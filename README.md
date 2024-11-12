@@ -1,9 +1,5 @@
 # C-Project
 
-Hier ist ein allgemeines **README**, das ihr als Grundlage verwenden könnt, und das während der Entwicklung angepasst und erweitert werden kann.
-
----
-
 # Neunermühle-Client für das Systempraktikum
 
 ## Projektübersicht

@@ -1,10 +1,10 @@
 # Zeitplanung für das Projekt "Neunermühle Client"
 
-Um das Projekt effizient zu bewältigen und unsere Ziele bis zum Abgabetermin zu erreichen, sollten wir die verbleibenden Wochen strukturiert angehen. Die folgende Zeitplanung basiert auf der Annahme, dass wir bis zum **02. Februar** fertig sein müssen, was uns insgesamt **12 Wochen** gibt.
+Um das Projekt effizient zu bewältigen und unsere Ziele bis zum **09. Februar 2025** zu erreichen, sollten wir die verbleibenden **12 Wochen** strukturiert angehen. Die folgende Zeitplanung bietet eine detaillierte Übersicht über die Projektphasen, Ziele und den geschätzten Zeitaufwand.
 
 ## Wöchentliche Zeiteinteilung
 
-Für ein 12-ECTS-Modul sollten wir pro Woche etwa **20 bis 25 Stunden** einplanen. Diese Stunden sind auf die Projektmeetings, die Implementierung und das Testen aufgeteilt.
+Für ein 12-ECTS-Modul sollten wir pro Woche etwa **20 bis 25 Stunden** einplanen. Diese Stunden sind auf Projektmeetings, Implementierung, Testen und Dokumentation aufgeteilt.
 
 ## Projektphasen und Zeitplan
 
@@ -56,6 +56,15 @@ Für ein 12-ECTS-Modul sollten wir pro Woche etwa **20 bis 25 Stunden** einplane
 - **Ziele**:
   - Präsentationsvorbereitung und Abgabe des Projekts
 - **Aufwand**: 10–15 Stunden für den Abschluss
+
+## Meilensteine
+
+- **Erste Meilensteinpräsentation:** 16. Dezember 2024
+  - **Ziele:** Fertigstellung von **Projektaufgabe 1** und teilweise **Projektaufgabe 2**
+- **Zweite Meilensteinpräsentation:** 20. Januar 2025
+  - **Ziele:** Fertigstellung von **Projektaufgabe 3** und teilweise **Projektaufgabe 4**
+- **Abgabetermin:** 09. Februar 2025
+  - **Ziele:** Vollständige Fertigstellung von **Projektaufgabe 4** und Abschluss des Projekts
 
 ## Wöchentliche Meetings
 

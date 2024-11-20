@@ -1,0 +1,33 @@
+# Deaktiviert alle Checks und aktiviert nur die gewünschten
+Checks: >
+  -*,
+  clang-analyzer-core.NullDereference,
+  readability-braces-around-statements,
+  cppcoreguidelines-avoid-magic-numbers,
+  cppcoreguidelines-non-private-member-variables-in-classes,
+  cert-mem57-c,
+  cert-str34-c
+
+# Analyse von potenziellen Null-Dereferenzierungen
+# Sicherstellen, dass Anweisungen in geschweiften Klammern stehen
+# Vermeidung von Magic Numbers (unerklärte Zahlenwerte im Code)
+# Sicherstellen, dass alle Klassenmitglieder initialisiert werden
+# Vermeidung von unsicherem Speicherzugriff
+# Vermeidung von Fehlern bei der Stringverarbeitung
+
+# Weitere mögliche Checks (auskommentiert):
+# clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling  # Unsichere Pufferhandhabung erkennen
+# readability-identifier-naming                                      # Überprüfen der Namenskonventionen von Identifikatoren
+# misc-unused-parameters                                            # Unbenutzte Parameter im Code identifizieren
+# bugprone-unhandled-self-assignment                                # Selbstzuweisung ohne Behandlung erkennen
+# performance-simplify-boolean-expr                                 # Vereinfachung von booleschen Ausdrücken zur Leistungssteigerung
+
+WarningsAsErrors: "" # Behandle keine Warnungen als Fehler
+HeaderFilterRegex: ".*" # Überprüfe alle Header-Dateien
+FormatStyle: file # Verwende den Formatierungsstil aus der Konfigurationsdatei
+# Language: C                # Optional: Kann entfernt werden, da clang-tidy die Sprache automatisch erkennt
+
+# Unterdrücken spezifischer Clang-Diagnostik-Fehler
+ExtraArgs:
+  - -Wno-unknown-warning-option
+  - -Wno-clang-diagnostic-error

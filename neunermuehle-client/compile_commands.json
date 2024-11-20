@@ -1,7 +1,7 @@
 [
   {
     "arguments": [
-      "/usr/bin/gcc",
+      "/opt/homebrew/opt/llvm/bin/clang",
       "-Wall",
       "-Werror",
       "-Imodules",
@@ -17,7 +17,7 @@
   },
   {
     "arguments": [
-      "/usr/bin/gcc",
+      "/opt/homebrew/opt/llvm/bin/clang",
       "-Wall",
       "-Werror",
       "-Imodules",

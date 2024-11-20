@@ -1,1 +1,0 @@
-/usr/bin/clang  -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.1.sdk -mmacosx-version-min=14.6 -Wl,-search_paths_first -Wl,-headerpad_max_install_names "CMakeFiles/sysprak-client.dir/main.c.o" "CMakeFiles/sysprak-client.dir/modules/args_parser/args_parser.c.o" -o bin/sysprak-client

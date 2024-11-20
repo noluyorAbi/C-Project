@@ -1,3 +1,0 @@
-/Users/alperen/Desktop/LMU/5.Semester/Sysprak/C-PROJEKT/neunermuehle-client/CMakeFiles/sysprak-client.dir
-/Users/alperen/Desktop/LMU/5.Semester/Sysprak/C-PROJEKT/neunermuehle-client/CMakeFiles/edit_cache.dir
-/Users/alperen/Desktop/LMU/5.Semester/Sysprak/C-PROJEKT/neunermuehle-client/CMakeFiles/rebuild_cache.dir

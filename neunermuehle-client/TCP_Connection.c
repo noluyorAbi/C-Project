@@ -7,9 +7,7 @@
 #include <netdb.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-
-#define HOSTNAME "sysprak.priv.lab.nm.ifi.lmu.de"
-#define PORT "1357"
+#include "TCP_Connection.h"
 
 // void performConnection(int sock) <- Jonas
 

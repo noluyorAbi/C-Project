@@ -22,7 +22,7 @@ OBJ = $(SRC:%.c=$(BUILD_DIR)/%.o)
 .DEFAULT_GOAL := all
 
 # Phony targets
-.PHONY: all run clean format
+.PHONY: all run clean format tidy
 
 # Format the source files
 format:
@@ -53,3 +53,12 @@ clean:
 	@echo "Cleaning up..."
 	@rm -rf $(BIN_DIR) $(BUILD_DIR)
 	@clang-format -i $(SRC)
+
+# Clang-Tidy target - Analyze all source files with clang-tidy
+tidy:
+	@echo "Running clang-tidy on source files..."
+	@for file in $(SRC); do \
+		echo "Analyzing $$file..."; \
+		clang-tidy -p . $$file || { echo "clang-tidy failed on $$file"; exit 1; }; \
+	done
+	@echo "clang-tidy analysis completed successfully."

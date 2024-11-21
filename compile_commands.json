@@ -11,9 +11,9 @@
       "build/./main.o",
       "main.c"
     ],
-    "directory": "/Users/alperen/Desktop/LMU/5.Semester/Sysprak/C-PROJEKT/neunermuehle-client",
-    "file": "/Users/alperen/Desktop/LMU/5.Semester/Sysprak/C-PROJEKT/neunermuehle-client/main.c",
-    "output": "/Users/alperen/Desktop/LMU/5.Semester/Sysprak/C-PROJEKT/neunermuehle-client/build/main.o"
+    "directory": "/Users/alperen/Desktop/LMU/5.Semester/Sysprak/C-PROJEKT",
+    "file": "/Users/alperen/Desktop/LMU/5.Semester/Sysprak/C-PROJEKT/main.c",
+    "output": "/Users/alperen/Desktop/LMU/5.Semester/Sysprak/C-PROJEKT/build/main.o"
   },
   {
     "arguments": [
@@ -24,11 +24,27 @@
       "-Imodules/args_parser",
       "-c",
       "-o",
-      "build/modules/args_parser/args_parser.o",
+      "build/./modules/args_parser/args_parser.o",
       "modules/args_parser/args_parser.c"
     ],
-    "directory": "/Users/alperen/Desktop/LMU/5.Semester/Sysprak/C-PROJEKT/neunermuehle-client",
-    "file": "/Users/alperen/Desktop/LMU/5.Semester/Sysprak/C-PROJEKT/neunermuehle-client/modules/args_parser/args_parser.c",
-    "output": "/Users/alperen/Desktop/LMU/5.Semester/Sysprak/C-PROJEKT/neunermuehle-client/build/modules/args_parser/args_parser.o"
+    "directory": "/Users/alperen/Desktop/LMU/5.Semester/Sysprak/C-PROJEKT",
+    "file": "/Users/alperen/Desktop/LMU/5.Semester/Sysprak/C-PROJEKT/modules/args_parser/args_parser.c",
+    "output": "/Users/alperen/Desktop/LMU/5.Semester/Sysprak/C-PROJEKT/build/modules/args_parser/args_parser.o"
+  },
+  {
+    "arguments": [
+      "/opt/homebrew/opt/llvm/bin/clang",
+      "-Wall",
+      "-Werror",
+      "-Imodules",
+      "-Imodules/args_parser",
+      "-c",
+      "-o",
+      "build/./modules/tcp_performConnection/tcp_connection.o",
+      "modules/tcp_performConnection/tcp_connection.c"
+    ],
+    "directory": "/Users/alperen/Desktop/LMU/5.Semester/Sysprak/C-PROJEKT",
+    "file": "/Users/alperen/Desktop/LMU/5.Semester/Sysprak/C-PROJEKT/modules/tcp_performConnection/tcp_connection.c",
+    "output": "/Users/alperen/Desktop/LMU/5.Semester/Sysprak/C-PROJEKT/build/modules/tcp_performConnection/tcp_connection.o"
   }
 ]

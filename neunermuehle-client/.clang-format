@@ -6,12 +6,12 @@
 AlignAfterOpenBracket: Align # Parameter nach einer öffnenden Klammer ausrichten.
 # Mögliche Werte: Align (Standard), DontAlign, AlwaysBreak
 
-AlignConsecutiveAssignments: false # Konsekutive Zuweisungen nicht ausrichten.
+AlignConsecutiveAssignments: None # Konsekutive Zuweisungen nicht ausrichten.
 # Setze auf 'true', um folgende Ausrichtung zu ermöglichen:
 # int   a    = 1;
 # float bbbb = 2.0;
 
-AlignConsecutiveDeclarations: false # Konsekutive Deklarationen nicht ausrichten.
+AlignConsecutiveDeclarations: None # Konsekutive Deklarationen nicht ausrichten.
 # Setze auf 'true', um folgende Ausrichtung zu ermöglichen:
 # int   a;
 # float bbbb;
@@ -28,7 +28,7 @@ AlignTrailingComments: true # Nachgestellte Kommentare in einer Spalte ausrichte
 AllowAllParametersOfDeclarationOnNextLine: false # Alle Parameter einer Funktionsdeklaration nicht auf die nächste Zeile verschieben.
 # Setze auf 'true', um alle Parameter auf die nächste Zeile zu setzen.
 
-AllowShortBlocksOnASingleLine: false # Kurze Blöcke nicht in einer Zeile erlauben.
+AllowShortBlocksOnASingleLine: Never # Kurze Blöcke nicht in einer Zeile erlauben.
 # Setze auf 'true', um z. B. '{ return 0; }' zu erlauben.
 
 AllowShortCaseLabelsOnASingleLine: false # Kurze 'case'-Anweisungen nicht in einer Zeile erlauben.
@@ -105,7 +105,7 @@ PointerAlignment: Right # Pointer-Sternchen an den Variablennamen binden.
 ReflowComments: true # Kommentare neu umbrechen, um sie an die Zeilenlänge anzupassen.
 # Setze auf 'false', um Kommentare nicht anzupassen.
 
-SortIncludes: true # 'include'-Anweisungen alphabetisch sortieren.
+SortIncludes: CaseSensitive # 'include'-Anweisungen alphabetisch sortieren.
 # Setze auf 'false', um die ursprüngliche Reihenfolge beizubehalten.
 
 SpaceAfterCStyleCast: true # Leerzeichen nach C-Style-Casts einfügen.
@@ -114,7 +114,7 @@ SpaceAfterCStyleCast: true # Leerzeichen nach C-Style-Casts einfügen.
 SpaceBeforeAssignmentOperators: true # Leerzeichen vor Zuweisungsoperatoren einfügen.
 # Beispiel: 'x = y' statt 'x= y'
 
-SpaceBeforeParens: Always # Immer ein Leerzeichen vor Klammern einfügen.
+SpaceBeforeParens: ControlStatements # Immer ein Leerzeichen vor Klammern einfügen.
 # Mögliche Werte: Never, ControlStatements, Always
 
 SpaceInEmptyParentheses: false # Keine Leerzeichen in leeren Klammern einfügen.

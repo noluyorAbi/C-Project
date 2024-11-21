@@ -1,6 +1,11 @@
 .DS_Store
+
 # Prerequisites
 *.d
+
+# IDEs
+.idea
+.vscode
 
 # Object files
 *.o

@@ -6,14 +6,14 @@
 AlignAfterOpenBracket: Align # Parameter nach einer öffnenden Klammer ausrichten.
 # Mögliche Werte: Align (Standard), DontAlign, AlwaysBreak
 
-AlignConsecutiveAssignments: "None" # Konsekutive Zuweisungen nicht ausrichten.
+AlignConsecutiveAssignments: false # Konsekutive Zuweisungen nicht ausrichten.
 # Setze auf 'true', um folgende Ausrichtung zu ermöglichen:
-# int a = 1;
+# int   a    = 1;
 # float bbbb = 2.0;
 
-AlignConsecutiveDeclarations: "None" # Konsekutive Deklarationen nicht ausrichten.
+AlignConsecutiveDeclarations: false # Konsekutive Deklarationen nicht ausrichten.
 # Setze auf 'true', um folgende Ausrichtung zu ermöglichen:
-# int a;
+# int   a;
 # float bbbb;
 
 AlignEscapedNewlines: Left # Backslashes bei umgebrochenen Zeilen linksbündig ausrichten.
@@ -28,8 +28,8 @@ AlignTrailingComments: true # Nachgestellte Kommentare in einer Spalte ausrichte
 AllowAllParametersOfDeclarationOnNextLine: false # Alle Parameter einer Funktionsdeklaration nicht auf die nächste Zeile verschieben.
 # Setze auf 'true', um alle Parameter auf die nächste Zeile zu setzen.
 
-AllowShortBlocksOnASingleLine: "Never" # Kurze Blöcke nicht in einer Zeile erlauben.
-# Setze auf 'true', um z. B. '{return 0;}' zu erlauben.
+AllowShortBlocksOnASingleLine: false # Kurze Blöcke nicht in einer Zeile erlauben.
+# Setze auf 'true', um z. B. '{ return 0; }' zu erlauben.
 
 AllowShortCaseLabelsOnASingleLine: false # Kurze 'case'-Anweisungen nicht in einer Zeile erlauben.
 # Setze auf 'true', um 'case 1: doSomething(); break;' zu erlauben.
@@ -43,7 +43,7 @@ AllowShortIfStatementsOnASingleLine: false # Kurze 'if'-Anweisungen nicht in ein
 AllowShortLoopsOnASingleLine: false # Kurze Schleifen nicht in einer Zeile erlauben.
 # Setze auf 'true', um 'while (x) continue;' zu erlauben.
 
-AlwaysBreakAfterReturnType: All # Immer einen Zeilenumbruch nach dem Rückgabetyp einfügen.
+AlwaysBreakAfterReturnType: None # Kein Zeilenumbruch nach dem Rückgabetyp
 # Mögliche Werte: None, All, TopLevel, AllDefinitions, TopLevelDefinitions
 
 AlwaysBreakBeforeMultilineStrings: false # Keine Umbrüche vor mehrzeiligen Strings einfügen.
@@ -91,7 +91,7 @@ IndentWrappedFunctionNames: false # Umgebrochene Funktionsnamen nicht zusätzlic
 KeepEmptyLinesAtTheStartOfBlocks: false # Leere Zeilen am Blockanfang entfernen.
 # Setze auf 'true', um sie zu behalten.
 
-Language: Cpp # Sprache auf C++ setzen.
+# Language: C # Sprache auf C setzen.
 # Für C-Code kann 'C' verwendet werden oder diese Zeile weglassen.
 
 MaxEmptyLinesToKeep: 1 # Maximal eine aufeinanderfolgende Leerzeile beibehalten.
@@ -105,7 +105,7 @@ PointerAlignment: Right # Pointer-Sternchen an den Variablennamen binden.
 ReflowComments: true # Kommentare neu umbrechen, um sie an die Zeilenlänge anzupassen.
 # Setze auf 'false', um Kommentare nicht anzupassen.
 
-SortIncludes: "CaseSensitive" # 'include'-Anweisungen alphabetisch sortieren.
+SortIncludes: true # 'include'-Anweisungen alphabetisch sortieren.
 # Setze auf 'false', um die ursprüngliche Reihenfolge beizubehalten.
 
 SpaceAfterCStyleCast: true # Leerzeichen nach C-Style-Casts einfügen.
@@ -133,12 +133,15 @@ UseTab: Never # Keine Tabs verwenden, sondern Leerzeichen.
 # Mögliche Werte: Never, ForIndentation, Always
 
 # Zusätzliche Optionen (als Kommentar):
-# IndentGotoLabels: 'false' # 'goto'-Labels nicht einrücken.
-# BreakBeforeInheritanceComma: 'false' # Umbrüche vor Kommas in Vererbungslisten.
-# AllowShortEnumsOnASingleLine: 'false' # Kurze Enums nicht in einer Zeile erlauben.
-# SpacesBeforeTrailingComments: '1' # Anzahl der Leerzeichen vor nachgestellten Kommentaren.
-# IndentPPDirectives: None # Präprozessor-Direktiven nicht einrücken.
+# IndentGotoLabels: 'false'    # 'goto'-Labels nicht einrücken.
+# BreakBeforeInheritanceComma: 'false'  # Umbrüche vor Kommas in Vererbungslisten.
+# AllowShortEnumsOnASingleLine: 'false'  # Kurze Enums nicht in einer Zeile erlauben.
+# SpacesBeforeTrailingComments: '1'  # Anzahl der Leerzeichen vor nachgestellten Kommentaren.
+# IndentPPDirectives: None     # Präprozessor-Direktiven nicht einrücken.
 #   Mögliche Werte: None, AfterHash, BeforeHash
-# TabWidth: '8' # Tabulatorbreite auf 8 setzen (relevant, wenn Tabs verwendet werden).
-BraceWrapping:
-  AfterFunction: false
+# TabWidth: '8'                # Tabulatorbreite auf 8 setzen (relevant, wenn Tabs verwendet werden).
+# BraceWrapping:               # Feinabstimmung des Klammerumbruchs.
+#   AfterFunction: 'false'
+#   AfterClass: 'false'
+#   BeforeElse: 'false'
+#   IndentBraces: 'false'

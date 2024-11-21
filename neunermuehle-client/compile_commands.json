@@ -1,0 +1,34 @@
+[
+  {
+    "arguments": [
+      "/opt/homebrew/opt/llvm/bin/clang",
+      "-Wall",
+      "-Werror",
+      "-Imodules",
+      "-Imodules/args_parser",
+      "-c",
+      "-o",
+      "build/./main.o",
+      "main.c"
+    ],
+    "directory": "/Users/alperen/Desktop/LMU/5.Semester/Sysprak/C-PROJEKT/neunermuehle-client",
+    "file": "/Users/alperen/Desktop/LMU/5.Semester/Sysprak/C-PROJEKT/neunermuehle-client/main.c",
+    "output": "/Users/alperen/Desktop/LMU/5.Semester/Sysprak/C-PROJEKT/neunermuehle-client/build/main.o"
+  },
+  {
+    "arguments": [
+      "/opt/homebrew/opt/llvm/bin/clang",
+      "-Wall",
+      "-Werror",
+      "-Imodules",
+      "-Imodules/args_parser",
+      "-c",
+      "-o",
+      "build/modules/args_parser/args_parser.o",
+      "modules/args_parser/args_parser.c"
+    ],
+    "directory": "/Users/alperen/Desktop/LMU/5.Semester/Sysprak/C-PROJEKT/neunermuehle-client",
+    "file": "/Users/alperen/Desktop/LMU/5.Semester/Sysprak/C-PROJEKT/neunermuehle-client/modules/args_parser/args_parser.c",
+    "output": "/Users/alperen/Desktop/LMU/5.Semester/Sysprak/C-PROJEKT/neunermuehle-client/build/modules/args_parser/args_parser.o"
+  }
+]

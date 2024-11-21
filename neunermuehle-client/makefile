@@ -15,8 +15,9 @@ TARGET = $(BIN_DIR)/sysprak-client
 MOCK_ARGS = -g 1234567890123 -p 1
 
 # Source and object files
-SRC = $(SRC_DIR)/main.c $(MODULES_DIR)/args_parser.c
+SRC = $(shell find $(SRC_DIR) $(MODULES_DIR) -name '*.c' -o -name '*.h')
 OBJ = $(SRC:%.c=$(BUILD_DIR)/%.o)
+CLANG_FORMAT = clang-format
 
 # Default target
 .DEFAULT_GOAL := all
@@ -26,8 +27,19 @@ OBJ = $(SRC:%.c=$(BUILD_DIR)/%.o)
 
 # Format the source files
 format:
-	@echo "Formatting source files..."
-	@clang-format -i $(SRC)
+	@echo "\n\033[1;35mReformating source files...\033[0m\n"
+	@formatted_count=0; \
+	for file in $(shell find $(SRC_DIR) $(MODULES_DIR) -name '*.c' -o -name '*.h'); do \
+		if ! $(CLANG_FORMAT) --dry-run --Werror $$file 2>/dev/null; then \
+			$(CLANG_FORMAT) -i $$file; \
+			echo "\033[1;33m  Reformatted:\033[0m $$file"; \
+			formatted_count=$$((formatted_count + 1)); \
+		else \
+			echo "\033[1;32m  Already formatted:\033[0m $$file"; \
+		fi; \
+	done; \
+	echo; \
+	echo "\033[1;36mFormatting complete. Total files reformatted: $$formatted_count.\033[0m"
 
 # Compile the main program
 all: $(TARGET)

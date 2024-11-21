@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  cicd:
+    name: Lint, Format, Syntax
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang clang-format clang-tidy
+
+      - name: ClangFormat
+        run: |
+          find neunermuehle-client -name "*.c" -o -name "*.h" | xargs -r clang-format -style=file --assume-filename=neunermuehle-client/.clang-format --dry-run --Werror
+
+      - name: Syntax Check
+        run: |
+          find . -name "*.c" | xargs -r clang -fsyntax-only -Wall -Wextra
+
+      - name: Clang-Tidy
+        run: |
+          find neunermuehle-client -name "*.c" | xargs -I {} clang-tidy {} --config-file=neunermuehle-client/.clang-tidy -- -std=c99

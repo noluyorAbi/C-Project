@@ -6,12 +6,12 @@
 AlignAfterOpenBracket: Align # Parameter nach einer öffnenden Klammer ausrichten.
 # Mögliche Werte: Align (Standard), DontAlign, AlwaysBreak
 
-AlignConsecutiveAssignments: "false" # Konsekutive Zuweisungen nicht ausrichten.
+AlignConsecutiveAssignments: None # Konsekutive Zuweisungen nicht ausrichten.
 # Setze auf 'true', um folgende Ausrichtung zu ermöglichen:
 # int   a    = 1;
 # float bbbb = 2.0;
 
-AlignConsecutiveDeclarations: "false" # Konsekutive Deklarationen nicht ausrichten.
+AlignConsecutiveDeclarations: None # Konsekutive Deklarationen nicht ausrichten.
 # Setze auf 'true', um folgende Ausrichtung zu ermöglichen:
 # int   a;
 # float bbbb;
@@ -19,40 +19,40 @@ AlignConsecutiveDeclarations: "false" # Konsekutive Deklarationen nicht ausricht
 AlignEscapedNewlines: Left # Backslashes bei umgebrochenen Zeilen linksbündig ausrichten.
 # Mögliche Werte: DontAlign, Left, Right
 
-AlignOperands: "true" # Operanden in mehrzeiligen Ausdrücken ausrichten.
+AlignOperands: true # Operanden in mehrzeiligen Ausdrücken ausrichten.
 # Setze auf 'false', um keine Ausrichtung vorzunehmen.
 
-AlignTrailingComments: "true" # Nachgestellte Kommentare in einer Spalte ausrichten.
+AlignTrailingComments: true # Nachgestellte Kommentare in einer Spalte ausrichten.
 # Setze auf 'false', um Kommentare nicht auszurichten.
 
-AllowAllParametersOfDeclarationOnNextLine: "false" # Alle Parameter einer Funktionsdeklaration nicht auf die nächste Zeile verschieben.
+AllowAllParametersOfDeclarationOnNextLine: false # Alle Parameter einer Funktionsdeklaration nicht auf die nächste Zeile verschieben.
 # Setze auf 'true', um alle Parameter auf die nächste Zeile zu setzen.
 
-AllowShortBlocksOnASingleLine: "false" # Kurze Blöcke nicht in einer Zeile erlauben.
+AllowShortBlocksOnASingleLine: Never # Kurze Blöcke nicht in einer Zeile erlauben.
 # Setze auf 'true', um z. B. '{ return 0; }' zu erlauben.
 
-AllowShortCaseLabelsOnASingleLine: "false" # Kurze 'case'-Anweisungen nicht in einer Zeile erlauben.
+AllowShortCaseLabelsOnASingleLine: false # Kurze 'case'-Anweisungen nicht in einer Zeile erlauben.
 # Setze auf 'true', um 'case 1: doSomething(); break;' zu erlauben.
 
 AllowShortFunctionsOnASingleLine: None # Kurze Funktionen nicht in einer Zeile erlauben.
 # Mögliche Werte: None (Standard), Empty, Inline, All
 
-AllowShortIfStatementsOnASingleLine: "false" # Kurze 'if'-Anweisungen nicht in einer Zeile erlauben.
+AllowShortIfStatementsOnASingleLine: false # Kurze 'if'-Anweisungen nicht in einer Zeile erlauben.
 # Setze auf 'true', um 'if (x) return;' zu erlauben.
 
-AllowShortLoopsOnASingleLine: "false" # Kurze Schleifen nicht in einer Zeile erlauben.
+AllowShortLoopsOnASingleLine: false # Kurze Schleifen nicht in einer Zeile erlauben.
 # Setze auf 'true', um 'while (x) continue;' zu erlauben.
 
-AlwaysBreakAfterReturnType: All # Immer einen Zeilenumbruch nach dem Rückgabetyp einfügen.
+AlwaysBreakAfterReturnType: None # Kein Zeilenumbruch nach dem Rückgabetyp
 # Mögliche Werte: None, All, TopLevel, AllDefinitions, TopLevelDefinitions
 
-AlwaysBreakBeforeMultilineStrings: "false" # Keine Umbrüche vor mehrzeiligen Strings einfügen.
+AlwaysBreakBeforeMultilineStrings: false # Keine Umbrüche vor mehrzeiligen Strings einfügen.
 # Setze auf 'true', um vor mehrzeiligen Strings umzubrechen.
 
-BinPackArguments: "true" # Mehrere Argumente in Funktionsaufrufen in einer Zeile erlauben.
+BinPackArguments: true # Mehrere Argumente in Funktionsaufrufen in einer Zeile erlauben.
 # Setze auf 'false', um jedes Argument in eine neue Zeile zu setzen, wenn sie nicht passen.
 
-BinPackParameters: "true" # Mehrere Parameter in Funktionsdeklarationen in einer Zeile erlauben.
+BinPackParameters: true # Mehrere Parameter in Funktionsdeklarationen in einer Zeile erlauben.
 # Setze auf 'false', um jeden Parameter in eine neue Zeile zu setzen, wenn sie nicht passen.
 
 BreakBeforeBinaryOperators: NonAssignment # Vor binären Operatoren (außer Zuweisungen) umbrechen.
@@ -61,40 +61,40 @@ BreakBeforeBinaryOperators: NonAssignment # Vor binären Operatoren (außer Zuwe
 BreakBeforeBraces: Attach # Geschweifte Klammern an die vorherige Zeile anhängen.
 # Mögliche Werte: Attach (K&R-Stil), Linux, Stroustrup, Allman, GNU, WebKit, Mozilla, Custom
 
-BreakBeforeTernaryOperators: "true" # Vor ternären Operatoren ('?', ':') umbrechen.
+BreakBeforeTernaryOperators: true # Vor ternären Operatoren ('?', ':') umbrechen.
 # Setze auf 'false', um nach den Operatoren umzubrechen.
 
-BreakStringLiterals: "true" # Lange String-Literale umbrechen.
+BreakStringLiterals: true # Lange String-Literale umbrechen.
 # Setze auf 'false', um String-Literale nicht umzubrechen.
 
-ColumnLimit: "80" # Maximale Zeilenlänge auf 80 Zeichen beschränken.
+ColumnLimit: 80 # Maximale Zeilenlänge auf 80 Zeichen beschränken.
 # Setze auf '0', um die Zeilenlängenbeschränkung zu deaktivieren.
 
-ContinuationIndentWidth: "2" # Einrückung für Fortsetzungszeilen auf 2 Leerzeichen setzen.
+ContinuationIndentWidth: 2 # Einrückung für Fortsetzungszeilen auf 2 Leerzeichen setzen.
 # Standardwert ist '4'.
 
-DerivePointerAlignment: "false" # Pointer-Ausrichtung nicht aus dem Quellcode ableiten.
+DerivePointerAlignment: false # Pointer-Ausrichtung nicht aus dem Quellcode ableiten.
 # Setze auf 'true', um die Ausrichtung automatisch zu erkennen.
 
 IncludeBlocks: Regroup # 'include'-Anweisungen neu gruppieren und sortieren.
 # Mögliche Werte: Preserve, Merge, Regroup
 
-IndentCaseLabels: "false" # 'case'-Labels nicht einrücken.
+IndentCaseLabels: false # 'case'-Labels nicht einrücken.
 # Setze auf 'true', um 'case' und 'default' einzurücken.
 
-IndentWidth: "2" # Einrückung mit 2 Leerzeichen.
+IndentWidth: 2 # Einrückung mit 2 Leerzeichen.
 # Gängige Werte sind '2' oder '4'.
 
-IndentWrappedFunctionNames: "false" # Umgebrochene Funktionsnamen nicht zusätzlich einrücken.
+IndentWrappedFunctionNames: false # Umgebrochene Funktionsnamen nicht zusätzlich einrücken.
 # Setze auf 'true', um sie einzurücken.
 
-KeepEmptyLinesAtTheStartOfBlocks: "false" # Leere Zeilen am Blockanfang entfernen.
+KeepEmptyLinesAtTheStartOfBlocks: false # Leere Zeilen am Blockanfang entfernen.
 # Setze auf 'true', um sie zu behalten.
 
-Language: Cpp # Sprache auf C++ setzen.
+# Language: C # Sprache auf C setzen.
 # Für C-Code kann 'C' verwendet werden oder diese Zeile weglassen.
 
-MaxEmptyLinesToKeep: "1" # Maximal eine aufeinanderfolgende Leerzeile beibehalten.
+MaxEmptyLinesToKeep: 1 # Maximal eine aufeinanderfolgende Leerzeile beibehalten.
 
 PointerAlignment: Right # Pointer-Sternchen an den Variablennamen binden.
 # Mögliche Werte:
@@ -102,31 +102,31 @@ PointerAlignment: Right # Pointer-Sternchen an den Variablennamen binden.
 #   Right - int *ptr; (Standard)
 #   Middle - int * ptr;
 
-ReflowComments: "true" # Kommentare neu umbrechen, um sie an die Zeilenlänge anzupassen.
+ReflowComments: true # Kommentare neu umbrechen, um sie an die Zeilenlänge anzupassen.
 # Setze auf 'false', um Kommentare nicht anzupassen.
 
-SortIncludes: "true" # 'include'-Anweisungen alphabetisch sortieren.
+SortIncludes: CaseSensitive # 'include'-Anweisungen alphabetisch sortieren.
 # Setze auf 'false', um die ursprüngliche Reihenfolge beizubehalten.
 
-SpaceAfterCStyleCast: "true" # Leerzeichen nach C-Style-Casts einfügen.
+SpaceAfterCStyleCast: true # Leerzeichen nach C-Style-Casts einfügen.
 # Beispiel: '(int) x' statt '(int)x'
 
-SpaceBeforeAssignmentOperators: "true" # Leerzeichen vor Zuweisungsoperatoren einfügen.
+SpaceBeforeAssignmentOperators: true # Leerzeichen vor Zuweisungsoperatoren einfügen.
 # Beispiel: 'x = y' statt 'x= y'
 
-SpaceBeforeParens: Always # Immer ein Leerzeichen vor Klammern einfügen.
+SpaceBeforeParens: ControlStatements # Immer ein Leerzeichen vor Klammern einfügen.
 # Mögliche Werte: Never, ControlStatements, Always
 
-SpaceInEmptyParentheses: "false" # Keine Leerzeichen in leeren Klammern einfügen.
+SpaceInEmptyParentheses: false # Keine Leerzeichen in leeren Klammern einfügen.
 # Beispiel: 'func()' statt 'func( )'
 
-SpacesInCStyleCastParentheses: "false" # Keine Leerzeichen innerhalb der Klammern von C-Style-Casts einfügen.
+SpacesInCStyleCastParentheses: false # Keine Leerzeichen innerhalb der Klammern von C-Style-Casts einfügen.
 # Beispiel: '(int)x' statt '( int )x'
 
-SpacesInParentheses: "false" # Keine Leerzeichen innerhalb von Klammern einfügen.
+SpacesInParentheses: false # Keine Leerzeichen innerhalb von Klammern einfügen.
 # Beispiel: 'func(a, b)' statt 'func( a, b )'
 
-SpacesInSquareBrackets: "false" # Keine Leerzeichen innerhalb von eckigen Klammern einfügen.
+SpacesInSquareBrackets: false # Keine Leerzeichen innerhalb von eckigen Klammern einfügen.
 # Beispiel: 'array[i]' statt 'array[ i ]'
 
 UseTab: Never # Keine Tabs verwenden, sondern Leerzeichen.

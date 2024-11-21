@@ -1,0 +1,25 @@
+name: CI - Format Check
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  format-check:
+    name: ClangFormat Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Repository auschecken
+        uses: actions/checkout@v3
+
+      - name: Abhängigkeiten installieren
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang clang-format
+
+      - name: ClangFormat ausführen
+        run: |
+          find . -name "*.c" -o -name "*.h" | xargs -r clang-format -style=file --dry-run --Werror

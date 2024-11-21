@@ -11,6 +11,10 @@
 	<img src="https://img.shields.io/github/languages/count/noluyorAbi/C-Project?style=default&color=0080ff" alt="repo-language-count">
 </p>
 <p align="center"><!-- default option, no dependency badges. -->
+  <!-- default option, no dependency badges. -->
+  <a href="https://github.com/noluyorAbi/C-Project/actions/workflows/ci-format.yaml">
+    <img src="https://github.com/noluyorAbi/C-Project/actions/workflows/ci-format.yaml/badge.svg" alt="CI - Format Check">
+  </a>
 </p>
 <p align="center">
 	<!-- default option, no dependency badges. -->

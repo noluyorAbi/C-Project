@@ -21,15 +21,13 @@ typedef struct {
  * @param config Zeiger auf GameConfig-Struktur zur Speicherung der Ergebnisse
  * @return true bei erfolgreichem Parsen, false bei Fehlern
  */
-bool
-parse_args (int argc, char *argv[], GameConfig *config);
+bool parse_args(int argc, char *argv[], GameConfig *config);
 
 /**
  * Zeigt die Nutzungshilfe an.
  *
  * @param prog_name Name des Programms
  */
-void
-print_usage (const char *prog_name);
+void print_usage(const char *prog_name);
 
 #endif // ARGS_PARSER_H

@@ -22,7 +22,7 @@ jobs:
 
       - name: ClangFormat
         run: |
-          find neunermuehle-client -name "*.c" -o -name "*.h" | xargs -r clang-format -style=file --assume-filename=neunermuehle-client/.clang-format --dry-run --Werror
+          find . -name "*.c" -o -name "*.h" | xargs -r clang-format -style=file --dry-run --Werror
 
       - name: Syntax Check
         run: |
@@ -30,4 +30,4 @@ jobs:
 
       - name: Clang-Tidy
         run: |
-          find neunermuehle-client -name "*.c" | xargs -I {} clang-tidy {} --config-file=neunermuehle-client/.clang-tidy -- -std=c99
+          find . -name "*.c" | xargs -I {} clang-tidy {} -- -std=c99

@@ -160,7 +160,7 @@ Bevor Sie beginnen, stellen Sie sicher, dass folgende Voraussetzungen erfüllt s
 Um den Client zu starten, verwenden Sie:
 
 ```sh
-./neunermuehle-client/neunermuehle_client
+make run
 ```
 
 ---

@@ -74,7 +74,9 @@ format:
 # Clean-Ziel - entfernt Binärdateien und Build-Dateien
 clean:
 	@echo "Bereinige..."
-	@rm -rf $(BIN_DIR) $(BUILD_DIR) $(LIB_DIR)
+	@find $(BIN_DIR) $(BUILD_DIR) $(LIB_DIR) -type f ! -name "README.md" -exec rm -f {} +
+	@find $(BIN_DIR) $(BUILD_DIR) $(LIB_DIR) -type d -empty -delete
+
 
 # Clang-Tidy-Ziel - Analysiert alle Quellcode-Dateien mit clang-tidy
 tidy:

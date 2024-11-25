@@ -99,6 +99,9 @@ Das Projekt wird in mehreren Schritten im Verlauf des Praktikums entwickelt, und
 │       └── tcp_connection.c
 ├── scripts
 │   ├── README.MD
+│   ├── setup_precommit
+│   │   ├── README.md
+│   │   └── setup_pre_commit.sh
 │   └── update_readme
 │       ├── README.md
 │       └── update_readme.sh
@@ -108,7 +111,7 @@ Das Projekt wird in mehreren Schritten im Verlauf des Praktikums entwickelt, und
         ├── README.md
         └── test_performConnection.c
 
-10 directories, 19 files
+11 directories, 21 files
 ```
 <!-- project-structure-end -->
 

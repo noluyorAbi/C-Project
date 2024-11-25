@@ -1,8 +1,4 @@
-# Tests
-
-Dieses Verzeichnis enthält Testdateien für das Projekt. Hier werden Unit-Tests, Integrationstests und andere Testmethoden abgelegt, um die Funktionalität der einzelnen Module und des gesamten Projekts zu überprüfen.
-
-## Inhalt
+# Inhalt
 
 - **`test_performConnection/`**: Integrationstest für die `performConnection`-Funktion der TCP-Kommunikationsmodule.
 

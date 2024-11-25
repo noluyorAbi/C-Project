@@ -54,7 +54,7 @@ int performConnection(int sockfd) {
 
   // 1. Receive greeting from server
   if (receiveMessage(sockfd, buffer, BUFFER_SIZE) != 0) {
-    return -1;
+    return EXIT_FAILURE;
   }
 
   // Check for the "+ MNM Gameserver" prefix

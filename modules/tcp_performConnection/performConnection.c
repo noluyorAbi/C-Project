@@ -44,7 +44,7 @@ int receiveMessage(int sockfd, char *buffer, size_t buffer_size) {
     return EXIT_FAILURE;
   }
   buffer[bytes_received] = '\0';
-  fprintf(stdout, "Empfangen: %s", buffer);
+  printf("Received: %s", buffer);
   return EXIT_SUCCESS;
 }
 

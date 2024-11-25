@@ -1,7 +1,6 @@
-// performConnection.c
-
 #include "performConnection.h"
 
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -19,7 +18,7 @@
  */
 int sendMessage(int sockfd, const char *message) {
   if (send(sockfd, message, strlen(message), 0) == -1) {
-    perror("Fehler beim Senden der Nachricht");
+    fprintf(stderr, "Fehler beim Senden der Nachricht: %s\n", strerror(errno));
     return EXIT_FAILURE;
   }
   fprintf(stdout, "Gesendet: %s", message);
@@ -37,7 +36,8 @@ int sendMessage(int sockfd, const char *message) {
 int receiveMessage(int sockfd, char *buffer, size_t buffer_size) {
   ssize_t bytes_received = recv(sockfd, buffer, buffer_size - 1, 0);
   if (bytes_received < 0) {
-    perror("Fehler beim Empfangen der Nachricht");
+    fprintf(stderr, "Fehler beim Empfangen der Nachricht: %s\n",
+            strerror(errno));
     return EXIT_FAILURE;
   } else if (bytes_received == 0) {
     fprintf(stderr, "Verbindung vom Server geschlossen\n");
@@ -85,8 +85,7 @@ int performConnection(int sockfd) {
   }
 
   // 4. Game-ID senden
-  const char *game_id =
-    "ID my-game-id\n"; // Im Test wird "my-game-id" verwendet
+  const char *game_id = "ID my-game-id\n";
   if (sendMessage(sockfd, game_id) != EXIT_SUCCESS) {
     return EXIT_FAILURE;
   }
@@ -121,7 +120,6 @@ int performConnection(int sockfd) {
     fprintf(stderr, "Unerwartete Spielerzuweisung: %s\n", buffer);
     return EXIT_FAILURE;
   } else {
-    // Verarbeitung der Spielerzuweisung
     fprintf(stdout, "Zugewiesener Spieler: %s", buffer + 5);
   }
 
@@ -150,10 +148,8 @@ int performConnection(int sockfd) {
       return EXIT_FAILURE;
     }
     if (strncmp(buffer, "+ ENDPLAYERS", 12) == 0) {
-      break; // Ende der Spielerliste
+      break;
     }
-    // Verarbeitung der Spielerinformationen (z.B. Nummer, Name, Bereitschaft)
-    // Beispiel: "+ PLAYER 1 Uli READY"
     int player_number;
     char player_name[50];
     char readiness[20];
@@ -168,5 +164,5 @@ int performConnection(int sockfd) {
   }
 
   fprintf(stdout, "Prolog-Phase erfolgreich abgeschlossen.\n");
-  return EXIT_SUCCESS; // Erfolg
+  return EXIT_SUCCESS;
 }

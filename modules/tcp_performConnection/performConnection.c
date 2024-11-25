@@ -18,7 +18,7 @@
 int sendMessage(int sockfd, const char *message) {
   if (send(sockfd, message, strlen(message), 0) == -1) {
     perror("Error sending message");
-    return -1;
+    return EXIT_FAILURE;
   }
   printf("Sent: %s", message);
   return 0;

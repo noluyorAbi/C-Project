@@ -36,7 +36,7 @@ int receiveMessage(int sockfd, char *buffer, size_t buffer_size) {
   int bytes_received = recv(sockfd, buffer, buffer_size - 1, 0);
   if (bytes_received <= 0) {
     perror("Error receiving message");
-    return -1;
+    return EXIT_FAILURE;
   }
   buffer[bytes_received] = '\0';
   printf("Received: %s", buffer);

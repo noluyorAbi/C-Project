@@ -1,0 +1,49 @@
+name: Update Project Structure in README
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  update-readme:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Checkout the repository
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    # Install tree command
+    - name: Install tree command
+      run: sudo apt-get update && sudo apt-get install -y tree
+
+    # Run the tree command to capture the project structure
+    - name: Generate project structure
+      run: tree -I '.git|node_modules|build|*.o|*.obj|*.class' > project-structure.txt
+
+    # Update the README file
+    - name: Update README.md
+      run: |
+        START_MARKER="## Projektstruktur"
+        END_MARKER="### Erläuterungen zur Projektstruktur"
+        STRUCTURE_CONTENT=$(cat project-structure.txt | sed 's/^/    /')
+        awk -v start_marker="$START_MARKER" -v end_marker="$END_MARKER" -v structure_content="$STRUCTURE_CONTENT" '
+          $0 ~ start_marker { print; in_structure=1; print structure_content; next }
+          $0 ~ end_marker { in_structure=0 }
+          !in_structure { print }
+        ' README.md > README.md.updated
+        mv README.md.updated README.md
+
+    # Commit and push changes
+    - name: Commit and push changes
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        git config user.name "GitHub Actions"
+        git config user.email "actions@github.com"
+        git remote set-url origin https://github.com/${GITHUB_REPOSITORY}
+        git add README.md
+        git commit -m "Update project structure in README"
+        git push --set-upstream origin ${GITHUB_REF##*/}

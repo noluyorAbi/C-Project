@@ -1,4 +1,4 @@
-#include "performConnection.c"
+#include "performConnection.h"
 
 #include <arpa/inet.h>
 #include <netdb.h>

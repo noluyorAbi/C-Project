@@ -18,7 +18,7 @@
  */
 int sendMessage(int sockfd, const char *message) {
   if (send(sockfd, message, strlen(message), 0) == -1) {
-    fprintf(stderr, "Fehler beim Senden der Nachricht: %s\n", strerror(errno));
+    perror("Error sending message");
     return EXIT_FAILURE;
   }
   fprintf(stdout, "Gesendet: %s", message);

@@ -1,4 +1,4 @@
-#include "/modules/args_parser/args_parser.c"
+#include "../../modules/args_parser/args_parser.h"
 
 #include <stdbool.h>
 #include <stdio.h>

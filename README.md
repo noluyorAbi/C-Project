@@ -32,7 +32,6 @@
 
 <br/>
 
-
 ## Inhaltsverzeichnis
 
 - [Inhaltsverzeichnis](#inhaltsverzeichnis)
@@ -49,6 +48,7 @@
 - [Spielregeln und Ressourcen](#spielregeln-und-ressourcen)
 - [Projekt-Roadmap](#projekt-roadmap)
 - [Beitragende](#beitragende)
+- [Richtlinien für Beiträge](#richtlinien-für-beiträge)
 - [Lizenz](#lizenz)
 - [Danksagungen](#danksagungen)
 
@@ -76,35 +76,44 @@ Das Projekt wird in mehreren Schritten im Verlauf des Praktikums entwickelt, und
 
 ## Projektstruktur
 
+<!-- project-structure-start -->
 ```sh
 .
+├── LICENSE
 ├── README.md
 ├── compile_commands.json
 ├── docs
-│   └── README.md
+│   └── README.md
 ├── lib
-│   └── README.md
+│   └── README.md
 ├── main.c
 ├── makefile
 ├── modules
-│   ├── README.md
-│   ├── args_parser
-│   │   ├── args_parser.c
-│   │   └── args_parser.h
-│   └── tcp_performConnection
-│       ├── performConnection.c
-│       └── tcp_connection.c
-├── neunermuehle-client
-│   └── build
-│       ├── main.o
-│       └── modules
-│           └── args_parser
-│               └── args_parser.o
+│   ├── README.md
+│   ├── args_parser
+│   │   ├── args_parser.c
+│   │   └── args_parser.h
+│   └── tcp_performConnection
+│       ├── performConnection.c
+│       ├── performConnection.h
+│       └── tcp_connection.c
 ├── scripts
-│   └── README.MD
+│   ├── README.MD
+│   ├── setup_precommit
+│   │   ├── README.md
+│   │   └── setup_pre_commit.sh
+│   └── update_readme
+│       ├── README.md
+│       └── update_readme.sh
 └── tests
-    └── README.md
+    ├── README.md
+    └── test_performConnection
+        ├── README.md
+        └── test_performConnection.c
+
+11 directories, 21 files
 ```
+<!-- project-structure-end -->
 
 ### Erläuterungen zur Projektstruktur
 
@@ -147,6 +156,8 @@ Bevor Sie beginnen, stellen Sie sicher, dass folgende Voraussetzungen erfüllt s
    git clone https://github.com/noluyorAbi/neunermuehle-client.git
    ```
 
+````
+
 2. **Kompilieren des Clients**:
 
    ```sh
@@ -160,7 +171,7 @@ Bevor Sie beginnen, stellen Sie sicher, dass folgende Voraussetzungen erfüllt s
 Um den Client zu starten, verwenden Sie:
 
 ```sh
-./neunermuehle-client/neunermuehle_client
+make run
 ```
 
 ---
@@ -208,16 +219,10 @@ Dieses Projekt wird von Studierenden der LMU im Rahmen des Systempraktikums entw
 - **🐛 [Probleme melden](https://github.com/noluyorAbi/neunermuehle-client/issues)**: Reichen Sie gefundene Bugs ein oder stellen Sie Feature-Anfragen.
 - **💡 [Pull Requests einreichen](https://github.com/noluyorAbi/neunermuehle-client/pulls)**: Überprüfen Sie offene PRs oder reichen Sie eigene PRs ein.
 
-
-
-
-
 ## Richtlinien für Beiträge
 
-
-⚠️ **Wichtiger Hinweis:**  
+⚠️ **Wichtiger Hinweis:**
 Da dieses Projekt ein modulinternes Projekt ist, können leider keine Beiträge von Außenstehenden berücksichtigt werden.
-
 
 ---
 

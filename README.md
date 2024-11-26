@@ -156,7 +156,6 @@ Bevor Sie beginnen, stellen Sie sicher, dass folgende Voraussetzungen erfüllt s
    git clone https://github.com/noluyorAbi/neunermuehle-client.git
    ```
 
-````
 
 2. **Kompilieren des Clients**:
 

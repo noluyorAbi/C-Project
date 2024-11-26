@@ -16,7 +16,7 @@ HOOK_PATH=".git/hooks/pre-commit"
 # Define the content of the pre-commit hook
 # This script ensures code formatting and README updates before every commit
 HOOK_CONTENT='#!/bin/bash
-make format         # Format the code according to the project's style rules
+make format         # Format the code according to the projects style rules
 make update_readme  # Update the project structure in the README.md file
 git add README.md   # Stage the updated README.md file for the commit
 '

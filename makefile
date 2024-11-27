@@ -33,7 +33,9 @@ CLANG_FORMAT = clang-format
 .DEFAULT_GOAL := all
 
 # Phony-Ziele
-.PHONY: all run clean format tidy test
+.PHONY: all run clean format tidy test update_readme
+
+all: $(TARGET) update_readme
 
 # Kompilieren von Bibliotheksobjektdateien
 $(BUILD_DIR)/%.o: %.c
@@ -74,8 +76,13 @@ format:
 # Clean-Ziel - entfernt Binärdateien und Build-Dateien
 clean:
 	@echo "Bereinige..."
-	@find $(BIN_DIR) $(BUILD_DIR) $(LIB_DIR) -type f ! -name "README.md" -exec rm -f {} +
-	@find $(BIN_DIR) $(BUILD_DIR) $(LIB_DIR) -type d -empty -delete
+	@for dir in $(BIN_DIR) $(BUILD_DIR) $(LIB_DIR); do \
+		if [ -d "$$dir" ]; then \
+			echo "Bereinige $$dir..."; \
+			find $$dir -type f ! -name "README.md" -exec rm -f {} +; \
+			find $$dir -type d -empty -delete; \
+		fi; \
+	done
 
 
 # Clang-Tidy-Ziel - Analysiert alle Quellcode-Dateien mit clang-tidy
@@ -97,3 +104,9 @@ test: $(LIBRARY) $(TEST_OBJ)
 	$(CC) $(CFLAGS) -o $(BIN_DIR)/sysprak-client-test $(TEST_OBJ) -L$(LIB_DIR) -lsysprak -lpthread
 	@echo "\n\n"
 	@./$(BIN_DIR)/sysprak-client-test
+
+# Phony Target für Update des README.md
+update_readme:
+	@printf "\n\033[1;35mAktualisiere die Projektstruktur in README.md...\033[0m\n"
+	@./scripts/update_readme/update_readme.sh > /dev/null
+	@printf "\033[1;36mUpdate abgeschlossen. Die Projektstruktur wurde in die README.md übernommen.\033[0m\n"

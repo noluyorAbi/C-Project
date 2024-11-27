@@ -1,35 +1,34 @@
-// performConnection.h
-
 #ifndef PERFORMCONNECTION_H
 #define PERFORMCONNECTION_H
 
 #include <stddef.h>
 
 /**
- * @brief Sendet eine Nachricht über den Socket.
+ * @brief Sends a message over the socket.
  *
- * @param sockfd Der Socket-Dateideskriptor.
- * @param message Die zu sendende Nachricht.
- * @return int EXIT_SUCCESS bei Erfolg, EXIT_FAILURE bei Fehler.
+ * @param sockfd The socket file descriptor.
+ * @param message The message to send.
+ * @return int EXIT_SUCCESS on success, EXIT_FAILURE on error.
  */
 int sendMessage(int sockfd, const char *message);
 
 /**
- * @brief Empfängt eine Nachricht über den Socket.
+ * @brief Receives a message over the socket.
  *
- * @param sockfd Der Socket-Dateideskriptor.
- * @param buffer Der Puffer zum Speichern der empfangenen Nachricht.
- * @param buffer_size Die Größe des Puffers.
- * @return int EXIT_SUCCESS bei Erfolg, EXIT_FAILURE bei Fehler.
+ * @param sockfd The socket file descriptor.
+ * @param buffer The buffer to store the received message.
+ * @param buffer_size The size of the buffer.
+ * @return int EXIT_SUCCESS on success, EXIT_FAILURE on error.
  */
 int receiveMessage(int sockfd, char *buffer, size_t buffer_size);
 
 /**
- * @brief Führt die Verbindungsprozedur gemäß dem Kommunikationsprotokoll durch.
+ * @brief Executes the connection procedure according to the communication
+ * protocol.
  *
- * @param sockfd Der Socket-Dateideskriptor für die TCP-Verbindung.
- * @return int EXIT_SUCCESS bei Erfolg, EXIT_FAILURE bei Fehler.
+ * @param sockfd The file descriptor for the TCP connection.
+ * @return int EXIT_SUCCESS on success, EXIT_FAILURE on error.
  */
 int performConnection(int sockfd);
 
-#endif // PERFORMCONNECTION_H
+#endif

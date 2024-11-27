@@ -10,143 +10,143 @@
 #define BUFFER_SIZE 1024
 
 /**
- * @brief Sendet eine Nachricht über den Socket.
+ * @brief Sends a message over the socket.
  *
- * @param sockfd Der Socket-Dateideskriptor.
- * @param message Die zu sendende Nachricht.
- * @return int EXIT_SUCCESS bei Erfolg, EXIT_FAILURE bei Fehler.
+ * @param sockfd The socket file descriptor.
+ * @param message The message to send.
+ * @return int EXIT_SUCCESS on success, EXIT_FAILURE on error.
  */
 int sendMessage(int sockfd, const char *message) {
   if (send(sockfd, message, strlen(message), 0) == -1) {
-    fprintf(stderr, "Fehler beim Senden der Nachricht: %s\n", strerror(errno));
+    fprintf(stderr, "Error sending message: %s\n", strerror(errno));
     return EXIT_FAILURE;
   }
-  fprintf(stdout, "Gesendet: %s", message);
+  fprintf(stdout, "C: %s", message);
   return EXIT_SUCCESS;
 }
 
 /**
- * @brief Empfängt eine Nachricht über den Socket.
+ * @brief Receives a message over the socket.
  *
- * @param sockfd Der Socket-Dateideskriptor.
- * @param buffer Der Puffer zum Speichern der empfangenen Nachricht.
- * @param buffer_size Die Größe des Puffers.
- * @return int EXIT_SUCCESS bei Erfolg, EXIT_FAILURE bei Fehler.
+ * @param sockfd The socket file descriptor.
+ * @param buffer The buffer to store the received message.
+ * @param buffer_size The size of the buffer.
+ * @return int EXIT_SUCCESS on success, EXIT_FAILURE on error.
  */
 int receiveMessage(int sockfd, char *buffer, size_t buffer_size) {
   ssize_t bytes_received = recv(sockfd, buffer, buffer_size - 1, 0);
   if (bytes_received < 0) {
-    fprintf(stderr, "Fehler beim Empfangen der Nachricht: %s\n",
-            strerror(errno));
+    fprintf(stderr, "Error receiving message: %s\n", strerror(errno));
     return EXIT_FAILURE;
   } else if (bytes_received == 0) {
-    fprintf(stderr, "Verbindung vom Server geschlossen\n");
+    fprintf(stderr, "Connection closed by server.\n");
     return EXIT_FAILURE;
   }
   buffer[bytes_received] = '\0';
-  fprintf(stdout, "Empfangen: %s", buffer);
+  fprintf(stdout, "S: %s", buffer);
   return EXIT_SUCCESS;
 }
 
 /**
- * @brief Führt die Verbindungsprozedur gemäß dem Kommunikationsprotokoll durch.
+ * @brief Executes the connection procedure according to the communication
+ * protocol.
  *
- * @param sockfd Der Socket-Dateideskriptor für die TCP-Verbindung.
- * @return int EXIT_SUCCESS bei Erfolg, EXIT_FAILURE bei Fehler.
+ * @param sockfd The socket file descriptor for the TCP connection.
+ * @return int EXIT_SUCCESS on success, EXIT_FAILURE on error.
  */
 int performConnection(int sockfd) {
   char buffer[BUFFER_SIZE];
 
-  // 1. Begrüßung vom Server empfangen
+  // 1. Receive greeting from server
   if (receiveMessage(sockfd, buffer, BUFFER_SIZE) != EXIT_SUCCESS) {
     return EXIT_FAILURE;
   }
 
-  // Überprüfung des Prefix "+ MNM Gameserver"
+  // Check the prefix "+ MNM Gameserver"
   if (strncmp(buffer, "+ MNM Gameserver", 16) != 0) {
-    fprintf(stderr, "Unerwartete Serverantwort: %s\n", buffer);
+    fprintf(stderr, "Unexpected server response: %s\n", buffer);
     return EXIT_FAILURE;
   }
 
-  // 2. Client-Version senden
+  // 2. Send client version
   const char *client_version = "VERSION 2.42\n";
   if (sendMessage(sockfd, client_version) != EXIT_SUCCESS) {
     return EXIT_FAILURE;
   }
 
-  // 3. Bestätigung und Game-ID-Aufforderung empfangen
+  // 3. Receive confirmation and game ID request
   if (receiveMessage(sockfd, buffer, BUFFER_SIZE) != EXIT_SUCCESS) {
     return EXIT_FAILURE;
   }
 
   if (strncmp(buffer, "+ Client version accepted", 25) != 0) {
-    fprintf(stderr, "Client-Version nicht akzeptiert: %s\n", buffer);
+    fprintf(stderr, "Client version not accepted: %s\n", buffer);
     return EXIT_FAILURE;
   }
 
-  // 4. Game-ID senden
+  // 4. Send game ID
   const char *game_id = "ID my-game-id\n";
   if (sendMessage(sockfd, game_id) != EXIT_SUCCESS) {
     return EXIT_FAILURE;
   }
 
-  // 5. Spieltyp empfangen
+  // 5. Receive game type
   if (receiveMessage(sockfd, buffer, BUFFER_SIZE) != EXIT_SUCCESS) {
     return EXIT_FAILURE;
   }
 
   if (strncmp(buffer, "+ PLAYING NMMorris", 18) != 0) {
-    fprintf(stderr, "Unerwarteter Spieltyp: %s\n", buffer);
+    fprintf(stderr, "Unexpected game type: %s\n", buffer);
     return EXIT_FAILURE;
   }
 
-  // 6. Spielname empfangen (falls erforderlich)
+  // 6. Receive game name (if required)
   if (receiveMessage(sockfd, buffer, BUFFER_SIZE) != EXIT_SUCCESS) {
     return EXIT_FAILURE;
   }
 
-  // 7. PLAYER-Befehl senden (ohne zusätzliche Werte)
+  // 7. Send PLAYER command (no additional values)
   const char *player_command = "PLAYER\n";
   if (sendMessage(sockfd, player_command) != EXIT_SUCCESS) {
     return EXIT_FAILURE;
   }
 
-  // 8. Spielerzuweisung empfangen
+  // 8. Receive player assignment
   if (receiveMessage(sockfd, buffer, BUFFER_SIZE) != EXIT_SUCCESS) {
     return EXIT_FAILURE;
   }
 
   if (strncmp(buffer, "+ YOU", 5) != 0) {
-    fprintf(stderr, "Unerwartete Spielerzuweisung: %s\n", buffer);
+    fprintf(stderr, "Unexpected player assignment: %s\n", buffer);
     return EXIT_FAILURE;
   } else {
-    fprintf(stdout, "Zugewiesener Spieler: %s", buffer + 5);
+    fprintf(stdout, "Assigned player: %s", buffer + 5);
   }
 
-  // 9. Gesamtanzahl der Spieler empfangen
+  // 9. Receive total number of players
   if (receiveMessage(sockfd, buffer, BUFFER_SIZE) != EXIT_SUCCESS) {
     return EXIT_FAILURE;
   }
 
   if (strncmp(buffer, "+ TOTAL", 7) != 0) {
-    fprintf(stderr, "Unerwartete Gesamtanzahl der Spieler: %s\n", buffer);
+    fprintf(stderr, "Unexpected total player count: %s\n", buffer);
     return EXIT_FAILURE;
   } else {
     int total_players;
     if (sscanf(buffer, "+ TOTAL %d", &total_players) == 1) {
-      fprintf(stdout, "Gesamtanzahl der Spieler: %d\n", total_players);
+      fprintf(stdout, "Total players: %d\n", total_players);
     } else {
-      fprintf(stderr, "Fehler beim Parsen der Gesamtanzahl der Spieler: %s\n",
-              buffer);
+      fprintf(stderr, "Error parsing total player count: %s\n", buffer);
       return EXIT_FAILURE;
     }
   }
 
-  // 10. Details der anderen Spieler empfangen
+  // 10. Receive details of other players
   while (1) {
     if (receiveMessage(sockfd, buffer, BUFFER_SIZE) != EXIT_SUCCESS) {
       return EXIT_FAILURE;
     }
+
     if (strncmp(buffer, "+ ENDPLAYERS", 12) == 0) {
       break;
     }
@@ -157,12 +157,12 @@ int performConnection(int sockfd) {
                readiness)
         == 3) {
       fprintf(stdout, "Spieler %d (%s) ist %s.\n", player_number, player_name,
-              strcmp(readiness, "READY") == 0 ? "bereit" : "nicht bereit");
+              strcmp(readiness, "READY") == 1 ? "bereit." : "nicht bereit.");
     } else {
-      fprintf(stderr, "Unbekannte Spielerinfo: %s\n", buffer);
+      fprintf(stderr, "Unknown player info: %s\n", buffer);
     }
   }
 
-  fprintf(stdout, "Prolog-Phase erfolgreich abgeschlossen.\n");
+  fprintf(stdout, "Prolog phase completed successfully.\n");
   return EXIT_SUCCESS;
 }

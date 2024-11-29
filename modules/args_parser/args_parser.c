@@ -7,66 +7,58 @@
 #include <string.h>
 
 /**
- * Parst die Kommandozeilenargumente und füllt die GameConfig-Struktur.
+ * Parses command-line arguments and populates the GameConfig structure.
  */
 bool parse_args(int argc, char *argv[], GameConfig *config) {
-  if (argc != 5) { // Erwartet genau 4 Argumente zusätzlich zum Programmnamen
-    fprintf(stderr, "Fehler: Falsche Anzahl von Argumenten.\n");
+  if (argc != 5) { // Expect exactly 4 arguments plus the program name
+    fprintf(stderr, "Error: Incorrect number of arguments.\n");
     return false;
   }
 
-  // Initialisiere die Struktur mit leeren Werten
+  // Initialize the structure with empty values
   memset(config->game_id, 0, sizeof(config->game_id));
   config->player_number = 0;
 
   for (int i = 1; i < argc; i++) {
     if (strcmp(argv[i], "-g") == 0) {
       if (i + 1 < argc) {
-        // Überprüfe, ob GAME-ID genau 13 Ziffern enthält
+        // Validate that GAME-ID contains exactly 13 digits
         size_t len = strlen(argv[i + 1]);
         if (len != 13) {
-          fprintf(stderr, "Fehler: GAME-ID muss genau 13 Ziffern lang sein.\n");
+          fprintf(stderr, "Error: GAME-ID must be exactly 13 digits long.\n");
           return false;
         }
-        for (size_t j = 0; j < len; j++) {
-          if (!isdigit((unsigned char) argv[i + 1][j])) {
-            fprintf(stderr, "Fehler: GAME-ID darf nur aus Ziffern bestehen.\n");
-            return false;
-          }
-        }
         strncpy(config->game_id, argv[i + 1], 13);
-        config->game_id[13] = '\0'; // Nullterminator sicherstellen
-        i++; // Überspringe das nächste Argument, da es bereits
-             // verarbeitet wurde
+        config->game_id[13] = '\0'; // Ensure null terminator
+        i++; // Skip the next argument since it has been processed
       } else {
-        fprintf(stderr, "Fehler: -g benötigt einen Wert.\n");
+        fprintf(stderr, "Error: -g requires a value.\n");
         return false;
       }
     } else if (strcmp(argv[i], "-p") == 0) {
       if (i + 1 < argc) {
-        // Überprüfe, ob Spielerzahl entweder 1 oder 2 ist
+        // Validate that the player number is either 1 or 2
         if (strlen(argv[i + 1]) != 1
             || (argv[i + 1][0] != '1' && argv[i + 1][0] != '2')) {
-          fprintf(stderr, "Fehler: Spielerzahl muss entweder 1 oder 2 sein.\n");
+          fprintf(stderr, "Error: Player number must be either 1 or 2.\n");
           return false;
         }
         config->player_number = argv[i + 1][0] - '0';
-        i++; // Überspringe das nächste Argument, da es bereits
-             // verarbeitet wurde
+        i++; // Skip the next argument since it has been processed
       } else {
-        fprintf(stderr, "Fehler: -p benötigt einen Wert.\n");
+        fprintf(stderr, "Error: -p requires a value.\n");
         return false;
       }
     } else {
-      fprintf(stderr, "Unbekannter Parameter: %s\n", argv[i]);
+      fprintf(stderr, "Unknown parameter: %s\n", argv[i]);
       return false;
     }
   }
 
-  // Überprüfe, ob beide Parameter korrekt gesetzt wurden
+  // Ensure both parameters are set correctly
   if (strlen(config->game_id) != 13
       || (config->player_number != 1 && config->player_number != 2)) {
-    fprintf(stderr, "Fehler: Ungültige oder fehlende Argumente.\n");
+    fprintf(stderr, "Error: Invalid or missing arguments.\n");
     return false;
   }
 
@@ -74,10 +66,10 @@ bool parse_args(int argc, char *argv[], GameConfig *config) {
 }
 
 /**
- * Zeigt die Nutzungshilfe an.
+ * Displays the usage help.
  */
 void print_usage(const char *prog_name) {
-  printf("Nutzung: %s -g <GAME-ID> -p <1|2>\n", prog_name);
-  printf("  -g <GAME-ID> : 13-stellige Spiel-ID\n");
-  printf("  -p <1|2>     : Spielerzahl (1 oder 2)\n");
+  printf("Usage: %s -g <GAME-ID> -p <1|2>\n", prog_name);
+  printf("  -g <GAME-ID> : 13-digit game ID\n");
+  printf("  -p <1|2>     : Player number (1 or 2)\n");
 }

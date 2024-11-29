@@ -1,6 +1,7 @@
 #include "./modules/args_parser/args_parser.h"
 
 #include <stdio.h>
+#define GAMEKINDNAME = "NMMorris"
 
 int main(int argc, char *argv[]) {
   GameConfig config;

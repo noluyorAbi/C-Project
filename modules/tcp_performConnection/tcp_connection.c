@@ -19,7 +19,6 @@ int createConnection() {
     *result; // Pointer to the list of address results (returned by getaddrinfo)
   struct addrinfo *rp;         // Iterator for address list
   struct addrinfo hints = {0}; // Hints for getaddrinfo configuration
-
   // Set connection criteria for getaddrinfo
   hints.ai_family = AF_UNSPEC;     // IPv4 or IPv6
   hints.ai_socktype = SOCK_STREAM; // TCP

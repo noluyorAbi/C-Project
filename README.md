@@ -83,6 +83,9 @@ Das Projekt wird in mehreren Schritten im Verlauf des Praktikums entwickelt, und
 .
 ├── LICENSE
 ├── README.md
+├── bin
+│   ├── sysprak-client
+│   └── sysprak-client-test
 ├── compile_commands.json
 ├── docs
 │   └── README.md
@@ -113,7 +116,7 @@ Das Projekt wird in mehreren Schritten im Verlauf des Praktikums entwickelt, und
         ├── README.md
         └── test_performConnection.c
 
-11 directories, 21 files
+12 directories, 23 files
 ```
 <!-- project-structure-end -->
 
@@ -148,9 +151,15 @@ Bevor Sie beginnen, stellen Sie sicher, dass folgende Voraussetzungen erfüllt s
 
 1. **Projekt klonen**:
 
+_Github:_
    ```sh
-   git clone https://github.com/noluyorAbi/neunermuehle-client.git
+   git clone https://github.com/noluyorAbi/C-Project
    ```
+   
+_Gitlab_ (Mirror-Repository von Github)
+```sh
+git clone https://gitlab.lrz.de/sysprakws2425/gruppe18/c-project-mirror
+```
 
 2. **Kompilieren des Clients**:
 
@@ -158,7 +167,7 @@ Bevor Sie beginnen, stellen Sie sicher, dass folgende Voraussetzungen erfüllt s
    make
    ```
 
-   Dies erstellt die ausführbare Datei und legt sie im `neunermuehle-client/` Verzeichnis ab.
+   Dies erstellt die ausführbare Datei und legt sie im `bin/` Verzeichnis ab.
 
 ### Benutzung
 

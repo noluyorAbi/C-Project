@@ -1,5 +1,4 @@
-name: C CI/CD Pipeline
-
+name: C Project Build, Memory Leak Check, and Deployment Pipeline
 on:
   push:
     branches: [main]

@@ -18,8 +18,6 @@
 	<a href="https://codescene.io/projects/61375"><img src="https://codescene.io/projects/61375/status-badges/code-health" alt="Code Health"></a>
 </p>
 
-
-
 <p align="center">
 	<!-- default option, no dependency badges. -->
 </p>
@@ -42,7 +40,7 @@
 - [Überblick](#überblick)
 - [Funktionen](#funktionen)
 - [Projektstruktur](#projektstruktur)
-  - [Erläuterungen zur Projektstruktur](#erläuterungen-zur-projektstruktur)
+  - [Übersicht der Verzeichnisse und Dateien](#übersicht-der-verzeichnisse-und-dateien)
 - [Erste Schritte](#erste-schritte)
   - [Voraussetzungen](#voraussetzungen)
   - [Installation](#installation)
@@ -119,25 +117,19 @@ Das Projekt wird in mehreren Schritten im Verlauf des Praktikums entwickelt, und
 ```
 <!-- project-structure-end -->
 
-### Erläuterungen zur Projektstruktur
+### Übersicht der Verzeichnisse und Dateien
 
-- **`README.md`**: Diese Datei enthält die Projektdokumentation.
-- **`compile_commands.json`**: Enthält Kompilierungsbefehle für die Quellcode-Dateien, nützlich für Tools wie Clang.
-- **`docs/`**: Dokumentationsdateien zum Projekt.
-- **`lib/`**: Bibliotheken oder externe Abhängigkeiten.
-- **`main.c`**: Der Haupteinstiegspunkt des Programms.
-- **`makefile`**: Makefile zur Automatisierung des Build-Prozesses.
-- **`modules/`**: Enthält die verschiedenen Module des Projekts.
-  - **`args_parser/`**: Modul zur Verarbeitung von Kommandozeilenargumenten.
-    - **`args_parser.c`** und **`args_parser.h`**: Quellcode und Header für den Argumentenparser.
-  - **`tcp_performConnection/`**: Modul zur Herstellung der TCP-Verbindung.
-    - **`performConnection.c`** und **`tcp_connection.c`**: Quellcode für die Netzwerkverbindung.
-- **`neunermuehle-client/`**: Build-Verzeichnis für den Client.
-  - **`build/`**: Enthält die kompilierten Objektdateien.
-    - **`main.o`**: Objektdatei für `main.c`.
-    - **`modules/args_parser/args_parser.o`**: Objektdatei für den Argumentenparser.
-- **`scripts/`**: Skripte zur Automatisierung von Aufgaben.
-- **`tests/`**: Testfälle und zugehörige Dokumentation.
+1. **`README.md`**: Enthält die Projektdokumentation, wie Ziel, Funktionen und Aufbau des Projekts.
+2. **`compile_commands.json`**: Nützlich für die Integration mit Tools wie Clang, um die Kompilierungsschritte zu verfolgen.
+3. **`docs/`**: Alle projektbezogenen Dokumentationen, strukturiert und separat gehalten.
+4. **`lib/`**: Bibliotheken oder externe Abhängigkeiten, die das Projekt verwendet.
+5. **`main.c`**: Zentrale Einstiegsdatei, in der das Programm startet.
+6. **`makefile`**: Automatisiert den Build-Prozess und erleichtert das Kompilieren.
+7. **`modules/`**: Organisiert die Funktionalitäten des Projekts in wiederverwendbare Module:
+   - **`args_parser`**: Verarbeitung von Kommandozeilenargumenten.
+   - **`tcp_performConnection`**: Netzwerkmodule zur Verwaltung von TCP-Verbindungen.
+8. **`scripts/`**: Praktische Automatisierungsskripte, z. B. für Pre-Commit-Hooks oder Dokumentationsaktualisierungen.
+9. **`tests/`**: Verzeichnis für Tests, die sicherstellen, dass der Code wie erwartet funktioniert.
 
 ---
 
@@ -159,7 +151,6 @@ Bevor Sie beginnen, stellen Sie sicher, dass folgende Voraussetzungen erfüllt s
    ```sh
    git clone https://github.com/noluyorAbi/neunermuehle-client.git
    ```
-
 
 2. **Kompilieren des Clients**:
 

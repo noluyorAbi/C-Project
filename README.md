@@ -97,10 +97,6 @@ Das Projekt wird in mehreren Schritten im Verlauf des Praktikums entwickelt, und
 ├── compile_commands.json
 ├── docs
 │   └── README.md
-├── gitlab
-│   └── workflows
-│       ├── build_test.yml
-│       └── format_check.yml
 ├── lib
 │   └── README.md
 ├── main.c
@@ -128,7 +124,7 @@ Das Projekt wird in mehreren Schritten im Verlauf des Praktikums entwickelt, und
         ├── README.md
         └── test_performConnection.c
 
-13 directories, 23 files
+11 directories, 21 files
 ```
 <!-- project-structure-end -->
 

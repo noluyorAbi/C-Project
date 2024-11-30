@@ -157,7 +157,7 @@ Bevor Sie beginnen, stellen Sie sicher, dass folgende Voraussetzungen erfüllt s
 1. **Projekt klonen**:
 
    ```sh
-   git clone https://github.com/noluyorAbi/neunermuehle-client.git
+   git clone https://github.com/noluyorAbi/C-Project
    ```
 
 
@@ -167,7 +167,7 @@ Bevor Sie beginnen, stellen Sie sicher, dass folgende Voraussetzungen erfüllt s
    make
    ```
 
-   Dies erstellt die ausführbare Datei und legt sie im `neunermuehle-client/` Verzeichnis ab.
+   Dies erstellt die ausführbare Datei und legt sie im `bin/` Verzeichnis ab.
 
 ### Benutzung
 

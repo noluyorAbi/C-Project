@@ -12,10 +12,21 @@
 </p>
 <p align="center"><!-- default option, no dependency badges. -->
   <!-- default option, no dependency badges. -->
-  <a href="https://github.com/noluyorAbi/C-Project/actions/workflows/ci-format.yaml">
+
+	
+ <a href="https://github.com/noluyorAbi/C-Project/actions/workflows/ci-format.yaml">
     <img src="https://github.com/noluyorAbi/C-Project/actions/workflows/ci-format.yaml/badge.svg" alt="CI - Format Check">
   </a>
-	<a href="https://codescene.io/projects/61375"><img src="https://codescene.io/projects/61375/status-badges/code-health" alt="Code Health"></a>
+
+<a href="https://github.com/noluyorAbi/C-Project/actions/workflows/ci.yml">
+  <img src="https://github.com/noluyorAbi/C-Project/actions/workflows/ci.yml/badge.svg" alt="C Project Build, Memory Leak Check, and Deployment Pipeline">
+</a>
+
+<a href="https://codescene.io/projects/61375">
+<img src="https://codescene.io/projects/61375/status-badges/code-health" alt="Code Health">
+</a>
+
+
 </p>
 
 <p align="center">

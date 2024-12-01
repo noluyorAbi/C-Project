@@ -11,7 +11,7 @@
 
 /**
  * Sends a signal to the Thinker process to notify it of new data.
- * 
+ *
  * @param thinker_pid The process ID of the Thinker process.
  */
 void send_signal_to_thinker(pid_t thinker_pid) {
@@ -27,9 +27,10 @@ void send_signal_to_thinker(pid_t thinker_pid) {
  * Main function for the Connector process.
  * - Writes mock game data to a named pipe.
  * - Sends a signal to the Thinker process to process the data.
- * 
+ *
  * @param argc Number of command-line arguments.
- * @param argv Array of command-line arguments. Expects Thinker PID as the first argument.
+ * @param argv Array of command-line arguments. Expects Thinker PID as the first
+ * argument.
  * @return int Exit status of the program.
  */
 int main(int argc, char *argv[]) {

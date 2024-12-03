@@ -226,9 +226,9 @@ Die Spielregeln für Neunermühle und weitere Hilfen zur Entwicklung des Clients
 
 Dieses Projekt wird von Studierenden der LMU im Rahmen des Systempraktikums entwickelt.
 
-- **💬 [Diskussionen beitreten](https://github.com/noluyorAbi/neunermuehle-client/discussions)**: Teilen Sie Ihre Ideen, Feedback oder stellen Sie Fragen.
-- **🐛 [Probleme melden](https://github.com/noluyorAbi/neunermuehle-client/issues)**: Reichen Sie gefundene Bugs ein oder stellen Sie Feature-Anfragen.
-- **💡 [Pull Requests einreichen](https://github.com/noluyorAbi/neunermuehle-client/pulls)**: Überprüfen Sie offene PRs oder reichen Sie eigene PRs ein.
+- **💬 [Diskussionen beitreten](https://github.com/noluyorAbi/C-Project/discussions)**: Teilen Sie Ihre Ideen, Feedback oder stellen Sie Fragen.
+- **🐛 [Probleme melden](https://github.com/noluyorAbi/C-Project/issues)**: Reichen Sie gefundene Bugs ein oder stellen Sie Feature-Anfragen.
+- **💡 [Pull Requests einreichen](https://github.com/noluyorAbi/C-Project/pulls)**: Überprüfen Sie offene PRs oder reichen Sie eigene PRs ein.
 
 ## Richtlinien für Beiträge
 

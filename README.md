@@ -94,9 +94,6 @@ Das Projekt wird in mehreren Schritten im Verlauf des Praktikums entwickelt, und
 .
 ├── LICENSE
 ├── README.md
-├── bin
-│   ├── sysprak-client
-│   └── sysprak-client-test
 ├── compile_commands.json
 ├── docs
 │   └── README.md
@@ -127,7 +124,7 @@ Das Projekt wird in mehreren Schritten im Verlauf des Praktikums entwickelt, und
         ├── README.md
         └── test_performConnection.c
 
-12 directories, 23 files
+11 directories, 21 files
 ```
 <!-- project-structure-end -->
 

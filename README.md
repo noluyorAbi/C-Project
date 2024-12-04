@@ -22,6 +22,10 @@
   <img src="https://github.com/noluyorAbi/C-Project/actions/workflows/ci.yml/badge.svg" alt="C Project Build, Memory Leak Check, and Deployment Pipeline">
 </a>
 
+<a href="https://github.com/noluyorAbi/C-Project/actions/workflows/flawfinder.yml">
+  <img src="https://github.com/noluyorAbi/C-Project/actions/workflows/flawfinder.yml/badge.svg" alt="flawfinder">
+</a>
+
 <a href="https://codescene.io/projects/61375">
 <img src="https://codescene.io/projects/61375/status-badges/code-health" alt="Code Health">
 </a>

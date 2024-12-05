@@ -115,7 +115,7 @@ Das Projekt wird in mehreren Schritten im Verlauf des Praktikums entwickelt, und
 │       ├── performConnection.h
 │       └── tcp_connection.c
 ├── scripts
-│   ├── README.MD
+│   ├── Readme.md
 │   ├── setup_precommit
 │   │   ├── README.md
 │   │   └── setup_pre_commit.sh

@@ -1,4 +1,5 @@
-name: C Project Build, Memory Leak Check, and Deployment Pipeline
+name: C Project Build, Memory Leak Check, and Shared Memory Test
+
 on:
   push:
     branches: [main]
@@ -10,27 +11,62 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Schritt 1: Repository auschecken
       - name: Checkout Code
         uses: actions/checkout@v3
 
+      # Schritt 2: Abhängigkeiten installieren
       - name: Install Dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y build-essential valgrind gcc
 
+      # Schritt 3: Shared Memory Test kompilieren
+      - name: Compile Shared Memory Test
+        run: |
+          gcc -Wall -Werror -g -o ./tests/test_sharedMemory/test_sharedMemory \
+            ./tests/test_sharedMemory/test_sharedMemory.c
+
+      # Schritt 4: Shared Memory Test ausführen
+      - name: Run Shared Memory Test
+        run: |
+          chmod +x ./tests/test_sharedMemory/test_sharedMemory
+          ./tests/test_sharedMemory/test_sharedMemory
+
+      # Schritt 5: Valgrind auf Shared Memory Test anwenden
+      - name: Run Valgrind on Shared Memory Test
+        run: |
+          valgrind_output=$(valgrind --leak-check=full --track-origins=yes ./tests/test_sharedMemory/test_sharedMemory 2>&1 || true)
+          echo "$valgrind_output" > valgrind_shared_memory.log
+
+      # Schritt 6: Valgrind-Ausgabe analysieren
+      - name: Analyze Valgrind Output for Shared Memory Test
+        run: |
+          cat valgrind_shared_memory.log
+          if grep -q "ERROR SUMMARY: [^0]" valgrind_shared_memory.log; then
+            echo "Memory leaks detected in shared memory test"
+            exit 1
+          else
+            echo "No memory leaks detected in shared memory test"
+          fi
+
+      # Schritt 7: Hauptprojekt kompilieren
       - name: Build Project
         run: |
           make CC=gcc CFLAGS="-Wall -Werror -g"
 
+      # Schritt 8: Hauptausführbare Datei ausführbar machen
       - name: Make Executable
         run: chmod +x ./bin/sysprak-client
 
-      - name: Run Valgrind and Collect Output
+      # Schritt 9: Valgrind auf Hauptausführbare anwenden
+      - name: Run Valgrind on Main Executable
         run: |
           valgrind_output=$(valgrind --leak-check=full --track-origins=yes ./bin/sysprak-client -g 1234567890123 -p 1 2>&1 || true)
           echo "$valgrind_output" > valgrind.log
 
-      - name: Analyze Valgrind Output
+      # Schritt 10: Valgrind-Ausgabe analysieren
+      - name: Analyze Valgrind Output for Main Executable
         run: |
           cat valgrind.log
           if grep -q "ERROR SUMMARY: [^0]" valgrind.log; then
@@ -39,9 +75,3 @@ jobs:
           else
             echo "No memory leaks detected"
           fi
-
-      - name: Deploy if Tests Pass
-        if: ${{ success() }}
-        run: |
-          # Add your deployment commands here
-          echo "Deploying application..."

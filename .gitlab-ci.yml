@@ -14,4 +14,4 @@ cache:
 
 include:
   - local: ".gitlab/workflows/format_check.yml"
-  - local: ".gitlab/workflows/build_test_deploy.yml"
+  - local: ".gitlab/workflows/build_test.yml"

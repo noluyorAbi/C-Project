@@ -11,35 +11,35 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Schritt 1: Repository auschecken
+      # Step 1: Checkout the repository
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      # Schritt 2: Abhängigkeiten installieren
+      # Step 2: Install required dependencies
       - name: Install Dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y build-essential valgrind gcc
 
-      # Schritt 3: Shared Memory Test kompilieren
+      # Step 3: Compile the shared memory test
       - name: Compile Shared Memory Test
         run: |
           gcc -Wall -Werror -g -o ./tests/test_sharedMemory/test_sharedMemory \
             ./tests/test_sharedMemory/test_sharedMemory.c
 
-      # Schritt 4: Shared Memory Test ausführen
+      # Step 4: Run the shared memory test
       - name: Run Shared Memory Test
         run: |
           chmod +x ./tests/test_sharedMemory/test_sharedMemory
           ./tests/test_sharedMemory/test_sharedMemory
 
-      # Schritt 5: Valgrind auf Shared Memory Test anwenden
+      # Step 5: Apply Valgrind to the shared memory test
       - name: Run Valgrind on Shared Memory Test
         run: |
           valgrind_output=$(valgrind --leak-check=full --track-origins=yes ./tests/test_sharedMemory/test_sharedMemory 2>&1 || true)
           echo "$valgrind_output" > valgrind_shared_memory.log
 
-      # Schritt 6: Valgrind-Ausgabe analysieren
+      # Step 6: Analyze Valgrind output for the shared memory test
       - name: Analyze Valgrind Output for Shared Memory Test
         run: |
           cat valgrind_shared_memory.log
@@ -50,22 +50,22 @@ jobs:
             echo "No memory leaks detected in shared memory test"
           fi
 
-      # Schritt 7: Hauptprojekt kompilieren
+      # Step 7: Compile the main project
       - name: Build Project
         run: |
           make CC=gcc CFLAGS="-Wall -Werror -g"
 
-      # Schritt 8: Hauptausführbare Datei ausführbar machen
+      # Step 8: Make the main executable file executable
       - name: Make Executable
         run: chmod +x ./bin/sysprak-client
 
-      # Schritt 9: Valgrind auf Hauptausführbare anwenden
+      # Step 9: Apply Valgrind to the main executable
       - name: Run Valgrind on Main Executable
         run: |
           valgrind_output=$(valgrind --leak-check=full --track-origins=yes ./bin/sysprak-client -g 1234567890123 -p 1 2>&1 || true)
           echo "$valgrind_output" > valgrind.log
 
-      # Schritt 10: Valgrind-Ausgabe analysieren
+      # Step 10: Analyze Valgrind output for the main executable
       - name: Analyze Valgrind Output for Main Executable
         run: |
           cat valgrind.log

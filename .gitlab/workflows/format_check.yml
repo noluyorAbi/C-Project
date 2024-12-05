@@ -1,0 +1,17 @@
+# gitlab/workflows/format_check.yml
+format_check:
+  stage: format_check
+  image: ubuntu:latest
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+  before_script:
+    - apt-get update
+    - apt-get install -y clang clang-format
+  script:
+    - find . -name "*.c" -o -name "*.h" | xargs -r clang-format -style=file --dry-run --Werror
+  artifacts:
+    when: always
+    paths:
+      - clang-format-report.txt
+  allow_failure: false

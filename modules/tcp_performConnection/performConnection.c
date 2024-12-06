@@ -13,15 +13,15 @@
  *
  * @param sockfd The socket file descriptor.
  * @param message The message to send.
- * @return int 0 on success, -1 on error.
+ * @return int EXIT_SUCCESS on success, EXIT_FAILURE on error.
  */
 int sendMessage(int sockfd, const char *message) {
   if (send(sockfd, message, strlen(message), 0) == -1) {
-    perror("Error sending message");
+    fprintf(stderr, "Error sending message: %s\n", strerror(errno));
     return EXIT_FAILURE;
   }
-  printf("Sent: %s", message);
-  return 0;
+  fprintf(stdout, "C: %s", message);
+  return EXIT_SUCCESS;
 }
 
 /**
@@ -30,37 +30,41 @@ int sendMessage(int sockfd, const char *message) {
  * @param sockfd The socket file descriptor.
  * @param buffer The buffer to store the received message.
  * @param buffer_size The size of the buffer.
- * @return int 0 on success, -1 on error.
+ * @return int EXIT_SUCCESS on success, EXIT_FAILURE on error.
  */
 int receiveMessage(int sockfd, char *buffer, size_t buffer_size) {
-  int bytes_received = recv(sockfd, buffer, buffer_size - 1, 0);
-  if (bytes_received <= 0) {
-    perror("Error receiving message");
-    return -1;
+  ssize_t bytes_received = recv(sockfd, buffer, buffer_size - 1, 0);
+  if (bytes_received < 0) {
+    fprintf(stderr, "Error receiving message: %s\n", strerror(errno));
+    return EXIT_FAILURE;
+  } else if (bytes_received == 0) {
+    fprintf(stderr, "Connection closed by server.\n");
+    return EXIT_FAILURE;
   }
   buffer[bytes_received] = '\0';
-  printf("Received: %s", buffer);
+  fprintf(stdout, "S: %s", buffer);
   return EXIT_SUCCESS;
 }
 
 /**
- * @brief Handles the Prolog phase of the protocol.
+ * @brief Executes the connection procedure according to the communication
+ * protocol.
  *
- * @param sockfd The socket file descriptor.
- * @return int 0 on success, -1 on error.
+ * @param sockfd The socket file descriptor for the TCP connection.
+ * @return int EXIT_SUCCESS on success, EXIT_FAILURE on error.
  */
 int performConnection(int sockfd) {
   char buffer[BUFFER_SIZE];
 
   // 1. Receive greeting from server
-  if (receiveMessage(sockfd, buffer, BUFFER_SIZE) != 0) {
+  if (receiveMessage(sockfd, buffer, BUFFER_SIZE) != EXIT_SUCCESS) {
     return EXIT_FAILURE;
   }
 
-  // Check for the "+ MNM Gameserver" prefix
+  // Check the prefix "+ MNM Gameserver"
   if (strncmp(buffer, "+ MNM Gameserver", 16) != 0) {
     fprintf(stderr, "Unexpected server response: %s\n", buffer);
-    return -1;
+    return EXIT_FAILURE;
   }
 
   // 2. Send client version
@@ -69,61 +73,71 @@ int performConnection(int sockfd) {
     return -1;
   }
 
-  // 3. Receive acknowledgment and Game-ID prompt
-  if (receiveMessage(sockfd, buffer, BUFFER_SIZE) != 0) {
-    return -1;
+  // 3. Receive confirmation and game ID request
+  if (receiveMessage(sockfd, buffer, BUFFER_SIZE) != EXIT_SUCCESS) {
+    return EXIT_FAILURE;
   }
 
   if (strncmp(buffer, "+ Client version accepted", 25) != 0) {
     fprintf(stderr, "Client version not accepted: %s\n", buffer);
-    return -1;
+    return EXIT_FAILURE;
   }
 
-  // 4. Send Game-ID
-  const char *game_id = "ID my-game-id\n"; // Replace with the actual Game-ID
-  if (sendMessage(sockfd, game_id) != 0) {
-    return -1;
+  // 4. Send game ID
+  const char *game_id = "ID my-game-id\n";
+  if (sendMessage(sockfd, game_id) != EXIT_SUCCESS) {
+    return EXIT_FAILURE;
   }
 
   // 5. Receive game type
-  if (receiveMessage(sockfd, buffer, BUFFER_SIZE) != 0) {
-    return -1;
+  if (receiveMessage(sockfd, buffer, BUFFER_SIZE) != EXIT_SUCCESS) {
+    return EXIT_FAILURE;
   }
 
   if (strncmp(buffer, "+ PLAYING NMMorris", 18) != 0) {
     fprintf(stderr, "Unexpected game type: %s\n", buffer);
-    return -1;
+    return EXIT_FAILURE;
   }
 
-  // 6. Receive game name
-  if (receiveMessage(sockfd, buffer, BUFFER_SIZE) != 0) {
-    return -1;
+  // 6. Receive game name (if required)
+  if (receiveMessage(sockfd, buffer, BUFFER_SIZE) != EXIT_SUCCESS) {
+    return EXIT_FAILURE;
   }
 
-  // 7. Send PLAYER command
+  // 7. Send PLAYER command (no additional values)
   const char *player_command = "PLAYER\n";
   if (sendMessage(sockfd, player_command) != 0) {
     return -1;
   }
 
   // 8. Receive player assignment
-  if (receiveMessage(sockfd, buffer, BUFFER_SIZE) != 0) {
-    return -1;
+  if (receiveMessage(sockfd, buffer, BUFFER_SIZE) != EXIT_SUCCESS) {
+    return EXIT_FAILURE;
   }
 
   if (strncmp(buffer, "+ YOU", 5) != 0) {
     fprintf(stderr, "Unexpected player assignment: %s\n", buffer);
-    return -1;
+    return EXIT_FAILURE;
+  } else {
+    fprintf(stdout, "Assigned player: %s", buffer + 5);
   }
 
-  // 9. Receive total players
-  if (receiveMessage(sockfd, buffer, BUFFER_SIZE) != 0) {
-    return -1;
+  // 9. Receive total number of players
+  if (receiveMessage(sockfd, buffer, BUFFER_SIZE) != EXIT_SUCCESS) {
+    return EXIT_FAILURE;
   }
 
   if (strncmp(buffer, "+ TOTAL", 7) != 0) {
-    fprintf(stderr, "Unexpected total players: %s\n", buffer);
-    return -1;
+    fprintf(stderr, "Unexpected total player count: %s\n", buffer);
+    return EXIT_FAILURE;
+  } else {
+    int total_players;
+    if (sscanf(buffer, "+ TOTAL %d", &total_players) == 1) {
+      fprintf(stdout, "Total players: %d\n", total_players);
+    } else {
+      fprintf(stderr, "Error parsing total player count: %s\n", buffer);
+      return EXIT_FAILURE;
+    }
   }
 
   // 10. Receive details of other players
@@ -131,13 +145,23 @@ int performConnection(int sockfd) {
     if (receiveMessage(sockfd, buffer, BUFFER_SIZE) != 0) {
       return -1;
     }
+
     if (strncmp(buffer, "+ ENDPLAYERS", 12) == 0) {
-      break; // End of player list
+      break;
     }
-    // Process player information (e.g., number, name, readiness)
-    printf("Player info: %s", buffer);
+    int player_number;
+    char player_name[50];
+    char readiness[20];
+    if (sscanf(buffer, "+ PLAYER %d %49s %19s", &player_number, player_name,
+               readiness)
+        == 3) {
+      fprintf(stdout, "Spieler %d (%s) ist %s.\n", player_number, player_name,
+              strcmp(readiness, "READY") == 1 ? "bereit." : "nicht bereit.");
+    } else {
+      fprintf(stderr, "Unknown player info: %s\n", buffer);
+    }
   }
 
-  printf("Prolog phase completed successfully.\n");
-  return 0; // Success
+  fprintf(stdout, "Prolog phase completed successfully.\n");
+  return EXIT_SUCCESS;
 }

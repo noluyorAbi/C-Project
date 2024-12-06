@@ -80,8 +80,9 @@ bool parse_args(int argc, char *argv[], GameConfig *config) {
 
   // Ensure that the mandatory parameter -g is set
   if (strlen(config->game_id) != 13) {
-    fprintf(stderr,
-            "Fehler: Fehlendes oder ungültiges Pflichtargument -g <GAME-ID>.\n");
+    fprintf(
+      stderr,
+      "Fehler: Fehlendes oder ungültiges Pflichtargument -g <GAME-ID>.\n");
     return false;
   }
 

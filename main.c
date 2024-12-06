@@ -32,10 +32,8 @@ int main(int argc, char *argv[]) {
 
   // Output the configured parameters
   printf("Hostname: %s\n", app_config.hostname);
-  printf(
-    "Portnummer: %u\n",
-    ntohs(
-      app_config.portNumber)); // Converts back to host byte order
+  printf("Portnummer: %u\n",
+         ntohs(app_config.portNumber)); // Converts back to host byte order
   printf("GameKindName: %s\n", app_config.gameKindName);
 
   return EXIT_SUCCESS;

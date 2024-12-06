@@ -98,6 +98,8 @@ Das Projekt wird in mehreren Schritten im Verlauf des Praktikums entwickelt, und
 .
 ├── LICENSE
 ├── README.md
+├── bin
+│   └── sysprak-client
 ├── client.conf
 ├── compile_commands.json
 ├── docs
@@ -128,11 +130,24 @@ Das Projekt wird in mehreren Schritten im Verlauf des Praktikums entwickelt, und
 │       └── update_readme.sh
 └── tests
     ├── README.md
+    ├── test_clientConf
+    │   ├── client.conf
+    │   ├── logs
+    │   │   ├── Fehlende Konfigurationsdatei.err
+    │   │   ├── Fehlender GAME-ID Parameter.err
+    │   │   ├── Gültige Konfiguration mit Standardwerten.err
+    │   │   ├── Gültige Konfiguration.err
+    │   │   ├── Ungültige GAME-ID (nicht numerisch).err
+    │   │   ├── Ungültige GAME-ID (zu kurz).err
+    │   │   ├── Ungültige Spielerzahl.err
+    │   │   └── Verwendung der Standard-Konfigurationsdatei.err
+    │   ├── test_clientConf.sh
+    │   └── valid.conf
     └── test_performConnection
         ├── README.md
         └── test_performConnection.c
 
-11 directories, 25 files
+14 directories, 37 files
 ```
 <!-- project-structure-end -->
 

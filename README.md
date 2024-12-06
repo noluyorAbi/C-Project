@@ -131,7 +131,7 @@ Das Projekt wird in mehreren Schritten im Verlauf des Praktikums entwickelt, und
     │   ├── README.md
     │   └── test_performConnection.c
     └── test_tcp_connection
-        └── test_tcp_connection.c
+        └── test_create_tcp_connection.c
 
 13 directories, 24 files
 ```

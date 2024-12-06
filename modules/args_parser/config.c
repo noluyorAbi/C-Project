@@ -28,25 +28,34 @@ static void trim_whitespace(char *str) {
 
 // Parses the configuration file and populates the Config structure. Returns
 // true on success, false on failure.
-
 bool parse_config_file(const char *filename, Config *config) {
   FILE *file = fopen(filename, "r");
   if (!file) {
-    perror("Error opening configuration file");
+    perror("Fehler beim Öffnen der Konfigurationsdatei");
     return false;
   }
 
-  // Set default values using macros
+  // Set default values using macros (only for optional parameters)
   strncpy(config->hostname, HOSTNAME, sizeof(config->hostname) - 1);
   config->hostname[sizeof(config->hostname) - 1] = '\0';
 
   config->portNumber = htons(PORTNUMBER);
 
-  strncpy(config->gameKindName, GAMEKINDNAME, sizeof(config->gameKindName) - 1);
-  config->gameKindName[sizeof(config->gameKindName) - 1] = '\0';
+  // Removed default initialization for gameKindName to make it required
+  // If a default value is desired, uncomment the following lines and ensure
+  // GAMEKINDNAME is defined strncpy(config->gameKindName, GAMEKINDNAME,
+  // sizeof(config->gameKindName) - 1);
+  // config->gameKindName[sizeof(config->gameKindName) - 1] = '\0';
+
+  // Initialize gameKindName as an empty string to check if it's set in the
+  // config file
+  config->gameKindName[0] = '\0';
 
   char line[512];
+  int line_number = 0;
   while (fgets(line, sizeof(line), file)) {
+    line_number++;
+
     // Remove any newline characters
     line[strcspn(line, "\r\n")] = '\0';
 
@@ -55,10 +64,25 @@ bool parse_config_file(const char *filename, Config *config) {
       continue;
     }
 
+    // Count the number of '=' in the line
+    int equals_count = 0;
+    for (char *p = line; *p != '\0'; p++) {
+      if (*p == '=') {
+        equals_count++;
+      }
+    }
+
+    if (equals_count != 1) {
+      fprintf(stderr, "Ungültiges Format in Zeile %d: %s\n", line_number, line);
+      fclose(file);
+      return false;
+    }
+
     // Split the line into key and value
     char *equals_sign = strchr(line, '=');
     if (!equals_sign) {
-      fprintf(stderr, "Invalid line in config file: %s\n", line);
+      // This should not happen as we've already checked the number of '='
+      fprintf(stderr, "Ungültige Zeile in der Konfigurationsdatei: %s\n", line);
       fclose(file);
       return false;
     }
@@ -77,9 +101,20 @@ bool parse_config_file(const char *filename, Config *config) {
       config->hostname[sizeof(config->hostname) - 1] = '\0';
     } else if (strcasecmp(key, "PortNumber") == 0) {
       // Convert to integer and then to network byte order
-      int port = atoi(value);
+      char *endptr;
+      long port = strtol(value, &endptr, 10);
+      if (*endptr != '\0') {
+        fprintf(stderr,
+                "Ungültiger PortNumber (nicht-numerisch) in Zeile %d: %s\n",
+                line_number, value);
+        fclose(file);
+        return false;
+      }
       if (port <= 0 || port > 65535) {
-        fprintf(stderr, "Invalid PortNumber: %s\n", value);
+        fprintf(
+          stderr,
+          "Ungültiger PortNumber (außerhalb des Bereichs) in Zeile %d: %s\n",
+          line_number, value);
         fclose(file);
         return false;
       }
@@ -89,7 +124,8 @@ bool parse_config_file(const char *filename, Config *config) {
       config->gameKindName[sizeof(config->gameKindName) - 1] = '\0';
     } else {
       // For extensibility: Add additional parameters here
-      fprintf(stderr, "Unknown configuration parameter: %s\n", key);
+      fprintf(stderr, "Unbekannter Konfigurationsparameter in Zeile %d: %s\n",
+              line_number, key);
       // Optional: Ignore unknown parameters or handle them as errors
       fclose(file);
       return false;
@@ -100,15 +136,17 @@ bool parse_config_file(const char *filename, Config *config) {
 
   // Check if all required parameters are set
   if (config->hostname[0] == '\0') {
-    fprintf(stderr, "Hostname not set in configuration file.\n");
+    fprintf(stderr, "Hostname ist in der Konfigurationsdatei nicht gesetzt.\n");
     return false;
   }
   if (config->portNumber == 0) {
-    fprintf(stderr, "PortNumber not set or invalid in configuration file.\n");
+    fprintf(stderr, "PortNumber ist in der Konfigurationsdatei nicht gesetzt "
+                    "oder ungültig.\n");
     return false;
   }
   if (config->gameKindName[0] == '\0') {
-    fprintf(stderr, "GameKindName not set in configuration file.\n");
+    fprintf(stderr,
+            "GameKindName ist in der Konfigurationsdatei nicht gesetzt.\n");
     return false;
   }
 

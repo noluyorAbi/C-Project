@@ -25,7 +25,7 @@ int main(int argc, char *argv[]) {
   // Parse the configuration file
   Config app_config;
   if (!parse_config_file(game_config.config_file, &app_config)) {
-    fprintf(stderr, "Failed to parse configuration file: %s\n",
+    fprintf(stderr, "Fehler: Ungültige Konfigurationsdatei. %s\n",
             game_config.config_file);
     return EXIT_FAILURE;
   }

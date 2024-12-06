@@ -1,2 +1,2 @@
-Error opening configuration file: No such file or directory
-Failed to parse configuration file: /nonexistent/client.conf
+Fehler beim Öffnen der Konfigurationsdatei: No such file or directory
+Fehler: Ungültige Konfigurationsdatei. /nonexistent/client.conf

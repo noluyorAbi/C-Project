@@ -132,22 +132,44 @@ Das Projekt wird in mehreren Schritten im Verlauf des Praktikums entwickelt, und
     ├── README.md
     ├── test_clientConf
     │   ├── client.conf
+    │   ├── commented_conf.conf
     │   ├── logs
     │   │   ├── Fehlende Konfigurationsdatei.err
     │   │   ├── Fehlender GAME-ID Parameter.err
+    │   │   ├── GAME-ID mit 13 Zeichen inklusive Buchstaben.err
     │   │   ├── Gültige Konfiguration mit Standardwerten.err
     │   │   ├── Gültige Konfiguration.err
+    │   │   ├── Konfigurationsdatei mit Großbuchstaben in Schlüsseln.err
+    │   │   ├── Konfigurationsdatei mit Kommentaren und leeren Zeilen.err
+    │   │   ├── Konfigurationsdatei mit maximal langen Hostname und GameKindName.err
+    │   │   ├── Konfigurationsdatei mit zusätzlichem Whitespace.err
+    │   │   ├── Konfigurationsdatei ohne erforderlichen Parameter GameKindName.err
+    │   │   ├── Konfigurationsdatei ohne optionalen Parameter GameKindName.err
+    │   │   ├── Malformed Konfigurationsdatei mit ungültigem Format.err
+    │   │   ├── Malformed Konfigurationsdatei ohne '=' .err
+    │   │   ├── Spielerzahl 0.err
+    │   │   ├── Spielerzahl 3.err
+    │   │   ├── Unbekannter Parameter in Konfigurationsdatei.err
+    │   │   ├── Unbekanntes Kommandozeilenargument.err
     │   │   ├── Ungültige GAME-ID (nicht numerisch).err
     │   │   ├── Ungültige GAME-ID (zu kurz).err
     │   │   ├── Ungültige Spielerzahl.err
     │   │   └── Verwendung der Standard-Konfigurationsdatei.err
+    │   ├── long_params.conf
+    │   ├── malformed_invalid_format.conf
+    │   ├── malformed_no_equals.conf
+    │   ├── missing_optional_param.conf
+    │   ├── missing_required_param.conf
     │   ├── test_clientConf.sh
-    │   └── valid.conf
+    │   ├── unknown_param.conf
+    │   ├── uppercase_keys.conf
+    │   ├── valid.conf
+    │   └── whitespace_conf.conf
     └── test_performConnection
         ├── README.md
         └── test_performConnection.c
 
-14 directories, 37 files
+14 directories, 59 files
 ```
 <!-- project-structure-end -->
 

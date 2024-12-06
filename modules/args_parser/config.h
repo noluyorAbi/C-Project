@@ -5,7 +5,7 @@
 
 #include "constants.h"
 
-#include <netinet/in.h> // für htons()
+#include <netinet/in.h> // for htons()
 #include <stdbool.h>
 
 typedef struct {

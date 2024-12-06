@@ -2,9 +2,9 @@
 
 #include "./modules/args_parser/args_parser.h"
 #include "./modules/args_parser/config.h"
-#include "./modules/args_parser/constants.h" // Einbindung der Konstanten, falls benötigt
+#include "./modules/args_parser/constants.h" // Inclusion of constants, if needed
 
-#include <arpa/inet.h> // Für ntohs()
+#include <arpa/inet.h> // For ntohs()
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -17,7 +17,7 @@ int main(int argc, char *argv[]) {
     return EXIT_FAILURE;
   }
 
-  // Ausgabe der geparsten Kommandozeilenargumente
+  // Output the parsed command-line arguments
   printf("GAME-ID: %s\n", game_config.game_id);
   printf("Spielerzahl: %d\n", game_config.player_number);
   printf("Konfigurationsdatei: %s\n", game_config.config_file);
@@ -30,17 +30,13 @@ int main(int argc, char *argv[]) {
     return EXIT_FAILURE;
   }
 
-  // Ausgabe der konfigurierten Parameter
+  // Output the configured parameters
   printf("Hostname: %s\n", app_config.hostname);
   printf(
     "Portnummer: %u\n",
     ntohs(
-      app_config.portNumber)); // Konvertiert zurück in Host-Byte-Reihenfolge
+      app_config.portNumber)); // Converts back to host byte order
   printf("GameKindName: %s\n", app_config.gameKindName);
-
-  // Weitere Nutzung der Konfigurationsparameter, z.B. Verbindungsaufbau zum
-  // Game-Server
-  // ...
 
   return EXIT_SUCCESS;
 }

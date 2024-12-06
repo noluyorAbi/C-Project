@@ -15,16 +15,16 @@
 #define BUFFER_SIZE 1024
 
 /**
- * @brief Mock-Server-Funktion, die erwartete Nachrichten sendet und empfängt.
+ * @brief Mock server function that sends and receives expected messages.
  *
- * @param arg Ein Zeiger auf den Server-Socket.
- * @return void* Nichts
+ * @param arg A pointer to the server socket.
+ * @return void* Nothing
  */
 void *mock_server(void *arg) {
   int server_sock = *(int *) arg;
   char buffer[BUFFER_SIZE];
 
-  // 1. Sende Begrüßung
+  // 1. Send greeting
   const char *greeting = "+ MNM Gameserver\n";
   if (send(server_sock, greeting, strlen(greeting), 0) == -1) {
     perror("Mock Server: Fehler beim Senden der Begrüßung");
@@ -33,7 +33,7 @@ void *mock_server(void *arg) {
   }
   fprintf(stdout, "Mock Server Gesendet: %s", greeting);
 
-  // 2. Empfang der Client-Version
+  // 2. Receive the client version
   ssize_t bytes = recv(server_sock, buffer, BUFFER_SIZE - 1, 0);
   if (bytes <= 0) {
     perror("Mock Server: Fehler beim Empfangen der Client-Version");
@@ -61,7 +61,7 @@ void *mock_server(void *arg) {
     return NULL;
   }
 
-  // 3. Empfang der Game-ID
+  // 3. Receive the Game ID
   bytes = recv(server_sock, buffer, BUFFER_SIZE - 1, 0);
   if (bytes <= 0) {
     perror("Mock Server: Fehler beim Empfangen der Game-ID");
@@ -71,7 +71,7 @@ void *mock_server(void *arg) {
   buffer[bytes] = '\0';
   fprintf(stdout, "Mock Server Empfangen: %s", buffer);
 
-  // Bestätigen des Game-ID Empfangs
+  // Acknowledge receipt of the Game ID
   const char *game_type = "+ PLAYING NMMorris\n";
   if (send(server_sock, game_type, strlen(game_type), 0) == -1) {
     perror("Mock Server: Fehler beim Senden des Spieltyps");
@@ -80,7 +80,7 @@ void *mock_server(void *arg) {
   }
   fprintf(stdout, "Mock Server Gesendet: %s", game_type);
 
-  // 4. Empfang des PLAYER-Befehls
+  // 4. Receive the PLAYER command
   bytes = recv(server_sock, buffer, BUFFER_SIZE - 1, 0);
   if (bytes <= 0) {
     perror("Mock Server: Fehler beim Empfangen des PLAYER-Befehls");
@@ -133,13 +133,13 @@ int main() {
   int sockfd_pair[2];
   pthread_t server_thread;
 
-  // Erstelle ein Socket-Paar
+  // Create a socket pair
   if (socketpair(AF_UNIX, SOCK_STREAM, 0, sockfd_pair) == -1) {
     perror("socketpair");
     exit(EXIT_FAILURE);
   }
 
-  // Starte den Mock-Server in einem separaten Thread
+  // Start the mock server in a separate thread
   if (pthread_create(&server_thread, NULL, mock_server, &sockfd_pair[1]) != 0) {
     perror("pthread_create");
     close(sockfd_pair[0]);
@@ -147,7 +147,7 @@ int main() {
     exit(EXIT_FAILURE);
   }
 
-  // Führe performConnection mit dem Client-Socket aus
+  // Execute performConnection with the client socket
   if (performConnection(sockfd_pair[0]) != EXIT_SUCCESS) {
     fprintf(stderr, "performConnection fehlgeschlagen.\n");
     close(sockfd_pair[0]);
@@ -156,7 +156,7 @@ int main() {
     exit(EXIT_FAILURE);
   }
 
-  // Schließe die Sockets und warte auf den Server-Thread
+  // Close sockets and wait for the server thread
   close(sockfd_pair[0]);
   close(sockfd_pair[1]);
   pthread_join(server_thread, NULL);

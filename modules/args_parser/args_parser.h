@@ -5,29 +5,16 @@
 
 #include <stdbool.h>
 
-/**
- * Struktur zur Speicherung der Spielkonfiguration.
- */
+// Stores game configuration
 typedef struct {
-  char game_id[14];  // 13 Ziffern + Nullterminator
-  int player_number; // Spielerzahl (1 oder 2)
+  char game_id[14];  // Game ID
+  int player_number; // Player number
 } GameConfig;
 
-/**
- * Parst die Kommandozeilenargumente.
- *
- * @param argc Argumentanzahl
- * @param argv Argumentvektor
- * @param config Zeiger auf GameConfig-Struktur zur Speicherung der Ergebnisse
- * @return true bei erfolgreichem Parsen, false bei Fehlern
- */
+// Parses command-line arguments
 bool parse_args(int argc, char *argv[], GameConfig *config);
 
-/**
- * Zeigt die Nutzungshilfe an.
- *
- * @param prog_name Name des Programms
- */
+// Displays usage information
 void print_usage(const char *prog_name);
 
-#endif // ARGS_PARSER_H
+#endif

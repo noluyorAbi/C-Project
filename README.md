@@ -101,6 +101,7 @@ Das Projekt wird in mehreren Schritten im Verlauf des Praktikums entwickelt, und
 ├── compile_commands.json
 ├── docs
 │   └── README.md
+├── example.py
 ├── lib
 │   └── README.md
 ├── main.c
@@ -128,7 +129,7 @@ Das Projekt wird in mehreren Schritten im Verlauf des Praktikums entwickelt, und
         ├── README.md
         └── test_performConnection.c
 
-11 directories, 21 files
+11 directories, 22 files
 ```
 <!-- project-structure-end -->
 

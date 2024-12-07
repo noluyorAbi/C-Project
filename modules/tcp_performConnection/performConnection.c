@@ -1,6 +1,5 @@
 #include "performConnection.h"
 
-#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -70,8 +69,8 @@ int performConnection(int sockfd) {
 
   // 2. Send client version
   const char *client_version = "VERSION 2.42\n";
-  if (sendMessage(sockfd, client_version) != EXIT_SUCCESS) {
-    return EXIT_FAILURE;
+  if (sendMessage(sockfd, client_version) != 0) {
+    return -1;
   }
 
   // 3. Receive confirmation and game ID request
@@ -107,8 +106,8 @@ int performConnection(int sockfd) {
 
   // 7. Send PLAYER command (no additional values)
   const char *player_command = "PLAYER\n";
-  if (sendMessage(sockfd, player_command) != EXIT_SUCCESS) {
-    return EXIT_FAILURE;
+  if (sendMessage(sockfd, player_command) != 0) {
+    return -1;
   }
 
   // 8. Receive player assignment
@@ -143,8 +142,8 @@ int performConnection(int sockfd) {
 
   // 10. Receive details of other players
   while (1) {
-    if (receiveMessage(sockfd, buffer, BUFFER_SIZE) != EXIT_SUCCESS) {
-      return EXIT_FAILURE;
+    if (receiveMessage(sockfd, buffer, BUFFER_SIZE) != 0) {
+      return -1;
     }
 
     if (strncmp(buffer, "+ ENDPLAYERS", 12) == 0) {

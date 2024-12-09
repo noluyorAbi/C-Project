@@ -4,6 +4,13 @@
 #include <stddef.h>
 
 /**
+ * @brief Creates a TCP connection and executes the protocol.
+ *
+ * @return int EXIT_SUCCESS on success, EXIT_FAILURE on error.
+ */
+int createConnection();
+
+/**
  * @brief Sends a message over the socket.
  *
  * @param sockfd The socket file descriptor.
@@ -26,7 +33,7 @@ int receiveMessage(int sockfd, char *buffer, size_t buffer_size);
  * @brief Executes the connection procedure according to the communication
  * protocol.
  *
- * @param sockfd The file descriptor for the TCP connection.
+ * @param sockfd The socket file descriptor for the TCP connection.
  * @return int EXIT_SUCCESS on success, EXIT_FAILURE on error.
  */
 int performConnection(int sockfd);

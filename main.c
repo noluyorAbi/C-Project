@@ -2,9 +2,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <unistd.h>
 
 #define GAMEKINDNAME "NMMorris"
 
@@ -31,11 +31,13 @@ int main(int argc, char *argv[]) {
   if (pid == 0) {
     // Child process: Connector
     printf("Connector process (PID: %d) starting...\n", getpid());
-    
+
     // Execute the connector
     char thinker_pid_str[16];
-    snprintf(thinker_pid_str, sizeof(thinker_pid_str), "%d", getppid()); // Thinker PID is the parent's PID
-    execl("./thinker_and_connector/connector", "./thinker_and_connector/connector", thinker_pid_str, (char *)NULL);
+    snprintf(thinker_pid_str, sizeof(thinker_pid_str), "%d",
+             getppid()); // Thinker PID is the parent's PID
+    execl("./thinker_and_connector/connector",
+          "./thinker_and_connector/connector", thinker_pid_str, (char *) NULL);
 
     // If execl fails
     perror("execl failed for connector");

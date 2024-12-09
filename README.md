@@ -110,10 +110,13 @@ Das Projekt wird in mehreren Schritten im Verlauf des Praktikums entwickelt, und
 │   ├── args_parser
 │   │   ├── args_parser.c
 │   │   └── args_parser.h
-│   └── tcp_performConnection
-│       ├── performConnection.c
-│       ├── performConnection.h
-│       └── tcp_connection.c
+│   ├── tcp_performConnection
+│   │   ├── performConnection.c
+│   │   ├── performConnection.h
+│   │   └── tcp_connection.c
+│   └── thinker_and_connector
+│       ├── connector.c
+│       └── thinker.c
 ├── scripts
 │   ├── Readme.md
 │   ├── setup_precommit

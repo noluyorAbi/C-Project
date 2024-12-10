@@ -1,3 +1,5 @@
+#include "performConnection.h"
+
 #include <errno.h>
 #include <fcntl.h>
 #include <signal.h>
@@ -40,6 +42,12 @@ int main(int argc, char *argv[]) {
   }
 
   pid_t thinker_pid = atoi(argv[1]);
+
+  // Establish TCP connection
+  if (createConnection() != EXIT_SUCCESS) {
+    fprintf(stderr, "Connector: Failed to establish TCP connection.\n");
+    return EXIT_FAILURE;
+  }
 
   if (mkfifo("/tmp/thinker_pipe", 0666) == -1 && errno != EEXIST) {
     perror("Connector: Failed to create named pipe");

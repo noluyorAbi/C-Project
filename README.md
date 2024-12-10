@@ -98,6 +98,9 @@ Das Projekt wird in mehreren Schritten im Verlauf des Praktikums entwickelt, und
 .
 ├── LICENSE
 ├── README.md
+├── bin
+│   └── sysprak-client
+├── client.conf
 ├── compile_commands.json
 ├── docs
 │   └── README.md
@@ -109,7 +112,10 @@ Das Projekt wird in mehreren Schritten im Verlauf des Praktikums entwickelt, und
 │   ├── README.md
 │   ├── args_parser
 │   │   ├── args_parser.c
-│   │   └── args_parser.h
+│   │   ├── args_parser.h
+│   │   ├── config.c
+│   │   ├── config.h
+│   │   └── constants.h
 │   └── tcp_performConnection
 │       ├── performConnection.c
 │       ├── performConnection.h
@@ -124,11 +130,13 @@ Das Projekt wird in mehreren Schritten im Verlauf des Praktikums entwickelt, und
 │       └── update_readme.sh
 └── tests
     ├── README.md
+    ├── test_clientConf
+    │   └── test_clientConf.sh
     └── test_performConnection
         ├── README.md
         └── test_performConnection.c
 
-11 directories, 21 files
+13 directories, 27 files
 ```
 <!-- project-structure-end -->
 

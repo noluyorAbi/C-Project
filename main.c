@@ -15,7 +15,6 @@ int main(int argc, char *argv[]) {
   GameConfig game_config;
 
   // Parse command-line arguments
-  // Parse the command-line arguments
   if (!parse_args(argc, argv, &game_config)) {
     print_usage(argv[0]);
     return EXIT_FAILURE;

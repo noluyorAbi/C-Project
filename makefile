@@ -101,6 +101,7 @@ tidy:
 
 # Ausführen des Hauptprogramms mit Mock-Daten
 run: $(TARGET)
+	echo "\n"
 	./$(TARGET) $(MOCK_ARGS)
 
 # Kompilieren und Ausführen von Tests

@@ -1,13 +1,19 @@
 #include "performConnection.h"
 
+#include <arpa/inet.h>
 #include <errno.h>
+#include <netdb.h>
+#include <netinet/in.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/socket.h>
+#include <sys/types.h>
 #include <unistd.h>
 
 #define BUFFER_SIZE 1024
+#define HOSTNAME "sysprak.priv.lab.nm.ifi.lmu.de"
+#define PORT "1357"
 
 /**
  * @brief Sends a message over the socket.
@@ -164,5 +170,52 @@ int performConnection(int sockfd) {
   }
 
   fprintf(stdout, "Prolog phase completed successfully.\n");
+  return EXIT_SUCCESS;
+}
+
+/**
+ * @brief Establishes a TCP connection and starts the protocol.
+ *
+ * @return int EXIT_SUCCESS on success, EXIT_FAILURE on error.
+ */
+int createConnection() {
+  int sock = -1;
+  struct addrinfo hints = {0}, *result, *rp;
+
+  hints.ai_family = AF_UNSPEC;     // Support both IPv4 and IPv6
+  hints.ai_socktype = SOCK_STREAM; // TCP connection
+
+  if (getaddrinfo(HOSTNAME, PORT, &hints, &result) != 0) {
+    fprintf(stderr, "Error resolving hostname.\n");
+    return EXIT_FAILURE;
+  }
+
+  for (rp = result; rp != NULL; rp = rp->ai_next) {
+    sock = socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol);
+    if (sock == -1) {
+      continue; // Try the next address
+    }
+
+    if (connect(sock, rp->ai_addr, rp->ai_addrlen) == 0) {
+      break; // Successfully connected
+    }
+
+    close(sock);
+    sock = -1;
+  }
+
+  freeaddrinfo(result);
+
+  if (sock == -1) {
+    fprintf(stderr, "Error: Could not establish connection.\n");
+    return EXIT_FAILURE;
+  }
+
+  if (performConnection(sock) != EXIT_SUCCESS) {
+    close(sock);
+    return EXIT_FAILURE;
+  }
+
+  close(sock);
   return EXIT_SUCCESS;
 }

@@ -47,15 +47,20 @@ $(BUILD_DIR)/main.o: main.c modules/tcp_performConnection/performConnection.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
 
+# Kompilieren von tcp_performConnection.o
+$(BUILD_DIR)/modules/tcp_performConnection/performConnection.o: modules/tcp_performConnection/performConnection.c modules/tcp_performConnection/performConnection.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -c $< -o $@
+
 # Erstellen der statischen Bibliothek
 $(LIBRARY): $(LIB_OBJ)
 	@mkdir -p $(LIB_DIR)
 	ar rcs $@ $^
 
 # Linken des Hauptprogramms mit der Bibliothek
-$(TARGET): $(MAIN_OBJ) $(LIBRARY)
+$(TARGET): $(MAIN_OBJ) $(BUILD_DIR)/modules/tcp_performConnection/performConnection.o $(LIBRARY)
 	@mkdir -p $(BIN_DIR)
-	$(CC) $(CFLAGS) -o $@ $^
+	$(CC) $(CFLAGS) -o $@ $^ -lpthread
 
 # Formatieren der Quellcode-Dateien
 format:

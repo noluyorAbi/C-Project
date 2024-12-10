@@ -116,10 +116,13 @@ Das Projekt wird in mehreren Schritten im Verlauf des Praktikums entwickelt, und
 │   │   ├── config.c
 │   │   ├── config.h
 │   │   └── constants.h
-│   └── tcp_performConnection
-│       ├── performConnection.c
-│       ├── performConnection.h
-│       └── tcp_connection.c
+│   ├── tcp_performConnection
+│   │   ├── performConnection.c
+│   │   ├── performConnection.h
+│   │   └── tcp_connection.c
+│   └── thinker_and_connector
+│       ├── connector.c
+│       └── thinker.c
 ├── scripts
 │   ├── Readme.md
 │   ├── setup_precommit
@@ -130,13 +133,16 @@ Das Projekt wird in mehreren Schritten im Verlauf des Praktikums entwickelt, und
 │       └── update_readme.sh
 └── tests
     ├── README.md
+    ├── test_args_parser
+    │   └── test_args
     ├── test_clientConf
     │   └── test_clientConf.sh
-    └── test_performConnection
-        ├── README.md
-        └── test_performConnection.c
+    ├── test_performConnection
+    │   ├── README.md
+    │   └── test_performConnection.c
+    └── test_tcp_connection
 
-13 directories, 27 files
+16 directories, 30 files
 ```
 <!-- project-structure-end -->
 

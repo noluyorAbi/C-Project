@@ -1,5 +1,5 @@
 #include <errno.h>
-#include <fcntl.h> 
+#include <fcntl.h>
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -42,7 +42,8 @@ void sigusr1_handler(int signum) {
     exit(EXIT_FAILURE);
   }
 
-  SharedMemory *shm_ptr = mmap(NULL, sizeof(SharedMemory), PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
+  SharedMemory *shm_ptr = mmap(NULL, sizeof(SharedMemory),
+                               PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
   if (shm_ptr == MAP_FAILED) {
     perror("Thinker: Failed to map shared memory");
     exit(EXIT_FAILURE);

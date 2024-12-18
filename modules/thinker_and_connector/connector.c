@@ -1,4 +1,5 @@
 #include "performConnection.h"
+
 #include <errno.h>
 #include <fcntl.h>
 #include <signal.h>
@@ -65,7 +66,8 @@ int main(int argc, char *argv[]) {
     perror("Connector: Failed to set shared memory size");
     exit(EXIT_FAILURE);
   }
-  SharedMemory *shm_ptr = mmap(NULL, sizeof(SharedMemory), PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
+  SharedMemory *shm_ptr = mmap(NULL, sizeof(SharedMemory),
+                               PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
   if (shm_ptr == MAP_FAILED) {
     perror("Connector: Failed to map shared memory");
     exit(EXIT_FAILURE);

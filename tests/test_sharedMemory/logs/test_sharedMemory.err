@@ -1,4 +1,4 @@
-Ungültige Anzahl von Spielern: -1. Muss zwischen 0 und 100 liegen.
-Spielname zu lang: 299 Zeichen. Maximal erlaubt sind 255 Zeichen.
-shmat fehlgeschlagen: Invalid argument
-Versuch, einen NULL-Pointer abzutrennen.
+[ERROR] Ungültige Anzahl von Spielern: -1. Muss zwischen 0 und 100 liegen.
+[ERROR] Spielname zu lang: 299 Zeichen. Maximal erlaubt sind 255 Zeichen.
+[ERROR] shmat fehlgeschlagen: Invalid argument
+[ERROR] Versuch, einen NULL-Pointer abzutrennen.

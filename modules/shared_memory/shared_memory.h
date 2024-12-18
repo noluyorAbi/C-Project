@@ -5,10 +5,10 @@
 #include <stddef.h>
 #include <sys/types.h>
 
-// Konstanten für Shared Memory
+// Constants for Shared Memory
 #define SHM_PERMISSIONS 0666
 
-// Fehlercodes für Shared Memory Operationen
+// Error codes for Shared Memory operations
 typedef enum {
   SHM_SUCCESS = 0,
   SHM_ERROR_CREATION = -1,
@@ -17,80 +17,78 @@ typedef enum {
   SHM_ERROR_REMOVE = -4,
 } ShmError;
 
-// Struktur für Spielerdaten
+// Structure for player data
 typedef struct {
   int playerNumber;
   char playerName[128];
   bool isRegistered;
 } Player;
 
-// Struktur für die im Shared Memory abgelegten Daten
+// Structure for data stored in Shared Memory
 typedef struct {
   char gameName[256];
   int playerNumber;
   int playerCount;
   pid_t thinkerPID;
   pid_t connectorPID;
-  Player players[]; // Flexibles Array-Mitglied für die Spieler
+  Player players[]; // Flexible array member for players
 } SharedMemory;
 
-// Funktionsdeklarationen
+// Function declarations
 /**
- * @brief Erstellt ein Shared-Memory-Segment.
+ * @brief Creates a shared memory segment.
  *
- * @param numPlayers Die Anzahl der Spieler, für die Platz reserviert werden
- * soll.
- * @return int Die ID des erstellten Shared-Memory-Segments oder ein Fehlercode
- * (siehe ShmError).
+ * @param numPlayers The number of players to reserve space for.
+ * @return int The ID of the created shared memory segment or an error code
+ * (see ShmError).
  */
 int createSharedMemory(int numPlayers);
 
 /**
- * @brief Hängt ein Shared-Memory-Segment an den Prozess an.
+ * @brief Attaches a shared memory segment to the process.
  *
- * @param shmid Die ID des anzuhängenden Shared-Memory-Segments.
- * @return SharedMemory* Ein Zeiger auf den Anfang des Shared-Memory-Segments
- * oder NULL bei einem Fehler.
+ * @param shmid The ID of the shared memory segment to attach.
+ * @return SharedMemory* A pointer to the beginning of the shared memory segment
+ * or NULL on error.
  */
 SharedMemory *attachSharedMemory(int shmid);
 
 /**
- * @brief Trennt ein Shared-Memory-Segment vom Prozess.
+ * @brief Detaches a shared memory segment from the process.
  *
- * @param shm Ein Zeiger auf den Anfang des Shared-Memory-Segments.
- * @return int 0 bei Erfolg, ein Fehlercode (siehe ShmError) sonst.
+ * @param shm A pointer to the beginning of the shared memory segment.
+ * @return int 0 on success, an error code (see ShmError) otherwise.
  */
 int detachSharedMemory(SharedMemory *shm);
 
 /**
- * @brief Markiert ein Shared-Memory-Segment zum Löschen.
+ * @brief Marks a shared memory segment for deletion.
  *
- * @param shmid Die ID des zu löschenden Shared-Memory-Segments.
- * @return int 0 bei Erfolg, ein Fehlercode (siehe ShmError) sonst.
+ * @param shmid The ID of the shared memory segment to delete.
+ * @return int 0 on success, an error code (see ShmError) otherwise.
  */
 int removeSharedMemory(int shmid);
 
 /**
- * @brief Initialisiert das Shared-Memory-Segment und die darin enthaltene
- * Struktur.
+ * @brief Initializes the shared memory segment and the contained structure.
  *
- * @param numPlayers Die Anzahl der Spieler.
- * @param gameName Der Name des Spiels.
- * @param playerNumber Die Spielernummer des eigenen Spielers.
- * @param thinkerPID Die PID des Thinker-Prozesses.
- * @param connectorPID Die PID des Connector-Prozesses.
- * @return int Die ID des Shared-Memory-Segments oder ein Fehlercode (siehe
+ * @param numPlayers The number of players.
+ * @param gameName The name of the game.
+ * @param playerNumber The player number of the current player.
+ * @param thinkerPID The PID of the thinker process.
+ * @param connectorPID The PID of the connector process.
+ * @return int The ID of the shared memory segment or an error code (see
  * ShmError).
  */
 int initSharedMemory(int numPlayers, const char *gameName, int playerNumber,
                      pid_t thinkerPID, pid_t connectorPID);
 
 /**
- * @brief Gibt ein Shared Memory Segment frei (detached und removed es).
+ * @brief Frees a shared memory segment (detaches and removes it).
  *
- * @param shmid ID des Shared Memory Segments.
- * @param shm Pointer auf das Shared Memory Segment.
+ * @param shmid ID of the shared memory segment.
+ * @param shm Pointer to the shared memory segment.
  */
 void cleanupSharedMemory(int shmid, SharedMemory *shm);
 
-#endif // SHARED_MEMORY_H
+#endif 

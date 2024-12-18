@@ -1,35 +1,35 @@
 #!/bin/bash
 
 # test_shared_memory.sh
-# Skript zum Testen der Shared Memory Funktionalität.
+# Script to test the Shared Memory functionality.
 
-# Definieren Sie Farbvariablen für die Ausgabe
+# Define color variables for output
 GREEN='\033[0;32m'
 RED='\033[0;31m'
 NC='\033[0m' # No Color
 
-# Pfade setzen
+# Set paths
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-TEST_PROGRAM="$SCRIPT_DIR/../../build/test_sharedMemory" # Angepasster Pfad zum Testprogramm
-MODULE_DIR="$SCRIPT_DIR/../../modules/shared_memory" # Pfad zu den Moduldateien
+TEST_PROGRAM="$SCRIPT_DIR/../../build/test_sharedMemory" # Adjusted path to the test program
+MODULE_DIR="$SCRIPT_DIR/../../modules/shared_memory" # Path to the module files
 LOG_DIR="$SCRIPT_DIR/logs"
 
-# Sicherstellen, dass das Log-Verzeichnis existiert
+# Ensure the log directory exists
 mkdir -p "$LOG_DIR"
 
-# Sicherstellen, dass das build-Verzeichnis existiert
+# Ensure the build directory exists
 mkdir -p "$(dirname "$TEST_PROGRAM")"
 
-# Header-Datei für shared_memory einbinden, falls noch nicht geschehen
+# Include header file for shared_memory if not already present
 if [ ! -f "$MODULE_DIR/shared_memory.h" ]; then
   echo -e "${RED}Fehler: Header-Datei shared_memory.h fehlt.${NC}"
   exit 1
 fi
 
-# Kompilierbefehl mit expliziter Einbindung der Header-Datei
+# Compilation command with explicit inclusion of the header file
 COMPILE_CMD="gcc -o \"$TEST_PROGRAM\" \"$SCRIPT_DIR/test_sharedMemory.c\" \"$MODULE_DIR/shared_memory.c\" -Wall -I\"$MODULE_DIR\""
 
-# Testprogramm kompilieren, falls es nicht existiert oder die Quelldateien neuer sind
+# Compile the test program if it does not exist or if the source files are newer
 if [ ! -x "$TEST_PROGRAM" ] || [ "$SCRIPT_DIR/test_sharedMemory.c" -nt "$TEST_PROGRAM" ] || [ "$MODULE_DIR/shared_memory.c" -nt "$TEST_PROGRAM" ]; then
   echo "Kompiliere Testprogramm..."
   eval "$COMPILE_CMD"
@@ -39,41 +39,41 @@ if [ ! -x "$TEST_PROGRAM" ] || [ "$SCRIPT_DIR/test_sharedMemory.c" -nt "$TEST_PR
   fi
 fi
 
-# Funktion zur Bereinigung von verbleibenden Shared-Memory-Segmenten
+# Function to clean up remaining Shared Memory segments
 cleanup_after_test() {
     echo "Bereinige verbleibende Shared-Memory-Segmente..."
-    # Überprüfen Sie, ob Shared-Memory-Segmente vorhanden sind und entfernen Sie diese
+    # Check if Shared Memory segments exist and remove them
     ipcs -m | grep "$USER" | awk '{print $2}' | while read -r shmid; do
         ipcrm -m "$shmid"
         printf "Entferne Shared Memory Segment: %s\n" "$shmid"
     done
 }
 
-# Führen Sie die Bereinigung vor den Tests durch, um sicherzustellen, dass keine alten Segmente vorhanden sind
+# Perform cleanup before tests to ensure no old segments are present
 cleanup_after_test
 
-# Trap einrichten, um bei Abbruch des Skripts (z.B. durch Ctrl+C) eine Bereinigung durchzuführen
+# Set up a trap to perform cleanup if the script is interrupted (e.g., via Ctrl+C)
 trap cleanup_after_test EXIT
 
-# Programm ausführen und Logs erfassen
+# Run the program and capture logs
 echo "===== Führe Shared Memory Tests aus ====="
 "$TEST_PROGRAM" > "$LOG_DIR/test_sharedMemory.out" 2> "$LOG_DIR/test_sharedMemory.err"
 EXIT_CODE=$?
 
-# Zähler für Pass und Fail initialisieren
+# Initialize counters for Pass and Fail
 PASS_COUNT=0
 FAIL_COUNT=0
 
-# Pass- und Fail-Zähler aus dem Log extrahieren
+# Extract Pass and Fail counts from the log
 PASS_COUNT=$(grep -c "\[PASS\]" "$LOG_DIR/test_sharedMemory.out")
 FAIL_COUNT=$(grep -c "\[FAIL\]" "$LOG_DIR/test_sharedMemory.out")
 
-# Zusammenfassung anzeigen
+# Display summary
 echo -e "\n===== Testzusammenfassung ====="
 echo -e "${GREEN}Bestanden: $PASS_COUNT${NC}"
 echo -e "${RED}Fehlgeschlagen: $FAIL_COUNT${NC}"
 
-# Detaillierte Fehlermeldungen anzeigen, falls vorhanden
+# Display detailed error messages if any
 if [ "$FAIL_COUNT" -ne 0 ]; then
   echo -e "\n${RED}Einige Tests sind fehlgeschlagen. Details siehe unten:${NC}"
   echo "---- Inhalt von test_sharedMemory.out ----"
@@ -82,15 +82,15 @@ if [ "$FAIL_COUNT" -ne 0 ]; then
   cat "$LOG_DIR/test_sharedMemory.err"
 fi
 
-# Optional: Gesamten Log anzeigen
+# Optional: Display the entire log
 echo -e "\n---- Gesamter Test-Log ----"
  cat "$LOG_DIR/test_sharedMemory.out"
  cat "$LOG_DIR/test_sharedMemory.err"
 
-# Aufräumen von nicht benötigten Logdateien (optional)
+# Optional: Clean up unnecessary log files
 # rm -f "$LOG_DIR/test_sharedMemory.out" "$LOG_DIR/test_sharedMemory.err"
 
-# Rückgabe des Gesamtstatus
+# Return the overall status
 if [ "$FAIL_COUNT" -ne 0 ]; then
     exit 1
 else

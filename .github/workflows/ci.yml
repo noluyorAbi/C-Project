@@ -19,13 +19,15 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential valgrind gcc
+          sudo apt-get install -y build-essential valgrind
 
       # Step 3: Compile the shared memory test
       - name: Compile Shared Memory Test
         run: |
           gcc -Wall -Werror -g -o ./tests/test_sharedMemory/test_sharedMemory \
-            ./tests/test_sharedMemory/test_sharedMemory.c
+            ./tests/test_sharedMemory/test_sharedMemory.c \
+            ./modules/shared_memory/shared_memory.c \
+            -I./modules/shared_memory
 
       # Step 4: Run the shared memory test
       - name: Run Shared Memory Test

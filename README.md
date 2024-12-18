@@ -142,10 +142,11 @@ Das Projekt wird in mehreren Schritten im Verlauf des Praktikums entwickelt, und
         ├── README.md
         ├── logs
         │   └── test_sharedMemory.err
+        ├── test_sharedMemory
         ├── test_sharedMemory.bash
         └── test_sharedMemory.c
 
-16 directories, 33 files
+16 directories, 34 files
 ```
 <!-- project-structure-end -->
 

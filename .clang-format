@@ -2,7 +2,6 @@
 #
 # Minimum required clang-format version: 6.0
 
----
 AlignAfterOpenBracket: Align # Parameter nach einer öffnenden Klammer ausrichten.
 # Mögliche Werte: Align (Standard), DontAlign, AlwaysBreak
 

@@ -100,6 +100,8 @@ Das Projekt wird in mehreren Schritten im Verlauf des Praktikums entwickelt, und
 ├── README.md
 ├── bin
 │   └── sysprak-client
+
+├── client.conf
 ├── compile_commands.json
 ├── docs
 │   └── README.md
@@ -111,10 +113,10 @@ Das Projekt wird in mehreren Schritten im Verlauf des Praktikums entwickelt, und
 │   ├── README.md
 │   ├── args_parser
 │   │   ├── args_parser.c
-│   │   └── args_parser.h
-│   ├── shared_memory
-│   │   ├── shared_memory.c
-│   │   └── shared_memory.h
+│   │   ├── args_parser.h
+│   │   ├── config.c
+│   │   ├── config.h
+│   │   └── constants.h
 │   └── tcp_performConnection
 │       ├── performConnection.c
 │       ├── performConnection.h
@@ -129,15 +131,14 @@ Das Projekt wird in mehreren Schritten im Verlauf des Praktikums entwickelt, und
 │       └── update_readme.sh
 └── tests
     ├── README.md
-    ├── test_performConnection
-    │   ├── README.md
-    │   └── test_performConnection.c
-    └── test_sharedMemory
+
+    ├── test_clientConf
+    │   └── test_clientConf.sh
+    └── test_performConnection
         ├── README.md
         ├── test_sharedMemory
         └── test_sharedMemory.c
-
-14 directories, 27 files
+13 directories, 27 files
 ```
 <!-- project-structure-end -->
 

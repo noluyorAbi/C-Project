@@ -122,6 +122,7 @@ Das Projekt wird in mehreren Schritten im Verlauf des Praktikums entwickelt, und
 │   │   └── tcp_connection.c
 │   └── thinker_and_connector
 │       ├── connector.c
+│       ├── connector.h
 │       └── thinker.c
 ├── scripts
 │   ├── Readme.md
@@ -141,7 +142,7 @@ Das Projekt wird in mehreren Schritten im Verlauf des Praktikums entwickelt, und
         ├── README.md
         └── test_performConnection.c
 
-15 directories, 30 files
+15 directories, 31 files
 ```
 <!-- project-structure-end -->
 

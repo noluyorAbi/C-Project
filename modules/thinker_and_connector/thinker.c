@@ -1,65 +1,39 @@
-#include <errno.h>
-#include <fcntl.h>
+// thinker.c
+
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/mman.h>
-#include <sys/stat.h>
 #include <unistd.h>
 
-#define SHM_NAME "/game_state_shm"
-#define SHM_SIZE 1024
+#define MOVE "A1\n" // Simulated move
 
-typedef struct {
-  char game_state[SHM_SIZE];
-  int new_data_flag; // Flag to indicate new data
-} SharedMemory;
+int pipe_fd; // Global pipe file descriptor for writing
 
 /**
- * Processes the game state from shared memory.
- */
-void process_game_state(SharedMemory *shm_ptr) {
-  if (shm_ptr->new_data_flag) {
-    printf("Thinker: Processing game state...\n");
-    printf("Game State: %s\n", shm_ptr->game_state);
-    shm_ptr->new_data_flag = 0; // Reset the flag
-  } else {
-    printf("Thinker: No new game state to process.\n");
-  }
-}
-
-/**
- * Signal handler for SIGUSR1.
+ * Signal handler for SIGUSR1. Activates the Thinker to generate a move.
  */
 void sigusr1_handler(int signum) {
   printf("Thinker: Received SIGUSR1 signal.\n");
 
-  // Open shared memory
-  int shm_fd = shm_open(SHM_NAME, O_RDWR, 0666);
-  if (shm_fd == -1) {
-    perror("Thinker: Failed to open shared memory");
+  // Simulate generating a move
+  const char *move = MOVE;
+  printf("Thinker: Generating move: %s", move);
+
+  // Write the move to the pipe
+  if (write(pipe_fd, move, strlen(move)) == -1) {
+    perror("Thinker: Failed to write move to pipe");
     exit(EXIT_FAILURE);
   }
 
-  SharedMemory *shm_ptr = mmap(NULL, sizeof(SharedMemory),
-                               PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
-  if (shm_ptr == MAP_FAILED) {
-    perror("Thinker: Failed to map shared memory");
-    exit(EXIT_FAILURE);
-  }
-
-  // Process the game state
-  process_game_state(shm_ptr);
-
-  // Clean up
-  if (munmap(shm_ptr, sizeof(SharedMemory)) == -1) {
-    perror("Thinker: Failed to unmap shared memory");
-  }
+  printf("Thinker: Move sent to Connector via pipe.\n");
 }
 
 int main() {
-  // Set up signal handler
+  // Close unused read end of the pipe
+  close(pipe_fd);
+
+  // Set up signal handler for SIGUSR1
   struct sigaction sa;
   sa.sa_handler = sigusr1_handler;
   sa.sa_flags = 0;
@@ -72,7 +46,7 @@ int main() {
 
   printf("Thinker: Waiting for signals...\n");
   while (1) {
-    pause(); // Wait for signals
+    pause(); // Wait for SIGUSR1 signal
   }
 
   return 0;

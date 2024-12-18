@@ -1,6 +1,6 @@
 # Compiler und Flags
-CC = clang
-CFLAGS = -Wall -Werror -Imodules -Imodules/args_parser -Imodules/tcp_performConnection
+CC = gcc
+CFLAGS = -Wall -Werror -g -Imodules -Imodules/args_parser -Imodules/tcp_performConnection -Imodules/thinker_and_connector
 
 # Verzeichnisse
 BIN_DIR = bin
@@ -47,6 +47,11 @@ $(BUILD_DIR)/main.o: main.c modules/tcp_performConnection/performConnection.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
 
+# Kompilieren von connector.o
+$(BUILD_DIR)/modules/thinker_and_connector/connector.o: modules/thinker_and_connector/connector.c modules/tcp_performConnection/performConnection.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -c $< -o $@
+
 # Kompilieren von tcp_performConnection.o
 $(BUILD_DIR)/modules/tcp_performConnection/performConnection.o: modules/tcp_performConnection/performConnection.c modules/tcp_performConnection/performConnection.h
 	@mkdir -p $(dir $@)
@@ -58,7 +63,7 @@ $(LIBRARY): $(LIB_OBJ)
 	ar rcs $@ $^
 
 # Linken des Hauptprogramms mit der Bibliothek
-$(TARGET): $(MAIN_OBJ) $(BUILD_DIR)/modules/tcp_performConnection/performConnection.o $(LIBRARY)
+$(TARGET): $(MAIN_OBJ) $(BUILD_DIR)/modules/tcp_performConnection/performConnection.o $(BUILD_DIR)/modules/thinker_and_connector/connector.o $(LIBRARY)
 	@mkdir -p $(BIN_DIR)
 	$(CC) $(CFLAGS) -o $@ $^ -lpthread
 

@@ -2,6 +2,8 @@
 #include "./modules/args_parser/config.h"
 #include "./modules/tcp_performConnection/performConnection.h" // Include for performConnection
 #include "./modules/thinker_and_connector/connector.h" // Include for run_connector
+#include "./modules/thinker_and_connector/connector.h"
+#include "./modules/thinker_and_connector/thinker.h"
 
 #include <arpa/inet.h> // For ntohs()
 #include <stdio.h>

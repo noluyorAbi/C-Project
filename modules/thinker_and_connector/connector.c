@@ -1,6 +1,7 @@
 // connector.c
 
-#include "performConnection.h"
+#include "connector.h"
+#include "../tcp_performConnection/performConnection.h"
 
 #include <errno.h>
 #include <fcntl.h>

@@ -1,10 +1,9 @@
 // main.c
 
 #include "./modules/args_parser/args_parser.h"
-
-#include "./modules/shared_memory/shared_memory.c"
 #include "./modules/args_parser/config.h"
-#include "./modules/args_parser/constants.h" // Inclusion of constants, if needed
+#include "./modules/args_parser/constants.h" 
+#include "./modules/shared_memory/shared_memory.c"
 #include <arpa/inet.h> // For ntohs()
 #include <stdio.h>
 #include <stdlib.h>
@@ -30,8 +29,6 @@ int main(int argc, char *argv[]) {
             game_config.config_file);
     return EXIT_FAILURE;
   }
-  const int PLAYER_NUMBER = config.player_number;
-  const char *GAME_ID = config.game_id;
   // Output the configured parameters
   printf("Hostname: %s\n", app_config.hostname);
   printf("Portnummer: %u\n",

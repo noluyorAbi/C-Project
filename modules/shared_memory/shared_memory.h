@@ -91,4 +91,4 @@ int initSharedMemory(int numPlayers, const char *gameName, int playerNumber,
  */
 void cleanupSharedMemory(int shmid, SharedMemory *shm);
 
-#endif 
+#endif

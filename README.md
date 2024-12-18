@@ -116,6 +116,9 @@ Das Projekt wird in mehreren Schritten im Verlauf des Praktikums entwickelt, und
 │   │   ├── config.c
 │   │   ├── config.h
 │   │   └── constants.h
+│   ├── shared_memory
+│   │   ├── shared_memory.c
+│   │   └── shared_memory.h
 │   └── tcp_performConnection
 │       ├── performConnection.c
 │       ├── performConnection.h
@@ -132,11 +135,18 @@ Das Projekt wird in mehreren Schritten im Verlauf des Praktikums entwickelt, und
     ├── README.md
     ├── test_clientConf
     │   └── test_clientConf.sh
-    └── test_performConnection
+    ├── test_performConnection
+    │   ├── README.md
+    │   └── test_performConnection.c
+    └── test_sharedMemory
         ├── README.md
-        └── test_performConnection.c
+        ├── logs
+        │   └── test_sharedMemory.err
+        ├── test_sharedMemory
+        ├── test_sharedMemory.bash
+        └── test_sharedMemory.c
 
-13 directories, 27 files
+16 directories, 34 files
 ```
 <!-- project-structure-end -->
 

@@ -137,12 +137,11 @@ Das Projekt wird in mehreren Schritten im Verlauf des Praktikums entwickelt, und
     │   └── test_args
     ├── test_clientConf
     │   └── test_clientConf.sh
-    ├── test_performConnection
-    │   ├── README.md
-    │   └── test_performConnection.c
-    └── test_tcp_connection
+    └── test_performConnection
+        ├── README.md
+        └── test_performConnection.c
 
-16 directories, 30 files
+15 directories, 30 files
 ```
 <!-- project-structure-end -->
 

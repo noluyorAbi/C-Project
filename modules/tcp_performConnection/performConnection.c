@@ -32,7 +32,7 @@ int sendMessage(int sockfd, const char *message) {
 }
 
 /**
- * @brief Receives a message over the socket.
+ * @brief Receives a message over the socket, handling fragmented messages.
  *
  * @param sockfd The socket file descriptor.
  * @param buffer The buffer to store the received message.
@@ -40,17 +40,33 @@ int sendMessage(int sockfd, const char *message) {
  * @return int EXIT_SUCCESS on success, EXIT_FAILURE on error.
  */
 int receiveMessage(int sockfd, char *buffer, size_t buffer_size) {
-  ssize_t bytes_received = recv(sockfd, buffer, buffer_size - 1, 0);
-  if (bytes_received < 0) {
-    fprintf(stderr, "Error receiving message: %s\n", strerror(errno));
-    return EXIT_FAILURE;
-  } else if (bytes_received == 0) {
-    fprintf(stderr, "Connection closed by server.\n");
-    return EXIT_FAILURE;
+  size_t total_received = 0; // Tracks total bytes received
+  while (total_received < buffer_size - 1) {
+    ssize_t bytes_received = recv(sockfd, buffer + total_received, buffer_size - 1 - total_received, 0);
+    if (bytes_received < 0) {
+      fprintf(stderr, "Error receiving message: %s\n", strerror(errno));
+      return EXIT_FAILURE;
+    } else if (bytes_received == 0) {
+      fprintf(stderr, "Connection closed by server.\n");
+      return EXIT_FAILURE;
+    }
+
+    total_received += bytes_received;
+
+    // Check if the message is complete (contains '\0')
+    for (size_t i = total_received - bytes_received; i < total_received; i++) {
+      if (buffer[i] == '\0') {
+        buffer[total_received] = '\0'; // Null-terminate the buffer
+        fprintf(stdout, "S: %s", buffer);
+        return EXIT_SUCCESS;
+      }
+    }
   }
-  buffer[bytes_received] = '\0';
-  fprintf(stdout, "S: %s", buffer);
-  return EXIT_SUCCESS;
+
+  // If we exit the loop, the buffer was filled without encountering '\0'
+  buffer[buffer_size - 1] = '\0'; // Ensure null termination
+  fprintf(stderr, "Message too long or incomplete: %s\n", buffer);
+  return EXIT_FAILURE;
 }
 
 /**

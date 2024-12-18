@@ -1,66 +1,77 @@
 #include <errno.h>
-#include <fcntl.h>
+#include <fcntl.h> 
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/mman.h>
+#include <sys/stat.h>
 #include <unistd.h>
 
-#define BUFFER_SIZE 256
+#define SHM_NAME "/game_state_shm"
+#define SHM_SIZE 1024
+
+typedef struct {
+  char game_state[SHM_SIZE];
+  int new_data_flag; // Flag to indicate new data
+} SharedMemory;
 
 /**
- * Signal handler for the Thinker process.
- * - Reads game data from a named pipe.
- * - Simulates calculation of the next move.
- *
- * @param signal The signal received (expected SIGUSR1).
+ * Processes the game state from shared memory.
  */
-void handle_signal(int signal) {
-  if (signal == SIGUSR1) {
-    printf("Thinker: Signal received. Processing data...\n");
-
-    int pipe_fd = open("/tmp/thinker_pipe", O_RDONLY);
-    if (pipe_fd == -1) {
-      perror("Thinker: Failed to open pipe");
-      exit(EXIT_FAILURE);
-    }
-
-    char game_data[BUFFER_SIZE] = {0};
-    if (read(pipe_fd, game_data, BUFFER_SIZE) == -1) {
-      perror("Thinker: Failed to read from pipe");
-      close(pipe_fd);
-      exit(EXIT_FAILURE);
-    }
-    close(pipe_fd);
-
-    printf("Thinker: Received game data: %s\n", game_data);
-
-    sleep(2);
-    printf("Thinker: Calculated move: A1:B4\n");
+void process_game_state(SharedMemory *shm_ptr) {
+  if (shm_ptr->new_data_flag) {
+    printf("Thinker: Processing game state...\n");
+    printf("Game State: %s\n", shm_ptr->game_state);
+    shm_ptr->new_data_flag = 0; // Reset the flag
+  } else {
+    printf("Thinker: No new game state to process.\n");
   }
 }
 
 /**
- * Main function for the Thinker process.
- * - Sets up a signal handler for SIGUSR1.
- * - Waits for signals in a loop.
- *
- * @return int Exit status of the program.
+ * Signal handler for SIGUSR1.
  */
-int main() {
-  struct sigaction sa;
-  sa.sa_handler = handle_signal;
-  sa.sa_flags = 0;
-  sigemptyset(&sa.sa_mask);
-  if (sigaction(SIGUSR1, &sa, NULL) == -1) {
-    perror("Thinker: sigaction failed");
+void sigusr1_handler(int signum) {
+  printf("Thinker: Received SIGUSR1 signal.\n");
+
+  // Open shared memory
+  int shm_fd = shm_open(SHM_NAME, O_RDWR, 0666);
+  if (shm_fd == -1) {
+    perror("Thinker: Failed to open shared memory");
     exit(EXIT_FAILURE);
   }
 
-  printf("Thinker: Ready and waiting for signals...\n");
+  SharedMemory *shm_ptr = mmap(NULL, sizeof(SharedMemory), PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
+  if (shm_ptr == MAP_FAILED) {
+    perror("Thinker: Failed to map shared memory");
+    exit(EXIT_FAILURE);
+  }
 
+  // Process the game state
+  process_game_state(shm_ptr);
+
+  // Clean up
+  if (munmap(shm_ptr, sizeof(SharedMemory)) == -1) {
+    perror("Thinker: Failed to unmap shared memory");
+  }
+}
+
+int main() {
+  // Set up signal handler
+  struct sigaction sa;
+  sa.sa_handler = sigusr1_handler;
+  sa.sa_flags = 0;
+  sigemptyset(&sa.sa_mask);
+
+  if (sigaction(SIGUSR1, &sa, NULL) == -1) {
+    perror("Thinker: Failed to set up SIGUSR1 handler");
+    exit(EXIT_FAILURE);
+  }
+
+  printf("Thinker: Waiting for signals...\n");
   while (1) {
-    pause();
+    pause(); // Wait for signals
   }
 
   return 0;

@@ -42,7 +42,8 @@ int sendMessage(int sockfd, const char *message) {
 int receiveMessage(int sockfd, char *buffer, size_t buffer_size) {
   size_t total_received = 0; // Tracks total bytes received
   while (total_received < buffer_size - 1) {
-    ssize_t bytes_received = recv(sockfd, buffer + total_received, buffer_size - 1 - total_received, 0);
+    ssize_t bytes_received = recv(sockfd, buffer + total_received,
+                                  buffer_size - 1 - total_received, 0);
     if (bytes_received < 0) {
       fprintf(stderr, "Error receiving message: %s\n", strerror(errno));
       return EXIT_FAILURE;

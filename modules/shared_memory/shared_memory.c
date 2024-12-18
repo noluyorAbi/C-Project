@@ -1,3 +1,4 @@
+// shared_memory.c
 #include "./shared_memory.h"
 
 #include <errno.h>
@@ -7,17 +8,22 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <unistd.h>
+#define MAX_PLAYERS 100
 
-#define MAX_PLAYERS 100 // Define the maximum number of players
+// Funktion zur Berechnung der Shared Memory Größe
+static size_t calculate_shm_size(int numPlayers) {
+  return sizeof(SharedMemory) + numPlayers * sizeof(Player);
+}
 
 /**
- * Creates a shared memory segment for the specified number of players.
+ * Erstellt ein Shared Memory Segment für die angegebene Anzahl von Spielern.
  *
- * @param numPlayers The number of players.
- * @return The shared memory ID on success, or a negative error code on failure.
+ * @param numPlayers Die Anzahl der Spieler.
+ * @return Der Shared Memory ID bei Erfolg, oder ein negativer Fehlercode bei
+ * Fehler.
  */
 int createSharedMemory(int numPlayers) {
-  // Input validation
+  // Eingabevalidierung
   if (numPlayers < 0 || numPlayers > MAX_PLAYERS) {
     fprintf(stderr,
             "[ERROR] Ungültige Anzahl von Spielern: %d. Muss zwischen 0 und %d "
@@ -26,7 +32,7 @@ int createSharedMemory(int numPlayers) {
     return SHM_ERROR_CREATION;
   }
 
-  size_t shmSize = sizeof(SharedMemory) + numPlayers * sizeof(Player);
+  size_t shmSize = calculate_shm_size(numPlayers);
   int shmid = shmget(IPC_PRIVATE, shmSize, IPC_CREAT | SHM_PERMISSIONS);
   if (shmid == -1) {
     fprintf(stderr, "[ERROR] shmget fehlgeschlagen: %s\n", strerror(errno));
@@ -36,10 +42,10 @@ int createSharedMemory(int numPlayers) {
 }
 
 /**
- * Attaches to the shared memory segment identified by shmid.
+ * Hängt an das Shared Memory Segment mit der angegebenen ID an.
  *
- * @param shmid The shared memory ID.
- * @return A pointer to the shared memory on success, or NULL on failure.
+ * @param shmid Die Shared Memory ID.
+ * @return Ein Zeiger auf das Shared Memory bei Erfolg, oder NULL bei Fehler.
  */
 SharedMemory *attachSharedMemory(int shmid) {
   void *shmaddr = shmat(shmid, NULL, 0);
@@ -51,10 +57,10 @@ SharedMemory *attachSharedMemory(int shmid) {
 }
 
 /**
- * Detaches from the shared memory segment.
+ * Trennt das Shared Memory Segment ab.
  *
- * @param shm Pointer to the shared memory.
- * @return SHM_SUCCESS on success, or a negative error code on failure.
+ * @param shm Zeiger auf das Shared Memory.
+ * @return SHM_SUCCESS bei Erfolg, oder ein negativer Fehlercode bei Fehler.
  */
 int detachSharedMemory(SharedMemory *shm) {
   if (shm == NULL) {
@@ -69,10 +75,10 @@ int detachSharedMemory(SharedMemory *shm) {
 }
 
 /**
- * Removes the shared memory segment.
+ * Entfernt das Shared Memory Segment.
  *
- * @param shmid The shared memory ID.
- * @return SHM_SUCCESS on success, or a negative error code on failure.
+ * @param shmid Die Shared Memory ID.
+ * @return SHM_SUCCESS bei Erfolg, oder ein negativer Fehlercode bei Fehler.
  */
 int removeSharedMemory(int shmid) {
   if (shmctl(shmid, IPC_RMID, NULL) == -1) {
@@ -84,24 +90,25 @@ int removeSharedMemory(int shmid) {
 }
 
 /**
- * Initializes the shared memory with game and player information.
+ * Initialisiert das Shared Memory mit Spiel- und Spielerinformationen.
  *
- * @param numPlayers The number of players.
- * @param gameName The name of the game.
- * @param playerNumber The number of the player.
- * @param thinkerPID The PID of the thinker process.
- * @param connectorPID The PID of the connector process.
- * @return The shared memory ID on success, or a negative error code on failure.
+ * @param numPlayers Die Anzahl der Spieler.
+ * @param gameName Der Name des Spiels.
+ * @param playerNumber Die Nummer des Spielers.
+ * @param thinkerPID Die PID des Denkprozesses.
+ * @param connectorPID Die PID des Verbindungsprozesses.
+ * @return Die Shared Memory ID bei Erfolg, oder ein negativer Fehlercode bei
+ * Fehler.
  */
 int initSharedMemory(int numPlayers, const char *gameName, int playerNumber,
                      pid_t thinkerPID, pid_t connectorPID) {
-  // Check if gameName is NULL
+  // Überprüfen, ob gameName NULL ist
   if (gameName == NULL) {
     fprintf(stderr, "[ERROR] Spielname darf nicht NULL sein.\n");
     return SHM_ERROR_CREATION;
   }
 
-  // Check the length of gameName
+  // Überprüfen der Länge von gameName
   if (strlen(gameName) >= sizeof(((SharedMemory *) 0)->gameName)) {
     fprintf(stderr,
             "[ERROR] Spielname zu lang: %zu Zeichen. Maximal erlaubt sind %zu "
@@ -112,26 +119,28 @@ int initSharedMemory(int numPlayers, const char *gameName, int playerNumber,
 
   int shmid = createSharedMemory(numPlayers);
   if (shmid < 0) {
-    return shmid; // Propagate the error code from createSharedMemory
+    return shmid; // Fehlercode von createSharedMemory weitergeben
   }
 
   SharedMemory *shm = attachSharedMemory(shmid);
   if (shm == NULL) {
+    removeSharedMemory(shmid); // Cleanup bei Fehler
     return SHM_ERROR_ATTACH;
   }
 
-  // Initialize the SharedMemory structure
+  // Initialisieren der SharedMemory Struktur
   strncpy(shm->gameName, gameName, sizeof(shm->gameName) - 1);
-  shm->gameName[sizeof(shm->gameName) - 1] = '\0'; // Ensure null-termination
+  shm->gameName[sizeof(shm->gameName) - 1] =
+    '\0'; // Sicherstellen der Null-Terminierung
   shm->playerNumber = playerNumber;
   shm->playerCount = numPlayers;
   shm->thinkerPID = thinkerPID;
   shm->connectorPID = connectorPID;
 
-  // Initialize the players array (optional, if necessary)
+  // Initialisieren des players Arrays
   for (int i = 0; i < numPlayers; i++) {
-    shm->players[i].playerNumber = 0;     // Or another default player number
-    shm->players[i].playerName[0] = '\0'; // Empty string
+    shm->players[i].playerNumber = 0; // Oder eine andere Standardspieler-Nummer
+    shm->players[i].playerName[0] = '\0'; // Leerer String
     shm->players[i].isRegistered = false;
   }
 
@@ -144,12 +153,15 @@ int initSharedMemory(int numPlayers, const char *gameName, int playerNumber,
  * @param shmid The shared memory ID.
  * @param shm Pointer to the shared memory.
  */
+
 void cleanupSharedMemory(int shmid, SharedMemory *shm) {
   if (shm != NULL) {
     if (detachSharedMemory(shm) != SHM_SUCCESS) {
       fprintf(stderr,
               "[ERROR] Shared Memory konnte nicht getrennt werden: %s\n",
               strerror(errno));
+    } else {
+      printf("[INFO] Shared Memory erfolgreich getrennt.\n");
     }
   }
 
@@ -158,6 +170,8 @@ void cleanupSharedMemory(int shmid, SharedMemory *shm) {
       fprintf(stderr,
               "[ERROR] Shared Memory konnte nicht entfernt werden: %s\n",
               strerror(errno));
+    } else {
+      printf("[INFO] Shared Memory erfolgreich entfernt.\n");
     }
   }
 }

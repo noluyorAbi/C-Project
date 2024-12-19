@@ -1,0 +1,5 @@
+[ERROR] Ungültige Anzahl von Spielern: 0. Muss zwischen 0 und 100 liegen.
+[ERROR] Ungültige Anzahl von Spielern: 101. Muss zwischen 0 und 100 liegen.
+[ERROR] Ungültige Anzahl von Spielern: -1. Muss zwischen 0 und 100 liegen.
+[ERROR] Spielname darf nicht NULL sein.
+[ERROR] Spielname zu lang: 265 Zeichen. Maximal erlaubt sind 255 Zeichen.

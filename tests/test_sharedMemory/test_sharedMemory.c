@@ -1,3 +1,4 @@
+// test_sharedMemory.c
 #include "../../modules/shared_memory/shared_memory.h" // Include shared_memory.h directly
 
 #include <errno.h>
@@ -111,7 +112,7 @@ void test_shared_memory_create_and_attach(TestStats *stats, int num_players) {
   printf("[INFO] %s: Shared memory removed successfully.\n", test_name);
 
   report_test(stats, test_name, true,
-              "Shared memory created, attached, detached und entfernt.");
+              "Shared memory erstellt, angehängt, getrennt und entfernt.");
 }
 
 // Function to verify shared memory initialization
@@ -231,7 +232,229 @@ void test_init_shared_memory(TestStats *stats, SharedMemoryTestParams *params) {
   cleanup_shared_memory(shmid, shm, stats, test_name);
 }
 
-#define MAX_PLAYERS_TEST 100
+// Test: SharedMemory creation with various num_players values
+void test_shared_memory_various_num_players(TestStats *stats) {
+  const int test_values[] = {0, 1, MAX_PLAYERS_TEST, MAX_PLAYERS_TEST + 1, -1};
+  const int num_tests = sizeof(test_values) / sizeof(test_values[0]);
+
+  for (int i = 0; i < num_tests; i++) {
+    int num_players = test_values[i];
+    char test_name[100];
+    snprintf(test_name, sizeof(test_name), "SharedMemory num_players = %d",
+             num_players);
+    printf("\n[Test] %s\n", test_name);
+
+    int shmid = createSharedMemory(num_players);
+    bool expected_success =
+      (num_players > 0 && num_players <= MAX_PLAYERS_TEST);
+    if (!expected_success && shmid >= 0) {
+      // Unexpected success
+      fprintf(stderr,
+              "[ERROR] %s: Expected failure but Shared Memory was created with "
+              "shmid: %d\n",
+              test_name, shmid);
+      report_test(stats, test_name, false,
+                  "Unexpected success in creating SHM.");
+      removeSharedMemory(shmid); // Cleanup
+      continue;
+    } else if (expected_success && shmid < 0) {
+      // Expected success but failed
+      fprintf(stderr,
+              "[ERROR] %s: Expected success but failed to create Shared "
+              "Memory. Error code: %d\n",
+              test_name, shmid);
+      report_test(stats, test_name, false,
+                  "Failed to create SHM when it should succeed.");
+      continue;
+    }
+
+    if (expected_success) {
+      // Attach and then clean up
+      SharedMemory *shm = attachSharedMemory(shmid);
+      if (shm == NULL) {
+        fprintf(stderr, "[ERROR] %s: Failed to attach Shared Memory.\n",
+                test_name);
+        report_test(stats, test_name, false, "Failed to attach SHM.");
+        removeSharedMemory(shmid);
+        continue;
+      }
+      printf("[INFO] %s: Shared memory attached at address: %p\n", test_name,
+             (void *) shm);
+
+      // Cleanup
+      if (detachSharedMemory(shm) != SHM_SUCCESS) {
+        fprintf(stderr, "[ERROR] %s: Failed to detach Shared Memory.\n",
+                test_name);
+        report_test(stats, test_name, false, "Failed to detach SHM.");
+        cleanup_shared_memory(shmid, shm, stats, test_name);
+        continue;
+      }
+      printf("[INFO] %s: Shared memory detached successfully.\n", test_name);
+
+      if (removeSharedMemory(shmid) != SHM_SUCCESS) {
+        fprintf(stderr, "[ERROR] %s: Failed to remove Shared Memory.\n",
+                test_name);
+        report_test(stats, test_name, false, "Failed to remove SHM.");
+        continue;
+      }
+      printf("[INFO] %s: Shared memory removed successfully.\n", test_name);
+
+      report_test(stats, test_name, true,
+                  "Shared Memory erstellt, angehängt, getrennt und entfernt.");
+    } else {
+      // Expected failure, already handled above
+      report_test(stats, test_name, true,
+                  "Shared Memory Erstellung korrekt fehlgeschlagen.");
+    }
+  }
+}
+
+// Test: Initialize shared memory with invalid parameters
+void test_init_shared_memory_invalid_params(TestStats *stats) {
+  const char *test_name_null_game =
+    "SharedMemory initialisieren mit NULL game_name";
+  printf("\n[Test] %s\n", test_name_null_game);
+
+  SharedMemoryTestParams params_null_game = {.num_players = 2,
+                                             .game_name = NULL, // Invalid
+                                             .player_number = 1,
+                                             .thinker_pid = getpid(),
+                                             .connector_pid = getpid() + 1};
+  int shmid = initSharedMemory(
+    params_null_game.num_players, params_null_game.game_name,
+    params_null_game.player_number, params_null_game.thinker_pid,
+    params_null_game.connector_pid);
+  if (shmid < 0) {
+    report_test(stats, test_name_null_game, true,
+                "Shared Memory Initialization korrekt fehlgeschlagen mit NULL "
+                "game_name.");
+  } else {
+    fprintf(stderr,
+            "[ERROR] %s: Shared Memory wurde unerwartet mit NULL game_name "
+            "initialisiert. shmid: %d\n",
+            test_name_null_game, shmid);
+    report_test(
+      stats, test_name_null_game, false,
+      "Shared Memory wurde unerwartet mit NULL game_name initialisiert.");
+    removeSharedMemory(shmid); // Cleanup
+  }
+
+  const char *test_name_long_game =
+    "SharedMemory initialisieren mit zu langem game_name";
+  printf("\n[Test] %s\n", test_name_long_game);
+
+  // Assuming gameName has a maximum size, let's create a string longer than
+  // that To prevent buffer overflow, calculate the maximum size based on
+  // SharedMemory structure We need to know the size of shm->gameName Assuming
+  // shared_memory.h defines SharedMemory and its fields, including gameName So,
+  // we can calculate the size as sizeof(((SharedMemory *)0)->gameName) Since
+  // sizeof cannot be applied to incomplete types, this code assumes
+  // SharedMemory is defined
+
+  size_t game_name_max_size = sizeof(((SharedMemory *) 0)->gameName);
+  char long_game_name[game_name_max_size + 10];
+  memset(long_game_name, 'A', sizeof(long_game_name) - 1);
+  long_game_name[sizeof(long_game_name) - 1] = '\0';
+
+  SharedMemoryTestParams params_long_game = {.num_players = 2,
+                                             .game_name =
+                                               long_game_name, // Too long
+                                             .player_number = 1,
+                                             .thinker_pid = getpid(),
+                                             .connector_pid = getpid() + 1};
+  shmid = initSharedMemory(
+    params_long_game.num_players, params_long_game.game_name,
+    params_long_game.player_number, params_long_game.thinker_pid,
+    params_long_game.connector_pid);
+  if (shmid < 0) {
+    report_test(stats, test_name_long_game, true,
+                "Shared Memory Initialization korrekt fehlgeschlagen mit zu "
+                "langem game_name.");
+  } else {
+    fprintf(stderr,
+            "[ERROR] %s: Shared Memory wurde unerwartet mit zu langem "
+            "game_name initialisiert. shmid: %d\n",
+            test_name_long_game, shmid);
+    report_test(
+      stats, test_name_long_game, false,
+      "Shared Memory wurde unerwartet mit zu langem game_name initialisiert.");
+    removeSharedMemory(shmid); // Cleanup
+  }
+}
+
+// Test: Multiple Shared Memory creations and deletions
+void test_shared_memory_multiple_creations(TestStats *stats) {
+  const char *test_name = "Multiple SharedMemory Erstellung und Löschung";
+  printf("\n[Test] %s\n", test_name);
+
+  int num_iterations = 10;
+  bool all_passed = true;
+
+  for (int i = 0; i < num_iterations; i++) {
+    printf("\n[%s] Iteration %d/%d\n", test_name, i + 1, num_iterations);
+    int shmid = createSharedMemory(2);
+    if (shmid < 0) {
+      fprintf(stderr,
+              "[ERROR] %s: Iteration %d: Failed to create Shared Memory: %d\n",
+              test_name, i + 1, shmid);
+      report_test(stats, test_name, false,
+                  "Failed to create SHM in multiple creation test.");
+      all_passed = false;
+      continue;
+    }
+    printf("[INFO] %s: Iteration %d: Shared Memory created with shmid: %d\n",
+           test_name, i + 1, shmid);
+
+    SharedMemory *shm = attachSharedMemory(shmid);
+    if (shm == NULL) {
+      fprintf(stderr,
+              "[ERROR] %s: Iteration %d: Failed to attach Shared Memory.\n",
+              test_name, i + 1);
+      report_test(stats, test_name, false,
+                  "Failed to attach SHM in multiple creation test.");
+      removeSharedMemory(shmid); // Cleanup
+      all_passed = false;
+      continue;
+    }
+    printf("[INFO] %s: Iteration %d: Shared Memory attached at address: %p\n",
+           test_name, i + 1, (void *) shm);
+
+    if (detachSharedMemory(shm) != SHM_SUCCESS) {
+      fprintf(stderr,
+              "[ERROR] %s: Iteration %d: Failed to detach Shared Memory.\n",
+              test_name, i + 1);
+      report_test(stats, test_name, false,
+                  "Failed to detach SHM in multiple creation test.");
+      cleanup_shared_memory(shmid, shm, stats, test_name);
+      all_passed = false;
+      continue;
+    }
+    printf("[INFO] %s: Iteration %d: Shared Memory detached successfully.\n",
+           test_name, i + 1);
+
+    if (removeSharedMemory(shmid) != SHM_SUCCESS) {
+      fprintf(stderr,
+              "[ERROR] %s: Iteration %d: Failed to remove Shared Memory.\n",
+              test_name, i + 1);
+      report_test(stats, test_name, false,
+                  "Failed to remove SHM in multiple creation test.");
+      continue;
+    }
+    printf("[INFO] %s: Iteration %d: Shared Memory removed successfully.\n",
+           test_name, i + 1);
+
+    report_test(stats, test_name, true,
+                "Shared Memory erstellt, angehängt, getrennt und entfernt.");
+  }
+
+  if (all_passed) {
+    report_test(stats, test_name, true,
+                "All multiple creation iterations passed successfully.");
+  } else {
+    report_test(stats, test_name, false,
+                "Some multiple creation iterations failed.");
+  }
+}
 
 // Main function
 int main() {
@@ -240,16 +463,25 @@ int main() {
   TestStats stats;
   init_test_stats(&stats);
 
-  // Test: Create and attach shared memory
+  // Test: Create and attach shared memory with 2 players
   test_shared_memory_create_and_attach(&stats, 2);
 
-  // Test: Initialize shared memory
+  // Test: Initialize shared memory with valid parameters
   SharedMemoryTestParams init_params = {.num_players = 2,
                                         .game_name = "TestGame",
                                         .player_number = 1,
                                         .thinker_pid = getpid(),
                                         .connector_pid = getpid() + 1};
   test_init_shared_memory(&stats, &init_params);
+
+  // Test: SharedMemory creation with various num_players values
+  test_shared_memory_various_num_players(&stats);
+
+  // Test: Initialize shared memory with invalid parameters
+  test_init_shared_memory_invalid_params(&stats);
+
+  // Test: Multiple SharedMemory creations and deletions
+  test_shared_memory_multiple_creations(&stats);
 
   printf("\nAll tests completed\n");
   printf("[SUMMARY] Bestanden: %d, Fehlgeschlagen: %d\n", stats.pass_count,

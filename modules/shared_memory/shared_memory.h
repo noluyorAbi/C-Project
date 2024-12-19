@@ -7,6 +7,7 @@
 
 // Constants for Shared Memory
 #define SHM_PERMISSIONS 0666
+#define MAX_PLAYERS_TEST 100
 
 // Error codes for Shared Memory operations
 typedef enum {

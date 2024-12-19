@@ -8,7 +8,6 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <unistd.h>
-#define MAX_PLAYERS 100
 
 /**
  * Creates a shared memory segment for the specified number of players.
@@ -18,11 +17,11 @@
  */
 int createSharedMemory(int numPlayers) {
   // Input validation
-  if (numPlayers <= 0 || numPlayers > MAX_PLAYERS) {
+  if (numPlayers <= 0 || numPlayers > MAX_PLAYERS_TEST) {
     fprintf(stderr,
             "[ERROR] Ungültige Anzahl von Spielern: %d. Muss zwischen 0 und %d "
             "liegen.\n",
-            numPlayers, MAX_PLAYERS);
+            numPlayers, MAX_PLAYERS_TEST);
     return SHM_ERROR_CREATION;
   }
 

@@ -68,11 +68,6 @@ FAIL_COUNT=0
 PASS_COUNT=$(grep -c "\[PASS\]" "$LOG_DIR/test_sharedMemory.out")
 FAIL_COUNT=$(grep -c "\[FAIL\]" "$LOG_DIR/test_sharedMemory.out")
 
-# Display summary
-echo -e "\n===== Testzusammenfassung ====="
-echo -e "${GREEN}Bestanden: $PASS_COUNT${NC}"
-echo -e "${RED}Fehlgeschlagen: $FAIL_COUNT${NC}"
-
 # Display detailed error messages if any
 if [ "$FAIL_COUNT" -ne 0 ]; then
   echo -e "\n${RED}Einige Tests sind fehlgeschlagen. Details siehe unten:${NC}"
@@ -84,11 +79,25 @@ fi
 
 # Optional: Display the entire log
 echo -e "\n---- Gesamter Test-Log ----"
- cat "$LOG_DIR/test_sharedMemory.out"
- cat "$LOG_DIR/test_sharedMemory.err"
+cat "$LOG_DIR/test_sharedMemory.out"
+cat "$LOG_DIR/test_sharedMemory.err"
 
-# Optional: Clean up unnecessary log files
-# rm -f "$LOG_DIR/test_sharedMemory.out" "$LOG_DIR/test_sharedMemory.err"
+# Display summary at the very end
+echo -e "\n===== Testzusammenfassung ====="
+echo -e "${GREEN}Bestanden: $PASS_COUNT${NC}"
+echo -e "${RED}Fehlgeschlagen: $FAIL_COUNT${NC}"
+
+# Ask if the log directory should be deleted
+echo -e "\n"
+read -r -p "Soll der Log-Ordner '$LOG_DIR' gelöscht werden? (j/N): " DELETE_LOGS
+
+# Delete the log directory if the user confirms (or if the input is empty, which defaults to yes)
+if [[ "$DELETE_LOGS" == "j" || "$DELETE_LOGS" == "" ]]; then
+  rm -rf "$LOG_DIR"
+  echo "Log-Ordner wurde gelöscht."
+else
+  echo "Log-Ordner bleibt erhalten."
+fi
 
 # Return the overall status
 if [ "$FAIL_COUNT" -ne 0 ]; then

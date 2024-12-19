@@ -34,7 +34,8 @@ int sendMessage(int sockfd, const char *message) {
  * @return int EXIT_SUCCESS on success, EXIT_FAILURE on error.
  */
 int receiveMessage(int sockfd, char *buffer, size_t buffer_size) {
-  if (buffer_size <= 1) {
+  if (buffer_size
+      <= 1) { // Check buffer_size to prevent overflow or invalid memory access
     fprintf(stderr, "Invalid buffer size.\n");
     return EXIT_FAILURE;
   }

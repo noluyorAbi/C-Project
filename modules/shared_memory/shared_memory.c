@@ -10,11 +10,6 @@
 #include <unistd.h>
 #define MAX_PLAYERS 100
 
-// Function to calculate the shared memory size
-static size_t calculate_shm_size(int numPlayers) {
-  return sizeof(SharedMemory) + numPlayers * sizeof(Player);
-}
-
 /**
  * Creates a shared memory segment for the specified number of players.
  *
@@ -31,7 +26,7 @@ int createSharedMemory(int numPlayers) {
     return SHM_ERROR_CREATION;
   }
 
-  size_t shmSize = calculate_shm_size(numPlayers);
+  size_t shmSize = sizeof(SharedMemory) + numPlayers * sizeof(Player);
   int shmid = shmget(IPC_PRIVATE, shmSize, IPC_CREAT | SHM_PERMISSIONS);
   if (shmid == -1) {
     fprintf(stderr, "[ERROR] shmget fehlgeschlagen: %s\n", strerror(errno));

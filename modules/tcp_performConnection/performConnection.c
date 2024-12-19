@@ -34,15 +34,32 @@ int sendMessage(int sockfd, const char *message) {
  * @return int EXIT_SUCCESS on success, EXIT_FAILURE on error.
  */
 int receiveMessage(int sockfd, char *buffer, size_t buffer_size) {
-  ssize_t bytes_received = recv(sockfd, buffer, buffer_size - 1, 0);
-  if (bytes_received < 0) {
-    fprintf(stderr, "Error receiving message: %s\n", strerror(errno));
-    return EXIT_FAILURE;
-  } else if (bytes_received == 0) {
-    fprintf(stderr, "Connection closed by server.\n");
-    return EXIT_FAILURE;
+  size_t total_received = 0; // Total length of the received data
+  while (total_received < buffer_size - 1) {
+    char temp_buffer[2]; // Temporary buffer for a single character
+    ssize_t bytes_received = recv(sockfd, temp_buffer, 1, 0); // Receive one character
+
+    if (bytes_received < 0) {
+      fprintf(stderr, "Error receiving message: %s\n", strerror(errno));
+      return EXIT_FAILURE;
+    } else if (bytes_received == 0) {
+      fprintf(stderr, "Connection closed by server.\n");
+      return EXIT_FAILURE;
+    }
+
+    // Append the received character to the buffer
+    buffer[total_received] = temp_buffer[0];
+    total_received++;
+
+    // Stop if a newline character is found
+    if (temp_buffer[0] == '\n') {
+      break;
+    }
   }
-  buffer[bytes_received] = '\0';
+
+  // Add a null terminator to make the buffer a valid string
+  buffer[total_received] = '\0';
+
   fprintf(stdout, "S: %s", buffer);
   return EXIT_SUCCESS;
 }

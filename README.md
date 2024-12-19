@@ -5,10 +5,10 @@
 <p align="center"><em>Client für das Systempraktikum der LMU München</em></p>
 
 <p align="center">
-	<img src="https://img.shields.io/github/license/noluyorAbi/C-Project?style=default&logo=opensourceinitiative&logoColor=white&color=0080ff" alt="license">
-	<img src="https://img.shields.io/github/last-commit/noluyorAbi/C-Project?style=default&logo=git&logoColor=white&color=0080ff" alt="last-commit">
-	<img src="https://img.shields.io/github/languages/top/noluyorAbi/C-Project?style=default&color=0080ff" alt="repo-top-language">
-	<img src="https://img.shields.io/github/languages/count/noluyorAbi/C-Project?style=default&color=0080ff" alt="repo-language-count">
+	<img src="https://img.shields.io/github/license/noluyorAbi/C-Project?style=for-the-badge&logo=opensourceinitiative&logoColor=white&color=0080ff" alt="license">
+	<img src="https://img.shields.io/github/last-commit/noluyorAbi/C-Project?style=for-the-badge&logo=git&logoColor=white&color=0080ff" alt="last-commit">
+	<img src="https://img.shields.io/github/languages/top/noluyorAbi/C-Project?style=for-the-badge&color=0080ff" alt="repo-top-language">
+	<img src="https://img.shields.io/github/languages/count/noluyorAbi/C-Project?style=for-the-badge&color=0080ff" alt="repo-language-count">
 </p>
 <p align="center"><!-- default option, no dependency badges. -->
   <!-- default option, no dependency badges. -->
@@ -141,7 +141,7 @@ Das Projekt wird in mehreren Schritten im Verlauf des Praktikums entwickelt, und
         ├── test_sharedMemory.bash
         └── test_sharedMemory.c
 
-14 directories, 31 files
+15 directories, 27 files
 ```
 <!-- project-structure-end -->
 

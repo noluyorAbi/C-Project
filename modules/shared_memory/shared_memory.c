@@ -18,7 +18,7 @@
  */
 int createSharedMemory(int numPlayers) {
   // Input validation
-  if (numPlayers < 0 || numPlayers > MAX_PLAYERS) {
+  if (numPlayers <= 0 || numPlayers > MAX_PLAYERS) {
     fprintf(stderr,
             "[ERROR] Ungültige Anzahl von Spielern: %d. Muss zwischen 0 und %d "
             "liegen.\n",

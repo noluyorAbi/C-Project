@@ -34,9 +34,14 @@ int sendMessage(int sockfd, const char *message) {
  * @return int EXIT_SUCCESS on success, EXIT_FAILURE on error.
  */
 int receiveMessage(int sockfd, char *buffer, size_t buffer_size) {
+  if (buffer_size <= 1) {
+    fprintf(stderr, "Invalid buffer size.\n");
+    return EXIT_FAILURE;
+  }
+
   size_t total_received = 0; // Total length of the received data
   while (total_received < buffer_size - 1) {
-    char temp_buffer[2]; // Temporary buffer for a single character
+    char temp_buffer[2] = {0}; // Temporary buffer for a single character
     ssize_t bytes_received =
       recv(sockfd, temp_buffer, 1, 0); // Receive one character
 
@@ -45,6 +50,9 @@ int receiveMessage(int sockfd, char *buffer, size_t buffer_size) {
       return EXIT_FAILURE;
     } else if (bytes_received == 0) {
       fprintf(stderr, "Connection closed by server.\n");
+      return EXIT_FAILURE;
+    } else if (bytes_received > 1) {
+      fprintf(stderr, "Unexpected bytes received: %zd\n", bytes_received);
       return EXIT_FAILURE;
     }
 

@@ -1,0 +1,39 @@
+name: Build Project
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # Step 2: Install required dependencies
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential valgrind
+
+      # Step 3: Compile the shared memory test
+      - name: Compile Shared Memory Test
+        run: |
+          gcc -Wall -Werror -g -o ./tests/test_sharedMemory/test_sharedMemory \
+            ./tests/test_sharedMemory/test_sharedMemory.c \
+            ./modules/shared_memory/shared_memory.c \
+            -I./modules/shared_memory
+
+      # Step 4: Build the main project
+      - name: Build Main Project
+        run: |
+          make CC=gcc CFLAGS="-Wall -Werror -g"
+
+      # Step 5: Make the main executable file executable
+      - name: Make Executable
+        run: chmod +x ./bin/sysprak-client

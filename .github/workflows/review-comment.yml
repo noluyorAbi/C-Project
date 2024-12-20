@@ -1,0 +1,30 @@
+name: Automatic Review Request and Deletion (without Action)
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  review_and_delete:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Comment "/review"
+        id: create-review-comment
+        uses: peter-evans/create-or-update-comment@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: "/review"
+
+      - name: Wait 120 seconds
+        run: sleep 120
+
+      - name: Delete the "/review" comment
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.deleteComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: '${{ steps.create-review-comment.outputs.comment-id }}'
+            })

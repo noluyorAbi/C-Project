@@ -1,7 +1,7 @@
 name: Automatic Review Request and Deletion (without Action)
 
 on:
-  pull_request:
+  pull_request_target:
     types: [opened, synchronize]
 
 jobs:

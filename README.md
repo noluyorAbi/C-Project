@@ -13,7 +13,7 @@
 <p align="center"><!-- default option, no dependency badges. -->
   <!-- default option, no dependency badges. -->
 
-
+	
  <a href="https://github.com/noluyorAbi/C-Project/actions/workflows/ci-format.yaml">
     <img src="https://github.com/noluyorAbi/C-Project/actions/workflows/ci-format.yaml/badge.svg" alt="CI - Format Check">
   </a>
@@ -55,13 +55,13 @@
 - [Überblick](#überblick)
 - [Funktionen](#funktionen)
 - [Projektstruktur](#projektstruktur)
-    - [Übersicht der Verzeichnisse und Dateien](#übersicht-der-verzeichnisse-und-dateien)
+  - [Übersicht der Verzeichnisse und Dateien](#übersicht-der-verzeichnisse-und-dateien)
 - [Erste Schritte](#erste-schritte)
-    - [Voraussetzungen](#voraussetzungen)
-    - [Installation](#installation)
-    - [Benutzung](#benutzung)
+  - [Voraussetzungen](#voraussetzungen)
+  - [Installation](#installation)
+  - [Benutzung](#benutzung)
 - [Zugriff auf Gameserver und Webinterface](#zugriff-auf-gameserver-und-webinterface)
-    - [Funktionen des Webinterfaces](#funktionen-des-webinterfaces)
+  - [Funktionen des Webinterfaces](#funktionen-des-webinterfaces)
 - [Spielregeln und Ressourcen](#spielregeln-und-ressourcen)
 - [Projekt-Roadmap](#projekt-roadmap)
 - [Beitragende](#beitragende)
@@ -73,24 +73,19 @@
 
 ## Überblick
 
-Willkommen im Systempraktikum der **Ludwig-Maximilians-Universität München**. Im Rahmen dieses Praktikums entwickeln wir
-einen **Client für das strategische Brettspiel Neunermühle** in der Programmiersprache **C**. Ziel ist es, die Logik des
-Spiels zu implementieren und den Client über eine TCP-Verbindung mit einem zentralen Gameserver zu verbinden. Der
-Gameserver überwacht das Spielgeschehen und stellt sicher, dass die Regeln eingehalten werden, während unser Client als
-aktiver Mitspieler agiert.
+Willkommen im Systempraktikum der **Ludwig-Maximilians-Universität München**. Im Rahmen dieses Praktikums entwickeln wir einen **Client für das strategische Brettspiel Neunermühle** in der Programmiersprache **C**. Ziel ist es, die Logik des Spiels zu implementieren und den Client über eine TCP-Verbindung mit einem zentralen Gameserver zu verbinden. Der Gameserver überwacht das Spielgeschehen und stellt sicher, dass die Regeln eingehalten werden, während unser Client als aktiver Mitspieler agiert.
 
-Das Projekt wird in mehreren Schritten im Verlauf des Praktikums entwickelt, und jeder Schritt führt uns näher zur
-fertigen Version des Clients.
+Das Projekt wird in mehreren Schritten im Verlauf des Praktikums entwickelt, und jeder Schritt führt uns näher zur fertigen Version des Clients.
 
 ---
 
 ## Funktionen
 
 |     |        Feature         | Zusammenfassung                                                                                                  |
-|:----|:----------------------:|:-----------------------------------------------------------------------------------------------------------------|
+| :-- | :--------------------: | :--------------------------------------------------------------------------------------------------------------- |
 | ⚙️  | **Programmiersprache** | C                                                                                                                |
 | 🔌  | **Netzwerkprotokoll**  | TCP zur Kommunikation mit dem Gameserver                                                                         |
-| 🗃️ |   **Systemzugriff**    | Nutzung von Shared Memory zur Speicherung von Spielfeldinformationen                                             |
+| 🗃️  |   **Systemzugriff**    | Nutzung von Shared Memory zur Speicherung von Spielfeldinformationen                                             |
 | 🌐  | **Gameserver-Zugriff** | Nur über das Münchener Wissenschaftsnetzwerk (MWN) möglich                                                       |
 | 🧩  |  **Hauptfunktionen**   | <ul><li>Verbindung zum Gameserver</li><li>Spielelogik</li><li>Signalverarbeitung</li><li>Shared Memory</li></ul> |
 
@@ -99,13 +94,10 @@ fertigen Version des Clients.
 ## Projektstruktur
 
 <!-- project-structure-start -->
-
 ```sh
 .
 ├── LICENSE
 ├── README.md
-├── bin
-│   └── sysprak-client
 ├── client.conf
 ├── compile_commands.json
 ├── docs
@@ -122,14 +114,13 @@ fertigen Version des Clients.
 │   │   ├── config.c
 │   │   ├── config.h
 │   │   └── constants.h
-│   ├── tcp_performConnection
-│   │   ├── performConnection.c
-│   │   ├── performConnection.h
-│   │   └── tcp_connection.c
-│   └── thinker_and_connector
-│       ├── connector.c
-│       ├── connector.h
-│       └── thinker.c
+│   ├── shared_memory
+│   │   ├── shared_memory.c
+│   │   └── shared_memory.h
+│   └── tcp_performConnection
+│       ├── performConnection.c
+│       ├── performConnection.h
+│       └── tcp_connection.c
 ├── scripts
 │   ├── Readme.md
 │   ├── setup_precommit
@@ -140,33 +131,31 @@ fertigen Version des Clients.
 │       └── update_readme.sh
 └── tests
     ├── README.md
-    ├── test_args_parser
-    │   └── test_args
     ├── test_clientConf
     │   └── test_clientConf.sh
     ├── test_performConnection
     │   ├── README.md
     │   └── test_performConnection.c
     └── test_sharedMemory
-        └── logs
+        ├── README.md
+        ├── test_sharedMemory.bash
+        └── test_sharedMemory.c
 
 15 directories, 27 files
 ```
-
 <!-- project-structure-end -->
 
 ### Übersicht der Verzeichnisse und Dateien
 
 1. **`README.md`**: Enthält die Projektdokumentation, wie Ziel, Funktionen und Aufbau des Projekts.
-2. **`compile_commands.json`**: Nützlich für die Integration mit Tools wie Clang, um die Kompilierungsschritte zu
-   verfolgen.
+2. **`compile_commands.json`**: Nützlich für die Integration mit Tools wie Clang, um die Kompilierungsschritte zu verfolgen.
 3. **`docs/`**: Alle projektbezogenen Dokumentationen, strukturiert und separat gehalten.
 4. **`lib/`**: Bibliotheken oder externe Abhängigkeiten, die das Projekt verwendet.
 5. **`main.c`**: Zentrale Einstiegsdatei, in der das Programm startet.
 6. **`makefile`**: Automatisiert den Build-Prozess und erleichtert das Kompilieren.
 7. **`modules/`**: Organisiert die Funktionalitäten des Projekts in wiederverwendbare Module:
-    - **`args_parser`**: Verarbeitung von Kommandozeilenargumenten.
-    - **`tcp_performConnection`**: Netzwerkmodule zur Verwaltung von TCP-Verbindungen.
+   - **`args_parser`**: Verarbeitung von Kommandozeilenargumenten.
+   - **`tcp_performConnection`**: Netzwerkmodule zur Verwaltung von TCP-Verbindungen.
 8. **`scripts/`**: Praktische Automatisierungsskripte, z. B. für Pre-Commit-Hooks oder Dokumentationsaktualisierungen.
 9. **`tests/`**: Verzeichnis für Tests, die sicherstellen, dass der Code wie erwartet funktioniert.
 
@@ -188,13 +177,11 @@ Bevor Sie beginnen, stellen Sie sicher, dass folgende Voraussetzungen erfüllt s
 1. **Projekt klonen**:
 
 _Github:_
-
    ```sh
    git clone https://github.com/noluyorAbi/C-Project
    ```
-
+   
 _Gitlab_ (Mirror-Repository von Github)
-
 ```sh
 git clone https://gitlab.lrz.de/sysprakws2425/gruppe18/c-project-mirror
 ```
@@ -223,8 +210,7 @@ Das **Webinterface** ist unter folgender Adresse verfügbar:
 
 [http://sysprak.priv.lab.nm.ifi.lmu.de](http://sysprak.priv.lab.nm.ifi.lmu.de)
 
-Um das Webinterface und den Gameserver aus dem MWN zu erreichen, können Sie eine SSH-Portweiterleitung zu einem
-CIP-Rechner nutzen:
+Um das Webinterface und den Gameserver aus dem MWN zu erreichen, können Sie eine SSH-Portweiterleitung zu einem CIP-Rechner nutzen:
 
 ```sh
 ssh -L localhost:PORT:sysprak.priv.lab.nm.ifi.lmu.de:PORT username@cip.ifi.lmu.de
@@ -232,9 +218,7 @@ ssh -L localhost:PORT:sysprak.priv.lab.nm.ifi.lmu.de:PORT username@cip.ifi.lmu.d
 
 ### Funktionen des Webinterfaces
 
-Das Webinterface ermöglicht das Erstellen von Partien, in denen der Client gegen andere Spieler antreten oder gegen sich
-selbst getestet werden kann. Zudem kann man als Beobachter in eine Partie einsteigen, um Einblicke in den Spielablauf zu
-erhalten und die korrekte Funktion des Clients zu überprüfen.
+Das Webinterface ermöglicht das Erstellen von Partien, in denen der Client gegen andere Spieler antreten oder gegen sich selbst getestet werden kann. Zudem kann man als Beobachter in eine Partie einsteigen, um Einblicke in den Spielablauf zu erhalten und die korrekte Funktion des Clients zu überprüfen.
 
 ---
 
@@ -259,12 +243,9 @@ Die Spielregeln für Neunermühle und weitere Hilfen zur Entwicklung des Clients
 
 Dieses Projekt wird von Studierenden der LMU im Rahmen des Systempraktikums entwickelt.
 
-- **💬 [Diskussionen beitreten](https://github.com/noluyorAbi/C-Project/discussions)**: Teilen Sie Ihre Ideen, Feedback
-  oder stellen Sie Fragen.
-- **🐛 [Probleme melden](https://github.com/noluyorAbi/C-Project/issues)**: Reichen Sie gefundene Bugs ein oder stellen
-  Sie Feature-Anfragen.
-- **💡 [Pull Requests einreichen](https://github.com/noluyorAbi/C-Project/pulls)**: Überprüfen Sie offene PRs oder
-  reichen Sie eigene PRs ein.
+- **💬 [Diskussionen beitreten](https://github.com/noluyorAbi/C-Project/discussions)**: Teilen Sie Ihre Ideen, Feedback oder stellen Sie Fragen.
+- **🐛 [Probleme melden](https://github.com/noluyorAbi/C-Project/issues)**: Reichen Sie gefundene Bugs ein oder stellen Sie Feature-Anfragen.
+- **💡 [Pull Requests einreichen](https://github.com/noluyorAbi/C-Project/pulls)**: Überprüfen Sie offene PRs oder reichen Sie eigene PRs ein.
 
 ## Richtlinien für Beiträge
 
@@ -275,8 +256,7 @@ Da dieses Projekt ein modulinternes Projekt ist, können leider keine Beiträge 
 
 ## Lizenz
 
-Dieses Projekt steht unter der [MIT License](https://choosealicense.com/licenses/mit/). Weitere Details finden Sie in
-der [LICENSE](https://github.com/noluyorAbi/neunermuehle-client/blob/main/LICENSE) Datei.
+Dieses Projekt steht unter der [MIT License](https://choosealicense.com/licenses/mit/). Weitere Details finden Sie in der [LICENSE](https://github.com/noluyorAbi/neunermuehle-client/blob/main/LICENSE) Datei.
 
 ---
 

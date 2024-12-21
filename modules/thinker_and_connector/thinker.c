@@ -1,6 +1,7 @@
 // thinker.c
 
 #include "thinker.h"
+
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>

@@ -40,34 +40,44 @@ int sendMessage(int sockfd, const char *message) {
  * @return int EXIT_SUCCESS on success, EXIT_FAILURE on error.
  */
 int receiveMessage(int sockfd, char *buffer, size_t buffer_size) {
-  size_t total_received = 0; // Tracks total bytes received
+  if (buffer_size
+      <= 1) { // Check buffer_size to prevent overflow or invalid memory access
+    fprintf(stderr, "Invalid buffer size.\n");
+    return EXIT_FAILURE;
+  }
+
+  size_t total_received = 0; // Total length of the received data
   while (total_received < buffer_size - 1) {
-    ssize_t bytes_received = recv(sockfd, buffer + total_received,
-                                  buffer_size - 1 - total_received, 0);
+    char temp_buffer[2] = {0}; // Temporary buffer for a single character
+    ssize_t bytes_received =
+      recv(sockfd, temp_buffer, 1, 0); // Receive one character
+
     if (bytes_received < 0) {
       fprintf(stderr, "Error receiving message: %s\n", strerror(errno));
       return EXIT_FAILURE;
     } else if (bytes_received == 0) {
       fprintf(stderr, "Connection closed by server.\n");
       return EXIT_FAILURE;
+    } else if (bytes_received > 1) {
+      fprintf(stderr, "Unexpected bytes received: %zd\n", bytes_received);
+      return EXIT_FAILURE;
     }
 
-    total_received += bytes_received;
+    // Append the received character to the buffer
+    buffer[total_received] = temp_buffer[0];
+    total_received++;
 
-    // Check if the message is complete (contains '\0')
-    for (size_t i = total_received - bytes_received; i < total_received; i++) {
-      if (buffer[i] == '\0') {
-        buffer[total_received] = '\0'; // Null-terminate the buffer
-        fprintf(stdout, "S: %s", buffer);
-        return EXIT_SUCCESS;
-      }
+    // Stop if a newline character is found
+    if (temp_buffer[0] == '\n') {
+      break;
     }
   }
 
-  // If we exit the loop, the buffer was filled without encountering '\0'
-  buffer[buffer_size - 1] = '\0'; // Ensure null termination
-  fprintf(stderr, "Message too long or incomplete: %s\n", buffer);
-  return EXIT_FAILURE;
+  // Add a null terminator to make the buffer a valid string
+  buffer[total_received] = '\0';
+
+  fprintf(stdout, "S: %s", buffer);
+  return EXIT_SUCCESS;
 }
 
 /**

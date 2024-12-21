@@ -1,14 +1,12 @@
 #include "./modules/args_parser/args_parser.h"
 #include "./modules/args_parser/config.h"
+#include "./modules/shared_memory/shared_memory.c"
 #include "./modules/tcp_performConnection/performConnection.h" // Include for performConnection
 #include "./modules/thinker_and_connector/connector.h" // Include for run_connector
-#include "./modules/thinker_and_connector/connector.h"
-#include "./modules/thinker_and_connector/thinker.h"
 
 #include <arpa/inet.h> // For ntohs()
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
 
@@ -35,7 +33,6 @@ int main(int argc, char *argv[]) {
             game_config.config_file);
     return EXIT_FAILURE;
   }
-
   // Output the configured parameters
   printf("Hostname: %s\n", app_config.hostname);
   printf("Portnummer: %u\n", ntohs(app_config.portNumber));

@@ -18,10 +18,6 @@
     <img src="https://github.com/noluyorAbi/C-Project/actions/workflows/ci-format.yaml/badge.svg" alt="CI - Format Check">
   </a>
 
-<a href="https://github.com/noluyorAbi/C-Project/actions/workflows/ci.yml">
-  <img src="https://github.com/noluyorAbi/C-Project/actions/workflows/ci.yml/badge.svg" alt="C Project Build, Memory Leak Check, and Deployment Pipeline">
-</a>
-
 <a href="https://github.com/noluyorAbi/C-Project/actions/workflows/flawfinder.yml">
   <img src="https://github.com/noluyorAbi/C-Project/actions/workflows/flawfinder.yml/badge.svg" alt="flawfinder">
 </a>

@@ -117,12 +117,12 @@ int performConnection(int sockfd, char *GAME_ID) {
     return EXIT_FAILURE;
   }
 
-    // 5. Send game ID // @noluyorAbi I THINK THIS WORKS NOW
-    char game_id_message[BUFFER_SIZE]; // Use a stack-allocated buffer
-    snprintf(game_id_message, BUFFER_SIZE, "ID %s\n", GAME_ID);
-    if (sendMessage(sockfd, game_id_message) != EXIT_SUCCESS) {
-        return EXIT_FAILURE;
-    }
+  // 5. Send game ID // @noluyorAbi I THINK THIS WORKS NOW
+  char game_id_message[BUFFER_SIZE]; // Use a stack-allocated buffer
+  snprintf(game_id_message, BUFFER_SIZE, "ID %s\n", GAME_ID);
+  if (sendMessage(sockfd, game_id_message) != EXIT_SUCCESS) {
+    return EXIT_FAILURE;
+  }
 
   // 6. Receive game type
   if (receiveMessage(sockfd, buffer, BUFFER_SIZE) != EXIT_SUCCESS) {
@@ -160,7 +160,7 @@ int performConnection(int sockfd, char *GAME_ID) {
     return EXIT_FAILURE;
   }
 
-if (strncmp(buffer, "+ TOTAL ", 7) != 0) {
+  if (strncmp(buffer, "+ TOTAL ", 7) != 0) {
     fprintf(stderr, "Unexpected total player count: %s\n", buffer);
     return EXIT_FAILURE;
   }
@@ -184,8 +184,10 @@ if (strncmp(buffer, "+ TOTAL ", 7) != 0) {
     char other_player_name[50];
     int other_player_readiness;
     if (sscanf(buffer, "+ %d %49s %d", &other_player_number, other_player_name,
-               &other_player_readiness) == 3) {
-      printf("(S: Spieler %d (%s) ist %s.)\n", other_player_number, other_player_name,
+               &other_player_readiness)
+        == 3) {
+      printf("(S: Spieler %d (%s) ist %s.)\n", other_player_number,
+             other_player_name,
              other_player_readiness == 1 ? "bereit" : "noch nicht bereit");
     } else {
       fprintf(stderr, "Unbekannte Spielerinformation: %s\n", buffer);

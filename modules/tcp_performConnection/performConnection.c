@@ -153,8 +153,6 @@ int performConnection(int sockfd, char *GAME_ID) {
   if (strncmp(buffer, "+ YOU", 5) != 0) {
     fprintf(stderr, "Unexpected player assignment: %s\n", buffer);
     return EXIT_FAILURE;
-  } else {
-    //DEBUGGING:  fprintf(stdout, "Assigned player: %s", buffer + 5); 
   }
 
   // 10. Receive total number of players
@@ -162,17 +160,15 @@ int performConnection(int sockfd, char *GAME_ID) {
     return EXIT_FAILURE;
   }
 
-  if (strncmp(buffer, "+ TOTAL", 7) != 0) {
+if (strncmp(buffer, "+ TOTAL ", 7) != 0) {
     fprintf(stderr, "Unexpected total player count: %s\n", buffer);
     return EXIT_FAILURE;
-  } else {
-    int total_players;
-    if (sscanf(buffer, "+ TOTAL %d", &total_players) == 1) {
-        //DEBUGGING:  fprintf(stdout, "Total players: %d\n", total_players);
-    } else {
-      fprintf(stderr, "Error parsing total player count: %s\n", buffer);
-      return EXIT_FAILURE;
-    }
+  }
+
+  int total_players;
+  if (sscanf(buffer + 7, "%d", &total_players) != 1) {
+    fprintf(stderr, "Error parsing total player count: %s\n", buffer);
+    return EXIT_FAILURE;
   }
 
   // 11. Receive details of other players
@@ -184,16 +180,15 @@ int performConnection(int sockfd, char *GAME_ID) {
     if (strncmp(buffer, "+ ENDPLAYERS", 12) == 0) {
       break;
     }
-    int player_number;
-    char player_name[50];
-    char readiness[20];
-    if (sscanf(buffer, "+ PLAYER %d %49s %19s", &player_number, player_name,
-               readiness)
-        == 3) {
-      fprintf(stdout, "Spieler %d (%s) ist %s.\n", player_number, player_name,
-              strcmp(readiness, "READY") == 0 ? "bereit." : "nicht bereit.");
+    int other_player_number;
+    char other_player_name[50];
+    int other_player_readiness;
+    if (sscanf(buffer, "+ %d %49s %d", &other_player_number, other_player_name,
+               &other_player_readiness) == 3) {
+      printf("(S: Spieler %d (%s) ist %s.)\n", other_player_number, other_player_name,
+             other_player_readiness == 1 ? "bereit" : "noch nicht bereit");
     } else {
-     //DEBUGGING:  fprintf(stderr, "Unknown player info: %s\n", buffer);
+      fprintf(stderr, "Unbekannte Spielerinformation: %s\n", buffer);
     }
   }
 

@@ -117,11 +117,12 @@ int performConnection(int sockfd, char *GAME_ID) {
     return EXIT_FAILURE;
   }
 
-  // 5. Send game ID
-  const char *game_id = GAME_ID; // "ID my-game-id\n";
-  if (sendMessage(sockfd, game_id) != EXIT_SUCCESS) {
-    return EXIT_FAILURE;
-  }
+    // 5. Send game ID // @noluyorAbi I THINK THIS WORKS NOW
+    char game_id_message[BUFFER_SIZE]; // Use a stack-allocated buffer
+    snprintf(game_id_message, BUFFER_SIZE, "ID %s\n", GAME_ID);
+    if (sendMessage(sockfd, game_id_message) != EXIT_SUCCESS) {
+        return EXIT_FAILURE;
+    }
 
   // 6. Receive game type
   if (receiveMessage(sockfd, buffer, BUFFER_SIZE) != EXIT_SUCCESS) {
@@ -153,7 +154,7 @@ int performConnection(int sockfd, char *GAME_ID) {
     fprintf(stderr, "Unexpected player assignment: %s\n", buffer);
     return EXIT_FAILURE;
   } else {
-    fprintf(stdout, "Assigned player: %s", buffer + 5);
+    //DEBUGGING:  fprintf(stdout, "Assigned player: %s", buffer + 5); 
   }
 
   // 10. Receive total number of players
@@ -167,7 +168,7 @@ int performConnection(int sockfd, char *GAME_ID) {
   } else {
     int total_players;
     if (sscanf(buffer, "+ TOTAL %d", &total_players) == 1) {
-      fprintf(stdout, "Total players: %d\n", total_players);
+        //DEBUGGING:  fprintf(stdout, "Total players: %d\n", total_players);
     } else {
       fprintf(stderr, "Error parsing total player count: %s\n", buffer);
       return EXIT_FAILURE;
@@ -192,7 +193,7 @@ int performConnection(int sockfd, char *GAME_ID) {
       fprintf(stdout, "Spieler %d (%s) ist %s.\n", player_number, player_name,
               strcmp(readiness, "READY") == 0 ? "bereit." : "nicht bereit.");
     } else {
-      fprintf(stderr, "Unknown player info: %s\n", buffer);
+     //DEBUGGING:  fprintf(stderr, "Unknown player info: %s\n", buffer);
     }
   }
 

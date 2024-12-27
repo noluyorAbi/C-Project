@@ -79,9 +79,10 @@ int receiveMessage(int sockfd, char *buffer, size_t buffer_size) {
  * protocol.
  *
  * @param sockfd The socket file descriptor for the TCP connection.
+ * @param GAME_ID The game ID to use for the connection.
  * @return int EXIT_SUCCESS on success, EXIT_FAILURE on error.
  */
-int performConnection(int sockfd) {
+int performConnection(int sockfd, char *GAME_ID) {
   char buffer[BUFFER_SIZE];
 
   // 1. Receive greeting from server
@@ -95,13 +96,18 @@ int performConnection(int sockfd) {
     return EXIT_FAILURE;
   }
 
-  // 2. Send client version
-  const char *client_version = "VERSION 2.42\n";
+  // 2. Receive another message from server
+  if (receiveMessage(sockfd, buffer, BUFFER_SIZE) != EXIT_SUCCESS) {
+    return EXIT_FAILURE;
+  }
+
+  // 3. Send client version
+  const char *client_version = "VERSION 3.42\n";
   if (sendMessage(sockfd, client_version) != EXIT_SUCCESS) {
     return EXIT_FAILURE;
   }
 
-  // 3. Receive confirmation and game ID request
+  // 4. Receive confirmation and game ID request
   if (receiveMessage(sockfd, buffer, BUFFER_SIZE) != EXIT_SUCCESS) {
     return EXIT_FAILURE;
   }
@@ -111,13 +117,13 @@ int performConnection(int sockfd) {
     return EXIT_FAILURE;
   }
 
-  // 4. Send game ID
-  const char *game_id = "ID my-game-id\n";
+  // 5. Send game ID
+  const char *game_id = GAME_ID; // "ID my-game-id\n";
   if (sendMessage(sockfd, game_id) != EXIT_SUCCESS) {
     return EXIT_FAILURE;
   }
 
-  // 5. Receive game type
+  // 6. Receive game type
   if (receiveMessage(sockfd, buffer, BUFFER_SIZE) != EXIT_SUCCESS) {
     return EXIT_FAILURE;
   }
@@ -127,18 +133,18 @@ int performConnection(int sockfd) {
     return EXIT_FAILURE;
   }
 
-  // 6. Receive game name (if required)
+  // 7. Receive game name (if required)
   if (receiveMessage(sockfd, buffer, BUFFER_SIZE) != EXIT_SUCCESS) {
     return EXIT_FAILURE;
   }
 
-  // 7. Send PLAYER command (no additional values)
+  // 8. Send PLAYER command (no additional values)
   const char *player_command = "PLAYER\n";
   if (sendMessage(sockfd, player_command) != EXIT_SUCCESS) {
     return EXIT_FAILURE;
   }
 
-  // 8. Receive player assignment
+  // 9. Receive player assignment
   if (receiveMessage(sockfd, buffer, BUFFER_SIZE) != EXIT_SUCCESS) {
     return EXIT_FAILURE;
   }
@@ -150,7 +156,7 @@ int performConnection(int sockfd) {
     fprintf(stdout, "Assigned player: %s", buffer + 5);
   }
 
-  // 9. Receive total number of players
+  // 10. Receive total number of players
   if (receiveMessage(sockfd, buffer, BUFFER_SIZE) != EXIT_SUCCESS) {
     return EXIT_FAILURE;
   }
@@ -168,7 +174,7 @@ int performConnection(int sockfd) {
     }
   }
 
-  // 10. Receive details of other players
+  // 11. Receive details of other players
   while (1) {
     if (receiveMessage(sockfd, buffer, BUFFER_SIZE) != EXIT_SUCCESS) {
       return EXIT_FAILURE;
@@ -184,7 +190,7 @@ int performConnection(int sockfd) {
                readiness)
         == 3) {
       fprintf(stdout, "Spieler %d (%s) ist %s.\n", player_number, player_name,
-              strcmp(readiness, "READY") == 1 ? "bereit." : "nicht bereit.");
+              strcmp(readiness, "READY") == 0 ? "bereit." : "nicht bereit.");
     } else {
       fprintf(stderr, "Unknown player info: %s\n", buffer);
     }

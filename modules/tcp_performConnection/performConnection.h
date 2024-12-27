@@ -27,8 +27,9 @@ int receiveMessage(int sockfd, char *buffer, size_t buffer_size);
  * protocol.
  *
  * @param sockfd The file descriptor for the TCP connection.
+ * @param GAME_ID The game ID to use for the connection.
  * @return int EXIT_SUCCESS on success, EXIT_FAILURE on error.
  */
-int performConnection(int sockfd);
+int performConnection(int sockfd, char *GAME_ID);
 
 #endif

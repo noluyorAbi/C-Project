@@ -117,9 +117,11 @@ Das Projekt wird in mehreren Schritten im Verlauf des Praktikums entwickelt, und
 │   │   ├── config.h
 │   │   └── constants.h
 │   └── tcp_performConnection
+│       ├── client
 │       ├── performConnection.c
 │       ├── performConnection.h
-│       └── tcp_connection.c
+│       ├── tcp_connection.c
+│       └── tcp_connection.h
 ├── scripts
 │   ├── Readme.md
 │   ├── setup_precommit
@@ -136,7 +138,7 @@ Das Projekt wird in mehreren Schritten im Verlauf des Praktikums entwickelt, und
         ├── README.md
         └── test_performConnection.c
 
-13 directories, 27 files
+13 directories, 29 files
 ```
 <!-- project-structure-end -->
 

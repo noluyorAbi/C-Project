@@ -3,6 +3,7 @@
 #include "./modules/args_parser/args_parser.h"
 #include "./modules/args_parser/config.h"
 #include "./modules/args_parser/constants.h" // Inclusion of constants, if needed
+#include "./modules/tcp_performConnection/tcp_connection.h"
 
 #include <arpa/inet.h> // For ntohs()
 #include <stdio.h>
@@ -35,6 +36,13 @@ int main(int argc, char *argv[]) {
   printf("Portnummer: %u\n",
          ntohs(app_config.portNumber)); // Converts back to host byte order
   printf("GameKindName: %s\n", app_config.gameKindName);
+
+  if (createConnection(game_config.game_id) != 0) {
+    fprintf(stderr, "Failed to establish connection.\n");
+    return EXIT_FAILURE;
+  } else {
+    return EXIT_SUCCESS;
+  }
 
   return EXIT_SUCCESS;
 }

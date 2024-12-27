@@ -1,0 +1,49 @@
+name: Automatic Review Request and Deletion (Owner Comment)
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+permissions:
+  issues: write
+  pull-requests: write
+  contents: read
+
+jobs:
+  review_and_delete:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create "/review" comment as Repo Owner
+        id: create_review_comment
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.REPO_OWNER_PAT }}
+          script: |
+            const comment = await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: "/review"
+            });
+            return comment.data.id;
+
+      - name: Wait 120 seconds
+        run: sleep 120
+
+      - name: Delete the "/review" comment
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.REPO_OWNER_PAT }}
+          script: |
+            try {
+              await github.rest.issues.deleteComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: ${{ steps.create_review_comment.outputs.result }}
+              });
+              console.log("Comment deleted successfully.");
+            } catch (error) {
+              console.error(`Failed to delete comment: ${error}`);
+              // Optionally, set the step to continue on error
+              // core.setFailed(error.message);
+            }

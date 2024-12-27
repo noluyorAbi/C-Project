@@ -19,7 +19,7 @@ bool parse_args(int argc, char *argv[], GameConfig *config) {
   // Initialize game_id to empty
   memset(config->game_id, 0, sizeof(config->game_id));
 
-  // Iterate through arguments
+  // Iterate over the command-line arguments to parse them
   for (int i = 1; i < argc; i++) {
     if (strcmp(argv[i], "-g") == 0) {
       if (i + 1 < argc) {

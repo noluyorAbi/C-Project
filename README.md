@@ -5,10 +5,10 @@
 <p align="center"><em>Client für das Systempraktikum der LMU München</em></p>
 
 <p align="center">
-	<img src="https://img.shields.io/github/license/noluyorAbi/C-Project?style=default&logo=opensourceinitiative&logoColor=white&color=0080ff" alt="license">
-	<img src="https://img.shields.io/github/last-commit/noluyorAbi/C-Project?style=default&logo=git&logoColor=white&color=0080ff" alt="last-commit">
-	<img src="https://img.shields.io/github/languages/top/noluyorAbi/C-Project?style=default&color=0080ff" alt="repo-top-language">
-	<img src="https://img.shields.io/github/languages/count/noluyorAbi/C-Project?style=default&color=0080ff" alt="repo-language-count">
+	<img src="https://img.shields.io/github/license/noluyorAbi/C-Project?style=for-the-badge&logo=opensourceinitiative&logoColor=white&color=0080ff" alt="license">
+	<img src="https://img.shields.io/github/last-commit/noluyorAbi/C-Project?style=for-the-badge&logo=git&logoColor=white&color=0080ff" alt="last-commit">
+	<img src="https://img.shields.io/github/languages/top/noluyorAbi/C-Project?style=for-the-badge&color=0080ff" alt="repo-top-language">
+	<img src="https://img.shields.io/github/languages/count/noluyorAbi/C-Project?style=for-the-badge&color=0080ff" alt="repo-language-count">
 </p>
 <p align="center"><!-- default option, no dependency badges. -->
   <!-- default option, no dependency badges. -->
@@ -17,10 +17,6 @@
  <a href="https://github.com/noluyorAbi/C-Project/actions/workflows/ci-format.yaml">
     <img src="https://github.com/noluyorAbi/C-Project/actions/workflows/ci-format.yaml/badge.svg" alt="CI - Format Check">
   </a>
-
-<a href="https://github.com/noluyorAbi/C-Project/actions/workflows/ci.yml">
-  <img src="https://github.com/noluyorAbi/C-Project/actions/workflows/ci.yml/badge.svg" alt="C Project Build, Memory Leak Check, and Deployment Pipeline">
-</a>
 
 <a href="https://github.com/noluyorAbi/C-Project/actions/workflows/flawfinder.yml">
   <img src="https://github.com/noluyorAbi/C-Project/actions/workflows/flawfinder.yml/badge.svg" alt="flawfinder">
@@ -116,6 +112,9 @@ Das Projekt wird in mehreren Schritten im Verlauf des Praktikums entwickelt, und
 │   │   ├── config.c
 │   │   ├── config.h
 │   │   └── constants.h
+│   ├── shared_memory
+│   │   ├── shared_memory.c
+│   │   └── shared_memory.h
 │   └── tcp_performConnection
 │       ├── client
 │       ├── performConnection.c
@@ -134,11 +133,15 @@ Das Projekt wird in mehreren Schritten im Verlauf des Praktikums entwickelt, und
     ├── README.md
     ├── test_clientConf
     │   └── test_clientConf.sh
-    └── test_performConnection
+    ├── test_performConnection
+    │   ├── README.md
+    │   └── test_performConnection.c
+    └── test_sharedMemory
         ├── README.md
-        └── test_performConnection.c
+        ├── test_sharedMemory.bash
+        └── test_sharedMemory.c
 
-13 directories, 29 files
+15 directories, 34 files
 ```
 <!-- project-structure-end -->
 

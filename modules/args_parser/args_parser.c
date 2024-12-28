@@ -23,21 +23,11 @@ bool parse_args(int argc, char *argv[], GameConfig *config) {
   for (int i = 1; i < argc; i++) {
     if (strcmp(argv[i], "-g") == 0) {
       if (i + 1 < argc) {
-        // Validate that GAME-ID contains exactly 13 digits
+        // Validate that GAME-ID contains exactly 13 characters (now accepts
+        // letters)
         size_t len = strlen(argv[i + 1]);
-        bool valid = true;
         if (len != 13) {
-          valid = false;
-        } else {
-          for (size_t j = 0; j < len; j++) {
-            if (!isdigit((unsigned char) argv[i + 1][j])) {
-              valid = false;
-              break;
-            }
-          }
-        }
-        if (!valid) {
-          fprintf(stderr, "Fehler: GAME-ID muss genau 13 Stellen lang sein.\n");
+          fprintf(stderr, "Fehler: GAME-ID muss genau 13 Zeichen lang sein.\n");
           return false;
         }
         strncpy(config->game_id, argv[i + 1], 13);
@@ -94,7 +84,7 @@ bool parse_args(int argc, char *argv[], GameConfig *config) {
  */
 void print_usage(const char *prog_name) {
   printf("Usage: %s -g <GAME-ID> [-p <1|2>] [-c <config_file>]\n", prog_name);
-  printf("  -g <GAME-ID>      : 13-digit game ID (mandatory)\n");
+  printf("  -g <GAME-ID>      : 13-character game ID (mandatory)\n");
   printf(
     "  -p <1|2>          : Player number (1 or 2) (optional, default: 1)\n");
   printf("  -c <config_file>  : Path to configuration file (optional, default: "

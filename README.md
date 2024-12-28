@@ -94,6 +94,8 @@ Das Projekt wird in mehreren Schritten im Verlauf des Praktikums entwickelt, und
 .
 ├── LICENSE
 ├── README.md
+├── bin
+│   └── sysprak-client
 ├── client.conf
 ├── compile_commands.json
 ├── docs
@@ -114,9 +116,11 @@ Das Projekt wird in mehreren Schritten im Verlauf des Praktikums entwickelt, und
 │   │   ├── shared_memory.c
 │   │   └── shared_memory.h
 │   └── tcp_performConnection
+│       ├── client
 │       ├── performConnection.c
 │       ├── performConnection.h
-│       └── tcp_connection.c
+│       ├── tcp_connection.c
+│       └── tcp_connection.h
 ├── scripts
 │   ├── Readme.md
 │   ├── setup_precommit
@@ -137,7 +141,7 @@ Das Projekt wird in mehreren Schritten im Verlauf des Praktikums entwickelt, und
         ├── test_sharedMemory.bash
         └── test_sharedMemory.c
 
-14 directories, 31 files
+15 directories, 34 files
 ```
 <!-- project-structure-end -->
 

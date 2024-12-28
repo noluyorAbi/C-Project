@@ -13,7 +13,7 @@
 #define HOSTNAME "sysprak.priv.lab.nm.ifi.lmu.de"
 #define PORT "1357"
 
-int createConnection() {
+int createConnection(char *GAME_ID) {
   int sock = -1; // File descriptor for socket, -1 indicates uninitialized
   struct addrinfo
     *result; // Pointer to the list of address results (returned by getaddrinfo)
@@ -55,7 +55,7 @@ int createConnection() {
     return EXIT_FAILURE;
   }
 
-  if (performConnection(sock) != 0) {
+  if (performConnection(sock, GAME_ID) != 0) {
     fprintf(stderr, "performConnection failed.\n");
     close(sock);
     return EXIT_FAILURE;
@@ -65,6 +65,7 @@ int createConnection() {
   return EXIT_SUCCESS;
 }
 
+/*
 int main() {
   if (createConnection() != 0) {
     fprintf(stderr, "Failed to establish connection.\n");
@@ -72,3 +73,4 @@ int main() {
   }
   return EXIT_SUCCESS;
 }
+*/

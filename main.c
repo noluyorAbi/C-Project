@@ -74,7 +74,11 @@ int main(int argc, char *argv[]) {
 
     // Wait for connector process to complete
     int status;
-    waitpid(pid, &status, 0);
+    if (waitpid(pid, &status, 0) == -1) {
+      fprintf(stderr, "Error waiting for child process.");
+      close(pipe_fd[0]); // Close the read end of the pipe
+      return EXIT_FAILURE;
+    }
 
     if (WIFEXITED(status)) { // Connector process exited with exit()
       printf("Connector exited with status %d.\n", WEXITSTATUS(status));

@@ -7,8 +7,10 @@
 #include "./modules/tcp_performConnection/tcp_connection.h"
 
 #include <arpa/inet.h> // For ntohs()
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/wait.h>
 #include <unistd.h>
 
@@ -47,7 +49,7 @@ int main(int argc, char *argv[]) {
  *                   END OF MAIN FUNCTION                 *
  *********************************************************/
 
-// ========================= ---- ======================= //
+// ========================= ---- ====================== //
 
 /**********************************************************
  *                    HELPER FUNCTIONS                    *
@@ -91,7 +93,7 @@ static int initialize_game(int argc, char *argv[], GameConfig *game_config,
  */
 static int create_pipe() {
   if (pipe(pipe_fd) == -1) {
-    fprintf(stderr, "Failed to create pipe.\n");
+    fprintf(stderr, "Failed to create pipe: %s\n", strerror(errno));
     return -1;
   }
   return 0;
@@ -105,7 +107,7 @@ static int create_pipe() {
 static int fork_processes(GameConfig game_config) {
   pid_t pid = fork();
   if (pid < 0) {
-    fprintf(stderr, "Fork failed.\n");
+    fprintf(stderr, "Fork failed: %s\n", strerror(errno));
     return EXIT_FAILURE;
   }
 
@@ -123,21 +125,29 @@ static int fork_processes(GameConfig game_config) {
  * @param game_config The configuration for the game
  */
 static void run_connector(GameConfig game_config) {
+  // Close the read end of the pipe in the connector process
   if (close(pipe_fd[0]) == -1) {
-    perror("Error closing read end of the pipe");
+    fprintf(stderr, "Connector: Error closing read end of the pipe: %s\n",
+            strerror(errno));
   }
 
   if (createConnection(game_config.game_id) != 0) {
     fprintf(stderr, "Connector: Failed to establish connection.\n");
+    // Close the write end of the pipe only if createConnection fails
     if (close(pipe_fd[1]) == -1) {
-      perror("Error closing write end of the pipe");
+      fprintf(stderr, "Connector: Error closing write end of the pipe: %s\n",
+              strerror(errno));
     }
     exit(EXIT_FAILURE);
   }
 
+  // Close the write end of the pipe immediately after successful connection
   if (close(pipe_fd[1]) == -1) {
-    perror("Error closing write end of the pipe");
+    fprintf(stderr, "Connector: Error closing write end of the pipe: %s\n",
+            strerror(errno));
+    exit(EXIT_FAILURE);
   }
+
   exit(EXIT_SUCCESS);
 }
 
@@ -146,17 +156,21 @@ static void run_connector(GameConfig game_config) {
  * @param pid The process ID of the connector process
  */
 static void run_thinker(pid_t pid) {
+  // Close the write end of the pipe in the thinker process
   if (close(pipe_fd[1]) == -1) {
-    perror("Error closing write end of the pipe");
+    fprintf(stderr, "Thinker: Error closing write end of the pipe: %s\n",
+            strerror(errno));
   }
 
   int status;
   if (waitpid(pid, &status, 0) == -1) {
-    fprintf(stderr, "Error waiting for child process.\n");
+    fprintf(stderr, "Thinker: Error waiting for child process: %s\n",
+            strerror(errno));
     if (close(pipe_fd[0]) == -1) {
-      perror("Error closing read end of the pipe");
+      fprintf(stderr, "Thinker: Error closing read end of the pipe: %s\n",
+              strerror(errno));
     }
-    exit(EXIT_FAILURE);
+    exit(EXIT_FAILURE); // Exit thinker if waitpid fails
   }
 
   if (WIFEXITED(status)) {
@@ -165,8 +179,10 @@ static void run_thinker(pid_t pid) {
     printf("Connector terminated by signal %d.\n", WTERMSIG(status));
   }
 
+  // Close the read end of the pipe in the thinker process
   if (close(pipe_fd[0]) == -1) {
-    perror("Error closing read end of the pipe");
+    fprintf(stderr, "Thinker: Error closing read end of the pipe: %s\n",
+            strerror(errno));
   }
 }
 /**********************************************************

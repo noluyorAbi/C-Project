@@ -64,13 +64,3 @@ int createConnection(char *GAME_ID) {
   close(sock);
   return EXIT_SUCCESS;
 }
-
-/*
-int main() {
-  if (createConnection() != 0) {
-    fprintf(stderr, "Failed to establish connection.\n");
-    return EXIT_FAILURE;
-  }
-  return EXIT_SUCCESS;
-}
-*/

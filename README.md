@@ -117,6 +117,8 @@ Das Projekt wird in mehreren Schritten im Verlauf des Praktikums entwickelt, und
 │   │   └── shared_memory.h
 │   └── tcp_performConnection
 │       ├── client
+│       ├── gameplay.c
+│       ├── gameplay.h
 │       ├── performConnection.c
 │       ├── performConnection.h
 │       ├── tcp_connection.c
@@ -141,7 +143,7 @@ Das Projekt wird in mehreren Schritten im Verlauf des Praktikums entwickelt, und
         ├── test_sharedMemory.bash
         └── test_sharedMemory.c
 
-15 directories, 34 files
+15 directories, 36 files
 ```
 <!-- project-structure-end -->
 

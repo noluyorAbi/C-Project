@@ -1,5 +1,7 @@
 #include "performConnection.h"
 
+#include "gameplay.h"
+
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -190,7 +192,47 @@ int performConnection(int sockfd, char *GAME_ID) {
              other_player_name,
              other_player_readiness == 1 ? "bereit" : "noch nicht bereit");
     } else {
-      fprintf(stderr, "Unbekannte Spielerinformation: %s\n", buffer);
+      fprintf(stderr, "Unknown player info: %s\n", buffer);
+    }
+  }
+
+  /*
+  if (sendMessage(sockfd, "PLAY A1:A1\n") != EXIT_SUCCESS) {
+    return EXIT_FAILURE;
+  }
+
+  // Receive MOVEOK
+  if (receiveMessage(sockfd, buffer, BUFFER_SIZE) != EXIT_SUCCESS) {
+      return EXIT_FAILURE;
+  }
+  if (strncmp(buffer, "+ MOVEOK", 8) != 0) {
+      fprintf(stderr, "Invalid move or unexpected response: %s\n", buffer);
+      return EXIT_FAILURE;
+  }
+  */
+
+  // Complete connection protocol
+  while (1) {
+    if (receiveMessage(sockfd, buffer, BUFFER_SIZE) != EXIT_SUCCESS) {
+      return EXIT_FAILURE;
+    }
+
+    if (strncmp(buffer, "+ WAIT", 6) == 0) {
+      if (handleWait(sockfd) != 0) {
+        return EXIT_FAILURE;
+      }
+    } else if (strncmp(buffer, "+ MOVE", 6) == 0) {
+      if (handleMove(sockfd) != 0) {
+        return EXIT_FAILURE;
+      }
+    } else if (strncmp(buffer, "+ GAMEOVER", 10) == 0) {
+      if (handleGameover(sockfd) != 0) {
+        return EXIT_FAILURE;
+      }
+      break; // Exit loop on GAMEOVER
+    } else {
+      fprintf(stderr, "Unrecognized message: %s\n", buffer);
+      return EXIT_FAILURE;
     }
   }
 

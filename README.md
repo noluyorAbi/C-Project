@@ -13,7 +13,6 @@
 <p align="center"><!-- default option, no dependency badges. -->
   <!-- default option, no dependency badges. -->
 
-	
  <a href="https://github.com/noluyorAbi/C-Project/actions/workflows/ci-format.yaml">
     <img src="https://github.com/noluyorAbi/C-Project/actions/workflows/ci-format.yaml/badge.svg" alt="CI - Format Check">
   </a>
@@ -25,7 +24,6 @@
 <a href="https://codescene.io/projects/61375">
 <img src="https://codescene.io/projects/61375/status-badges/code-health" alt="Code Health">
 </a>
-
 
 </p>
 
@@ -116,7 +114,6 @@ Das Projekt wird in mehreren Schritten im Verlauf des Praktikums entwickelt, und
 │   │   ├── shared_memory.c
 │   │   └── shared_memory.h
 │   └── tcp_performConnection
-│       ├── client
 │       ├── gameplay.c
 │       ├── gameplay.h
 │       ├── performConnection.c
@@ -143,7 +140,7 @@ Das Projekt wird in mehreren Schritten im Verlauf des Praktikums entwickelt, und
         ├── test_sharedMemory.bash
         └── test_sharedMemory.c
 
-15 directories, 36 files
+15 directories, 35 files
 ```
 <!-- project-structure-end -->
 
@@ -179,11 +176,13 @@ Bevor Sie beginnen, stellen Sie sicher, dass folgende Voraussetzungen erfüllt s
 1. **Projekt klonen**:
 
 _Github:_
-   ```sh
-   git clone https://github.com/noluyorAbi/C-Project
-   ```
-   
+
+```sh
+git clone https://github.com/noluyorAbi/C-Project
+```
+
 _Gitlab_ (Mirror-Repository von Github)
+
 ```sh
 git clone https://gitlab.lrz.de/sysprakws2425/gruppe18/c-project-mirror
 ```

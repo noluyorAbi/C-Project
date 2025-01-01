@@ -11,39 +11,17 @@
 
 #define BUFFER_SIZE 1024
 
-// Phase: WAIT
-int handleWait(int sockfd) {
-  char buffer[BUFFER_SIZE];
-  if (receiveMessage(sockfd, buffer, BUFFER_SIZE) != EXIT_SUCCESS) {
-    return EXIT_FAILURE;
-  }
-
-  if (strncmp(buffer, "+ WAIT", 6) != 0) {
-    fprintf(stderr, "Unexpected response for WAIT: %s\n", buffer);
-    return EXIT_FAILURE;
-  }
-
+int handleWait(int sockfd, const char *waitLine) {
   if (sendMessage(sockfd, "OKWAIT\n") != EXIT_SUCCESS) {
     return EXIT_FAILURE;
   }
-
   return EXIT_SUCCESS;
 }
 
-// Phase: MOVE
-int handleMove(int sockfd) {
+int handleMove(int sockfd, const char *moveLine) {
   char buffer[BUFFER_SIZE];
 
-  // Receive MOVE command
-  if (receiveMessage(sockfd, buffer, BUFFER_SIZE) != EXIT_SUCCESS) {
-    return EXIT_FAILURE;
-  }
-  if (strncmp(buffer, "+ MOVE", 6) != 0) {
-    fprintf(stderr, "Unexpected response for MOVE: %s\n", buffer);
-    return EXIT_FAILURE;
-  }
-
-  // Receive CAPTURE command
+  // Receive "+ CAPTURE ..." immediately after + MOVE
   if (receiveMessage(sockfd, buffer, BUFFER_SIZE) != EXIT_SUCCESS) {
     return EXIT_FAILURE;
   }
@@ -52,23 +30,24 @@ int handleMove(int sockfd) {
     return EXIT_FAILURE;
   }
 
-  // Receive PIECELIST
+  // Receive a list of pieces until "+ ENDPIECELIST"
   while (1) {
     if (receiveMessage(sockfd, buffer, BUFFER_SIZE) != EXIT_SUCCESS) {
       return EXIT_FAILURE;
     }
-
     if (strncmp(buffer, "+ ENDPIECELIST", 14) == 0) {
       break;
     }
+    // Otherwise, parse piece info
+    // e.g. "+ 0 A1", etc.
   }
 
-  // Send THINKING
+  // Send "THINKING"
   if (sendMessage(sockfd, "THINKING\n") != EXIT_SUCCESS) {
     return EXIT_FAILURE;
   }
 
-  // Receive OKTHINK command
+  // Receive "+ OKTHINK"
   if (receiveMessage(sockfd, buffer, BUFFER_SIZE) != EXIT_SUCCESS) {
     return EXIT_FAILURE;
   }
@@ -77,43 +56,37 @@ int handleMove(int sockfd) {
     return EXIT_FAILURE;
   }
 
+  // TODO: Next, you might eventually send a "PLAY ..." command
+  // if (sendMessage(sockfd, "PLAY A1:A1\n") != EXIT_SUCCESS) { ... }
+  // then handle the response, etc.
+
   return EXIT_SUCCESS;
 }
 
-// Phase: GAMEOVER
-int handleGameover(int sockfd) {
+int handleGameover(int sockfd, const char *gameoverLine) {
   char buffer[BUFFER_SIZE];
 
-  // Receive GAMEOVER
-  if (receiveMessage(sockfd, buffer, BUFFER_SIZE) != EXIT_SUCCESS) {
-    return EXIT_FAILURE;
-  }
-  if (strncmp(buffer, "+ GAMEOVER", 10) != 0) {
-    fprintf(stderr, "Unexpected response for GAMEOVER: %s\n", buffer);
-    return EXIT_FAILURE;
-  }
-
-  // Receive PIECELIST
+  // Receive a list of pieces until "+ ENDPIECELIST"
   while (1) {
     if (receiveMessage(sockfd, buffer, BUFFER_SIZE) != EXIT_SUCCESS) {
       return EXIT_FAILURE;
     }
-
     if (strncmp(buffer, "+ ENDPIECELIST", 14) == 0) {
       break;
     }
+    // parse or ignore piece lines
   }
 
-  // Receive PLAYERXWON messages
+  // Receive lines like "+ PLAYER0WON" or similar
+  // We'll read 2 lines (example) that indicate winner/loser
   for (int i = 0; i < 2; i++) {
     if (receiveMessage(sockfd, buffer, BUFFER_SIZE) != EXIT_SUCCESS) {
       return EXIT_FAILURE;
     }
-
-    fprintf(stdout, "%s", buffer); // Print winning status
+    fprintf(stdout, "%s", buffer);
   }
 
-  // Receive QUIT
+  // Receive "+ QUIT"
   if (receiveMessage(sockfd, buffer, BUFFER_SIZE) != EXIT_SUCCESS) {
     return EXIT_FAILURE;
   }

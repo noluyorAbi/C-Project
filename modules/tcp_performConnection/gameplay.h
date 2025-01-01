@@ -3,13 +3,15 @@
 
 #include <stddef.h>
 
+// TODO MAKE PARAMS
+
 /**
  * @brief Handles the WAIT phase of the game.
  *
  * @param sockfd The socket file descriptor.
  * @return int EXIT_SUCCESS on success, EXIT_FAILURE on error.
  */
-int handleWait(int sockfd);
+int handleWait(int sockfd, const char *waitLine);
 
 /**
  * @brief Handles the MOVE phase of the game.
@@ -17,7 +19,7 @@ int handleWait(int sockfd);
  * @param sockfd The socket file descriptor.
  * @return int EXIT_SUCCESS on success, EXIT_FAILURE on error.
  */
-int handleMove(int sockfd);
+int handleMove(int sockfd, const char *moveLine);
 
 /**
  * @brief Handles the GAMEOVER phase of the game.
@@ -25,6 +27,6 @@ int handleMove(int sockfd);
  * @param sockfd The socket file descriptor.
  * @return int EXIT_SUCCESS on success, EXIT_FAILURE on error.
  */
-int handleGameover(int sockfd);
+int handleGameover(int sockfd, const char *gameoverLine);
 
 #endif

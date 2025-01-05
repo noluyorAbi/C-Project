@@ -1,5 +1,7 @@
 #include "performConnection.h"
 
+#include "gameplay.h"
+
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -80,9 +82,11 @@ int receiveMessage(int sockfd, char *buffer, size_t buffer_size) {
  *
  * @param sockfd The socket file descriptor for the TCP connection.
  * @param GAME_ID The game ID to use for the connection.
+ * @param piece_data Buffer for storing game state data.
+ * @param shm Pointer to second SHM segment.
  * @return int EXIT_SUCCESS on success, EXIT_FAILURE on error.
  */
-int performConnection(int sockfd, char *GAME_ID) {
+int performConnection(int sockfd, char *GAME_ID, char *piece_data, char *shm) {
   char buffer[BUFFER_SIZE];
 
   // 1. Receive greeting from server
@@ -190,7 +194,32 @@ int performConnection(int sockfd, char *GAME_ID) {
              other_player_name,
              other_player_readiness == 1 ? "bereit" : "noch nicht bereit");
     } else {
-      fprintf(stderr, "Unbekannte Spielerinformation: %s\n", buffer);
+      fprintf(stderr, "Unknown player info: %s\n", buffer);
+    }
+  }
+
+  // Complete connection protocol
+  while (1) {
+    if (receiveMessage(sockfd, buffer, BUFFER_SIZE) != EXIT_SUCCESS) {
+      return EXIT_FAILURE;
+    }
+
+    if (strncmp(buffer, "+ WAIT", 6) == 0) {
+      if (handleWait(sockfd, buffer) != 0) {
+        return EXIT_FAILURE;
+      }
+    } else if (strncmp(buffer, "+ MOVE", 6) == 0) {
+      if (handleMove(sockfd, buffer, piece_data, shm) != 0) {
+        return EXIT_FAILURE;
+      }
+    } else if (strncmp(buffer, "+ GAMEOVER", 10) == 0) {
+      if (handleGameover(sockfd, buffer, piece_data, shm) != 0) {
+        return EXIT_FAILURE;
+      }
+      break; // Exit loop on GAMEOVER
+    } else {
+      fprintf(stderr, "Unrecognized message: %s\n", buffer);
+      return EXIT_FAILURE;
     }
   }
 

@@ -11,18 +11,26 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
 #include <sys/wait.h>
 #include <unistd.h>
+
+#define INITIAL_SIZE 1024
 
 // ========================= GLOBAL VARIABLES ==========================
 int pipe_fd[2]; // Pipe file descriptors: [0] read, [1] write
 
+int shmid; // ID of second SHM segment for the game state
+char *shm; // Pointer to second SHM segment
+
 // ========================= FUNCTION PROTOTYPES =======================
 static int initialize_game(int argc, char *argv[], GameConfig *game_config,
                            Config *app_config);
+static void createBoardMemory(); // Creates second SHM segment
 static int create_pipe();
-static int fork_processes(GameConfig game_config);
-static void run_connector(GameConfig game_config);
+static int fork_processes(GameConfig game_config, char *piece_data);
+static void run_connector(GameConfig game_config, char *piece_data);
 static void run_thinker(pid_t pid);
 
 /**********************************************************
@@ -37,13 +45,21 @@ int main(int argc, char *argv[]) {
     return EXIT_FAILURE;
   }
 
+  // Create first SHM segment??
+
+  // Create second SHM segment
+  createBoardMemory();
+
+  // Create buffer to store piece data (game state data)
+  char piece_data[INITIAL_SIZE] = "";
+
   // Create an inter-process communication pipe
   if (create_pipe() != 0) {
     return EXIT_FAILURE;
   }
 
   // Fork processes for connector and thinker logic
-  return fork_processes(game_config);
+  return fork_processes(game_config, piece_data);
 }
 /**********************************************************
  *                   END OF MAIN FUNCTION                 *
@@ -88,6 +104,29 @@ static int initialize_game(int argc, char *argv[], GameConfig *game_config,
 }
 
 /**
+ * @brief Creates a SHM segment for the game state
+ */
+static void createBoardMemory() {
+  // Creates second SHM segment
+  shmid = shmget(IPC_PRIVATE, sizeof(char) * INITIAL_SIZE, IPC_CREAT | 0666);
+  if (shmid < 0) {
+    fprintf(stderr, "Shared memory creation for board failed.");
+    exit(EXIT_FAILURE);
+  } else {
+    fprintf(stdout, "Shared memory creation for board was sucessful.\n");
+  }
+
+  // Attaches SHM segment to the process
+  shm = (char *) shmat(shmid, NULL, 0);
+  if (shm == (char *) -1) {
+    fprintf(stderr, "shmat failed.");
+    exit(EXIT_FAILURE);
+  } else {
+    fprintf(stdout, "shmat was sucessful.\n");
+  }
+}
+
+/**
  * @brief Create a pipe for inter-process communication
  * @return 0 on success, -1 on failure
  */
@@ -102,9 +141,10 @@ static int create_pipe() {
 /**
  * @brief Fork processes and manage their execution
  * @param game_config The configuration for the game
+ * @param piece_data Buffer for storing game state data
  * @return EXIT_SUCCESS on success, EXIT_FAILURE on failure
  */
-static int fork_processes(GameConfig game_config) {
+static int fork_processes(GameConfig game_config, char *piece_data) {
   pid_t pid = fork();
   if (pid < 0) {
     fprintf(stderr, "Fork failed: %s\n", strerror(errno));
@@ -112,7 +152,7 @@ static int fork_processes(GameConfig game_config) {
   }
 
   if (pid == 0) {
-    run_connector(game_config);
+    run_connector(game_config, piece_data);
   } else {
     run_thinker(pid);
   }
@@ -123,15 +163,16 @@ static int fork_processes(GameConfig game_config) {
 /**
  * @brief Run the connector process logic
  * @param game_config The configuration for the game
+ * @param piece_data Buffer for storing game state data
  */
-static void run_connector(GameConfig game_config) {
+static void run_connector(GameConfig game_config, char *piece_data) {
   // Close the read end of the pipe in the connector process
   if (close(pipe_fd[0]) == -1) {
     fprintf(stderr, "Connector: Error closing read end of the pipe: %s\n",
             strerror(errno));
   }
 
-  if (createConnection(game_config.game_id) != 0) {
+  if (createConnection(game_config.game_id, piece_data, shm) != 0) {
     fprintf(stderr, "Connector: Failed to establish connection.\n");
     // Close the write end of the pipe only if createConnection fails
     if (close(pipe_fd[1]) == -1) {
@@ -183,6 +224,24 @@ static void run_thinker(pid_t pid) {
   if (close(pipe_fd[0]) == -1) {
     fprintf(stderr, "Thinker: Error closing read end of the pipe: %s\n",
             strerror(errno));
+  }
+
+  fprintf(stdout, "Game state in second SHM segment:\n%s\n", shm);
+
+  // Detach the second SHM segment
+  if (shmdt(shm) == -1) {
+    fprintf(stderr, "shmdt failed.");
+    exit(EXIT_FAILURE);
+  } else {
+    fprintf(stdout, "shmdt was sucessful.\n");
+  }
+
+  // Deallocate the second SHM segment
+  if (shmctl(shmid, IPC_RMID, NULL) == -1) {
+    fprintf(stderr, "shmctl failed.");
+    exit(EXIT_FAILURE);
+  } else {
+    fprintf(stdout, "shmctl was sucessful.\n");
   }
 }
 /**********************************************************

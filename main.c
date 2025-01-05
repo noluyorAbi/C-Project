@@ -296,6 +296,12 @@ static void run_thinker(pid_t pid) {
     }
   }
 
+  // Close the read end of the pipe in the thinker process
+  if (close(pipe_fd[0]) == -1) {
+    fprintf(stderr, "Thinker: Error closing read end of the pipe: %s\n",
+            strerror(errno));
+  }
+
   // Cleanup code (unreachable in current infinite loop)
   // Detach the SHM segment
   if (shmdt(shm) == -1) {
@@ -313,3 +319,6 @@ static void run_thinker(pid_t pid) {
     fprintf(stdout, "Thinker: shmctl was successful.\n");
   }
 }
+/**********************************************************
+ *                END OF HELPER FUNCTIONS                 *
+ *********************************************************/

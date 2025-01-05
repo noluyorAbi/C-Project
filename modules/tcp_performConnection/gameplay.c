@@ -3,6 +3,7 @@
 #include "performConnection.h"
 
 #include <errno.h>
+#include <signal.h> // For signal handling
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -61,13 +62,22 @@ int handleMove(int sockfd, const char *moveLine, char *piece_data, char *shm) {
     return EXIT_FAILURE;
   }
 
+  // TODO: Send "PLAY" with think()-method, this was just a test
+  // DEBUG: WORKS
+  // THIS SHOULD BE SENT AS A SIGNAL TO THE THINKER
+  // Replace the following sendMessage with signal sending
   /*
-    // TODO: Send "PLAY" with think()-method, this was just a test
-    DEBUG: WORKS
-    if (sendMessage(sockfd, "PLAY B6\n") != EXIT_SUCCESS) {
+  if (sendMessage(sockfd, "PLAY B6\n") != EXIT_SUCCESS) {
       return EXIT_FAILURE;
-    }
-   */
+  }
+  */
+
+  // Send SIGUSR1 signal to the Thinker process
+  if (kill(getppid(), SIGUSR1) == -1) {
+    fprintf(stderr, "Gameplay: Failed to send SIGUSR1 to Thinker: %s\n",
+            strerror(errno));
+    return EXIT_FAILURE;
+  }
 
   // Receive "+ MOVEOK"
   if (receiveMessage(sockfd, buffer, BUFFER_SIZE) != EXIT_SUCCESS) {

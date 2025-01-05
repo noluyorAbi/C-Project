@@ -45,8 +45,6 @@ int handleMove(int sockfd, const char *moveLine, char *piece_data, char *shm) {
                piece_data); // Save collected data in SHM segment
       break;
     }
-    // Otherwise, parse piece info
-    // e.g. "+ 0 A1", etc.
   }
 
   // Send "THINKING"
@@ -63,9 +61,19 @@ int handleMove(int sockfd, const char *moveLine, char *piece_data, char *shm) {
     return EXIT_FAILURE;
   }
 
-  // TODO: Next, you might eventually send a "PLAY ..." command
-  // if (sendMessage(sockfd, "PLAY A1:A1\n") != EXIT_SUCCESS) { ... }
-  // then handle the response, etc.
+  // TODO: Send "PLAY" with think()-method, this was just a test
+  if (sendMessage(sockfd, "PLAY A1\n") != EXIT_SUCCESS) {
+    return EXIT_FAILURE;
+  }
+
+  // Receive "+ MOVEOK"
+  if (receiveMessage(sockfd, buffer, BUFFER_SIZE) != EXIT_SUCCESS) {
+    return EXIT_FAILURE;
+  }
+  if (strncmp(buffer, "+ MOVEOK", 8) != 0) {
+    fprintf(stderr, "Unexpected response for MOVEOK: %s\n", buffer);
+    return EXIT_FAILURE;
+  }
 
   return EXIT_SUCCESS;
 }
@@ -89,7 +97,6 @@ int handleGameover(int sockfd, const char *gameoverLine, char *piece_data,
                piece_data); // Save collected data in SHM segment
       break;
     }
-    // parse or ignore piece lines
   }
 
   // Receive lines like "+ PLAYER0WON" or similar

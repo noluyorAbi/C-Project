@@ -284,8 +284,8 @@ static void run_thinker(pid_t pid) {
       // Check if the SHM flag is set
       if (shm_ptr->flag) {
         // Print the received game state in ASCII
-        printf("Thinker: Received game state:\n%s\n", shm_ptr->game_data);
-
+        printf("Thinker: Received game state:\n%s\n",
+               shm_ptr->game_data - sizeof(int));
         // Placeholder for move calculation logic
         // Example:
         // printf("Thinker: Calculated move: A1:B4\n");

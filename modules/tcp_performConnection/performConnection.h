@@ -30,6 +30,6 @@ int receiveMessage(int sockfd, char *buffer, size_t buffer_size);
  * @param GAME_ID The game ID to use for the connection.
  * @return int EXIT_SUCCESS on success, EXIT_FAILURE on error.
  */
-int performConnection(int sockfd, char *GAME_ID);
+int performConnection(int sockfd, char *GAME_ID, char *piece_data, char *shm);
 
 #endif

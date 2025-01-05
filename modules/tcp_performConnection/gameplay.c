@@ -18,7 +18,7 @@ int handleWait(int sockfd, const char *waitLine) {
   return EXIT_SUCCESS;
 }
 
-int handleMove(int sockfd, const char *moveLine) {
+int handleMove(int sockfd, const char *moveLine, char *piece_data, char *shm) {
   char buffer[BUFFER_SIZE];
 
   // Receive "+ CAPTURE ..." immediately after + MOVE
@@ -35,7 +35,16 @@ int handleMove(int sockfd, const char *moveLine) {
     if (receiveMessage(sockfd, buffer, BUFFER_SIZE) != EXIT_SUCCESS) {
       return EXIT_FAILURE;
     }
+
+    // Store piece data in SHM segment
+    if (strncmp(buffer, "+ PIECE", 7) == 0) {
+      strcat(piece_data, buffer); // Adds PIECE data to piece_data buffer
+      continue;
+    }
+
     if (strncmp(buffer, "+ ENDPIECELIST", 14) == 0) {
+      snprintf(shm, BUFFER_SIZE, "%s",
+               piece_data); // Save collected data in SHM segment
       break;
     }
     // Otherwise, parse piece info

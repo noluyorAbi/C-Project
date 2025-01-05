@@ -21,7 +21,7 @@
 // ========================= GLOBAL VARIABLES ==========================
 int pipe_fd[2]; // Pipe file descriptors: [0] read, [1] write
 
-int shmid; // Second SHM segment ID for game state
+int shmid; // ID of second SHM segment for the game state
 char *shm; // Pointer to second SHM segment
 
 // ========================= FUNCTION PROTOTYPES =======================
@@ -50,7 +50,7 @@ int main(int argc, char *argv[]) {
   // Create second SHM segment
   createBoardMemory();
 
-  // Create buffer to store piece data
+  // Create buffer to store piece data (game state data)
   char piece_data[INITIAL_SIZE] = "";
 
   // Create an inter-process communication pipe
@@ -103,6 +103,9 @@ static int initialize_game(int argc, char *argv[], GameConfig *game_config,
   return 0;
 }
 
+/**
+ * @brief Creates a SHM segment for the game state
+ */
 static void createBoardMemory() {
   // Creates second SHM segment
   shmid = shmget(IPC_PRIVATE, sizeof(char) * INITIAL_SIZE, IPC_CREAT | 0666);
@@ -113,6 +116,7 @@ static void createBoardMemory() {
     fprintf(stdout, "Shared memory creation for board was sucessful.\n");
   }
 
+  // Attaches SHM segment to the process
   shm = (char *) shmat(shmid, NULL, 0);
   if (shm == (char *) -1) {
     fprintf(stderr, "shmat failed.");
@@ -137,6 +141,7 @@ static int create_pipe() {
 /**
  * @brief Fork processes and manage their execution
  * @param game_config The configuration for the game
+ * @param piece_data Buffer for storing game state data
  * @return EXIT_SUCCESS on success, EXIT_FAILURE on failure
  */
 static int fork_processes(GameConfig game_config, char *piece_data) {
@@ -158,6 +163,7 @@ static int fork_processes(GameConfig game_config, char *piece_data) {
 /**
  * @brief Run the connector process logic
  * @param game_config The configuration for the game
+ * @param piece_data Buffer for storing game state data
  */
 static void run_connector(GameConfig game_config, char *piece_data) {
   // Close the read end of the pipe in the connector process
@@ -220,9 +226,9 @@ static void run_thinker(pid_t pid) {
             strerror(errno));
   }
 
-  fprintf(stdout, "Data in second SHM segment:\n%s\n", shm);
+  fprintf(stdout, "Game state in second SHM segment:\n%s\n", shm);
 
-  // Disconnects SHM
+  // Detach the second SHM segment
   if (shmdt(shm) == -1) {
     fprintf(stderr, "shmdt failed.");
     exit(EXIT_FAILURE);
@@ -230,7 +236,7 @@ static void run_thinker(pid_t pid) {
     fprintf(stdout, "shmdt was sucessful.\n");
   }
 
-  // Frees SHM segment
+  // Deallocate the second SHM segment
   if (shmctl(shmid, IPC_RMID, NULL) == -1) {
     fprintf(stderr, "shmctl failed.");
     exit(EXIT_FAILURE);

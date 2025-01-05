@@ -82,6 +82,8 @@ int receiveMessage(int sockfd, char *buffer, size_t buffer_size) {
  *
  * @param sockfd The socket file descriptor for the TCP connection.
  * @param GAME_ID The game ID to use for the connection.
+ * @param piece_data Buffer for storing game state data.
+ * @param shm Pointer to second SHM segment.
  * @return int EXIT_SUCCESS on success, EXIT_FAILURE on error.
  */
 int performConnection(int sockfd, char *GAME_ID, char *piece_data, char *shm) {
@@ -196,28 +198,6 @@ int performConnection(int sockfd, char *GAME_ID, char *piece_data, char *shm) {
     }
   }
 
-  /*
-  // Store piece data in SHM segment
-  while (1) {
-    if (receiveMessage(sockfd, buffer, BUFFER_SIZE) != EXIT_SUCCESS) {
-      return EXIT_FAILURE;
-    }
-
-    if (strncmp(buffer, "+ PIECELIST", 11) == 0) {
-      strcat(piece_data, buffer); // Adds data to piece_data buffer
-      continue;
-    }
-
-    if (strncmp(buffer, "+ ENDPIECELIST", 14) == 0) {
-      snprintf(shm, BUFFER_SIZE, "%s",
-               piece_data); // Save collected data in SHM segment
-      break;
-    }
-
-    strcat(piece_data, buffer); // Adds PIECE data
-  }
-  */
-
   // Complete connection protocol
   while (1) {
     if (receiveMessage(sockfd, buffer, BUFFER_SIZE) != EXIT_SUCCESS) {
@@ -233,7 +213,7 @@ int performConnection(int sockfd, char *GAME_ID, char *piece_data, char *shm) {
         return EXIT_FAILURE;
       }
     } else if (strncmp(buffer, "+ GAMEOVER", 10) == 0) {
-      if (handleGameover(sockfd, buffer) != 0) {
+      if (handleGameover(sockfd, buffer, piece_data, shm) != 0) {
         return EXIT_FAILURE;
       }
       break; // Exit loop on GAMEOVER

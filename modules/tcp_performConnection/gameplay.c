@@ -61,10 +61,14 @@ int handleMove(int sockfd, const char *moveLine, char *piece_data, char *shm) {
     return EXIT_FAILURE;
   }
 
+/* 
   // TODO: Send "PLAY" with think()-method, this was just a test
-  if (sendMessage(sockfd, "PLAY A1\n") != EXIT_SUCCESS) {
+  DEBUG: WORKS
+  if (sendMessage(sockfd, "PLAY B6\n") != EXIT_SUCCESS) {
     return EXIT_FAILURE;
   }
+ */
+
 
   // Receive "+ MOVEOK"
   if (receiveMessage(sockfd, buffer, BUFFER_SIZE) != EXIT_SUCCESS) {

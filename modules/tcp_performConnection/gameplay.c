@@ -35,13 +35,11 @@ int handleMove(int sockfd, const char *moveLine, char *piece_data, char *shm) {
     if (receiveMessage(sockfd, buffer, BUFFER_SIZE) != EXIT_SUCCESS) {
       return EXIT_FAILURE;
     }
-
     // Store piece data in second SHM segment
     if (strncmp(buffer, "+ PIECE", 7) == 0) {
       strcat(piece_data, buffer); // Adds PIECE data to piece_data buffer
       continue;
     }
-
     if (strncmp(buffer, "+ ENDPIECELIST", 14) == 0) {
       snprintf(shm, BUFFER_SIZE, "%s",
                piece_data); // Save collected data in SHM segment
@@ -81,13 +79,11 @@ int handleGameover(int sockfd, const char *gameoverLine, char *piece_data,
     if (receiveMessage(sockfd, buffer, BUFFER_SIZE) != EXIT_SUCCESS) {
       return EXIT_FAILURE;
     }
-
     // Store piece data in SHM segment
     if (strncmp(buffer, "+ PIECE", 7) == 0) {
       strcat(piece_data, buffer); // Adds PIECE data to piece_data buffer
       continue;
     }
-
     if (strncmp(buffer, "+ ENDPIECELIST", 14) == 0) {
       snprintf(shm, BUFFER_SIZE, "%s",
                piece_data); // Save collected data in SHM segment

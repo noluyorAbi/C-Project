@@ -32,7 +32,9 @@ typedef struct {
   int playerCount;
   pid_t thinkerPID;
   pid_t connectorPID;
-  Player players[]; // Flexible array member for players
+  char gameState[1024]; // To store the game state
+  int readyFlag;        // 1 = new game state available, 0 = processed
+  Player players[];     // Flexible array for player data
 } SharedMemory;
 
 // Function declarations

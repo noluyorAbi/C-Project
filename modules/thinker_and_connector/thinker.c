@@ -1,55 +1,85 @@
-// thinker.c
-
 #include "thinker.h"
+
+#include "../shared_memory/shared_memory.h"
 
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/shm.h>
 #include <unistd.h>
 
-#define MOVE "A1\n" // Simulated move
+static SharedMemory *shm = NULL;
+volatile sig_atomic_t think_flag = 0;
 
-int pipe_fd; // Global pipe file descriptor for writing
-
-/**
- * Signal handler for SIGUSR1. Activates the Thinker to generate a move.
- */
-void sigusr1_handler(int signum) {
-  printf("Thinker: Received SIGUSR1 signal.\n");
-
-  // Simulate generating a move
-  const char *move = MOVE;
-  printf("Thinker: Generating move: %s", move);
-
-  // Write the move to the pipe
-  if (write(pipe_fd, move, strlen(move)) == -1) {
-    perror("Thinker: Failed to write move to pipe");
-    exit(EXIT_FAILURE);
+void think(int pipe_fd) {
+  if (shm == NULL) {
+    fprintf(stderr, "[THINKER] Shared memory not attached. Exiting.\n");
+    return;
   }
 
-  printf("Thinker: Move sent to Connector via pipe.\n");
+  if (shm->readyFlag == 1) {
+    printf("[THINKER] Processing game state: %s\n", shm->gameState);
+    shm->readyFlag = 0;
+
+    const char *move = "MOVE A1\n";
+    write(pipe_fd, move, strlen(move));
+    printf("[THINKER] Move written to pipe: %s\n", move);
+  } else {
+    printf("[THINKER] No new game state to process.\n");
+  }
 }
 
-int main() {
-  // Close unused read end of the pipe
-  close(pipe_fd);
+void signal_handler(int signum) {
+  if (signum == SIGUSR1) {
+    think_flag = 1;
+  }
+}
 
-  // Set up signal handler for SIGUSR1
-  struct sigaction sa;
-  sa.sa_handler = sigusr1_handler;
-  sa.sa_flags = 0;
-  sigemptyset(&sa.sa_mask);
+void signalCleanup(int signum) {
+  fprintf(stderr, "[THINKER] Caught signal %d. Cleaning up and exiting...\n",
+          signum);
+  if (shm != NULL) {
+    detachSharedMemory(shm);
+  }
+  exit(EXIT_SUCCESS);
+}
 
-  if (sigaction(SIGUSR1, &sa, NULL) == -1) {
-    perror("Thinker: Failed to set up SIGUSR1 handler");
-    exit(EXIT_FAILURE);
+int main(int argc, char *argv[]) {
+  if (argc < 2) {
+    fprintf(stderr, "[THINKER] Usage: %s <pipe_write_fd>\n", argv[0]);
+    return EXIT_FAILURE;
   }
 
-  printf("Thinker: Waiting for signals...\n");
+  int pipe_fd = atoi(argv[1]);
+
+  int shmid = shmget(SHM_KEY, sizeof(SharedMemory), 0666);
+  if (shmid == -1) {
+    perror("[THINKER] Failed to retrieve shared memory ID");
+    return EXIT_FAILURE;
+  }
+
+  shm = attachSharedMemory(shmid);
+  if (shm == NULL) {
+    fprintf(stderr, "[THINKER] Failed to attach to shared memory.\n");
+    return EXIT_FAILURE;
+  }
+
+  signal(SIGUSR1, signal_handler);
+  signal(SIGTERM, signalCleanup);
+  signal(SIGINT, signalCleanup);
+
+  printf("[THINKER] Ready and waiting for SIGUSR1 signals...\n");
+
   while (1) {
-    pause(); // Wait for SIGUSR1 signal
+    pause();
+    if (think_flag) {
+      think(pipe_fd);
+      think_flag = 0;
+    }
   }
 
-  return 0;
+  // Cleanup before exiting (if the loop is broken)
+  detachSharedMemory(shm);
+  return EXIT_SUCCESS;
 }

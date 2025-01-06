@@ -12,6 +12,7 @@ TESTS_DIR = tests
 
 # Ziele
 TARGET = $(BIN_DIR)/sysprak-client
+THINKER_TARGET = $(BIN_DIR)/Thinker
 LIBRARY = $(LIB_DIR)/libsysprak.a
 
 # Mock-Daten
@@ -35,7 +36,8 @@ CLANG_FORMAT = clang-format
 # Phony-Ziele
 .PHONY: all run clean format tidy test update_readme
 
-all: $(TARGET) update_readme
+# Build All
+all: $(TARGET) $(THINKER_TARGET) update_readme
 
 # Kompilieren von Bibliotheksobjektdateien
 $(BUILD_DIR)/%.o: %.c
@@ -56,6 +58,14 @@ $(LIBRARY): $(LIB_OBJ)
 $(TARGET): $(MAIN_OBJ) $(LIBRARY)
 	@mkdir -p $(BIN_DIR)
 	$(CC) $(CFLAGS) -o $@ $^
+
+# Thinker Binary
+$(THINKER_TARGET): $(BUILD_DIR)/modules/thinker_and_connector/thinker.o $(LIBRARY)
+	@mkdir -p $(BIN_DIR)
+	$(CC) $(CFLAGS) -o $@ $^
+
+# Dependencies for thinker.o
+$(BUILD_DIR)/modules/thinker_and_connector/thinker.o: modules/thinker_and_connector/thinker.c modules/shared_memory/shared_memory.h
 
 # Formatieren der Quellcode-Dateien
 format:
@@ -84,7 +94,6 @@ clean:
 		fi; \
 	done
 
-
 # Clang-Tidy-Ziel - Analysiert alle Quellcode-Dateien mit clang-tidy
 tidy:
 	@echo "Führe clang-tidy auf Quellcode-Dateien aus..."
@@ -95,8 +104,9 @@ tidy:
 	@echo "clang-tidy-Analyse erfolgreich abgeschlossen."
 
 # Ausführen des Hauptprogramms mit Mock-Daten
-run: $(TARGET)
-	echo "\n"
+run: $(TARGET) $(THINKER_TARGET)
+	@echo "\n"
+	./$(THINKER_TARGET) &
 	./$(TARGET) $(MOCK_ARGS)
 
 # Kompilieren und Ausführen von Tests

@@ -1,84 +1,65 @@
-// connector.c
-
 #include "connector.h"
 
+#include "../shared_memory/shared_memory.h"
 #include "../tcp_performConnection/performConnection.h"
+#include "thinker.h"
 
-#include <errno.h>
-#include <fcntl.h>
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/select.h> // Use select instead of epoll
+#include <sys/ipc.h>
+#include <sys/select.h>
+#include <sys/shm.h>
 #include <sys/socket.h>
 #include <unistd.h>
 
-#define BUFFER_SIZE 1024
+static SharedMemory *shm = NULL;
+static int shmid = -1;
 
-/**
- * Reads moves from the pipe and sends them to the server.
- */
-void handle_pipe_input(int sockfd, int pipe_fd) {
-  char move[BUFFER_SIZE];
-  ssize_t bytes_read = read(pipe_fd, move, sizeof(move) - 1);
-
-  if (bytes_read > 0) {
-    move[bytes_read] = '\0'; // Null-terminate the move
-    printf("Connector: Received move from Thinker: %s", move);
-
-    // Send move to server
-    if (sendMessage(sockfd, move) != EXIT_SUCCESS) {
-      fprintf(stderr, "Connector: Failed to send move to server.\n");
-      exit(EXIT_FAILURE);
-    }
-    printf("Connector: Move sent to server.\n");
-  } else if (bytes_read == 0) {
-    printf("Connector: Pipe closed by Thinker.\n");
-    exit(EXIT_SUCCESS);
-  } else {
-    perror("Connector: Failed to read from pipe");
-    exit(EXIT_FAILURE);
+void signalCleanup(int signum) {
+  fprintf(stderr, "[CONNECTOR] Caught signal %d. Cleaning up and exiting...\n",
+          signum);
+  if (shm != NULL) {
+    cleanupSharedMemory(shmid, shm);
   }
+  exit(EXIT_SUCCESS);
 }
 
-/**
- * Runs the Connector logic.
- */
 void run_connector(int pipe_fd, int sockfd) {
-  fd_set read_fds; // Set of file descriptors to monitor
+  signal(SIGTERM, signalCleanup);
+  signal(SIGINT, signalCleanup);
 
-  printf("Connector: Waiting for input...\n");
+  shmid = shmget(SHM_KEY, sizeof(SharedMemory), 0666);
+  if (shmid == -1) {
+    perror("[CONNECTOR] Failed to retrieve shared memory ID");
+    return;
+  }
+
+  shm = attachSharedMemory(shmid);
+  if (shm == NULL) {
+    fprintf(stderr, "[CONNECTOR] Failed to attach to shared memory.\n");
+    return;
+  }
 
   while (1) {
-    FD_ZERO(&read_fds);         // Clear the set
-    FD_SET(pipe_fd, &read_fds); // Add pipe_fd to the set
-    FD_SET(sockfd, &read_fds);  // Add sockfd to the set
+    char buffer[BUFFER_SIZE];
+    int bytes_received = recv(sockfd, buffer, BUFFER_SIZE, 0);
+    if (bytes_received > 0) {
+      buffer[bytes_received] = '\0';
+      printf("[CONNECTOR] Received data: %s\n", buffer);
 
-    int max_fd = (pipe_fd > sockfd) ? pipe_fd : sockfd;
+      strncpy(shm->gameState, buffer, sizeof(shm->gameState) - 1);
+      shm->readyFlag = 1;
 
-    // Use select to monitor file descriptors
-    int ret = select(max_fd + 1, &read_fds, NULL, NULL, NULL);
-    if (ret == -1) {
-      perror("Connector: select failed");
-      exit(EXIT_FAILURE);
-    }
-
-    // Check if pipe_fd is ready to read
-    if (FD_ISSET(pipe_fd, &read_fds)) {
-      handle_pipe_input(sockfd, pipe_fd);
-    }
-
-    // Check if sockfd is ready to read
-    if (FD_ISSET(sockfd, &read_fds)) {
-      char buffer[BUFFER_SIZE];
-      if (receiveMessage(sockfd, buffer, sizeof(buffer)) != EXIT_SUCCESS) {
-        fprintf(stderr, "Connector: Server connection error.\n");
-        exit(EXIT_FAILURE);
-      }
-      printf("Connector: Server response: %s", buffer);
+      kill(shm->thinkerPID, SIGUSR1);
+    } else if (bytes_received == 0) {
+      printf("[CONNECTOR] Connection closed by server.\n");
+      break;
+    } else {
+      perror("[CONNECTOR] Error receiving data");
     }
   }
 
-  close(sockfd);
-  close(pipe_fd);
+  cleanupSharedMemory(shmid, shm);
 }

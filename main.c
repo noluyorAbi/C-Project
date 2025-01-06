@@ -44,6 +44,13 @@ int main(int argc, char *argv[]) {
     return EXIT_FAILURE;
   }
 
+  // Create Shared Memory
+  int shmid = createSharedMemory(game_config.player_number);
+  if (shmid == -1) {
+    perror("Failed to create shared memory");
+    return EXIT_FAILURE;
+  }
+
   pid_t thinker_pid = fork();
   if (thinker_pid < 0) {
     perror("Fork failed for Thinker");
@@ -53,7 +60,13 @@ int main(int argc, char *argv[]) {
   if (thinker_pid == 0) {
     // Thinker process
     close(pipe_fd[0]); // Close unused read end
-    execl("./thinker", "./thinker", NULL);
+
+    // Convert pipe_fd[1] to string
+    char pipe_write_fd_str[10];
+    sprintf(pipe_write_fd_str, "%d", pipe_fd[1]);
+
+    // Pass pipe_write_fd to Thinker
+    execl("./bin/Thinker", "Thinker", pipe_write_fd_str, NULL);
 
     // If execl fails
     perror("execl failed for Thinker");

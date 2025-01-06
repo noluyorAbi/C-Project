@@ -11,10 +11,6 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#define BUFFER_SIZE 1024
-#define HOSTNAME "sysprak.priv.lab.nm.ifi.lmu.de"
-#define PORT "1357"
-
 /**
  * @brief Sends a message over the socket.
  *

@@ -1,6 +1,10 @@
 #ifndef PERFORMCONNECTION_H
 #define PERFORMCONNECTION_H
 
+#define BUFFER_SIZE 1024
+#define HOSTNAME "sysprak.priv.lab.nm.ifi.lmu.de"
+#define PORT "1357"
+
 #include <stddef.h>
 
 /**

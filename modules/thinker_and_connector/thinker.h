@@ -1,13 +1,24 @@
 #ifndef THINKER_H
 #define THINKER_H
 
-#include <signal.h>
+#define SHM_KEY 12345
 
 /**
- * @brief Signal handler for SIGUSR1 to trigger the Thinker logic.
- *
- * @param signum The signal number (SIGUSR1).
+ * @brief Processes game state from shared memory and writes a move to the pipe.
+ * @param pipe_fd The file descriptor of the write-end of the pipe.
  */
-void sigusr1_handler(int signum);
+void think(int pipe_fd);
+
+/**
+ * @brief Signal handler for SIGUSR1 to trigger thinking.
+ * @param signum Signal number.
+ */
+void signal_handler(int signum);
+
+/**
+ * @brief Cleans up resources when a termination signal is received.
+ * @param signum Signal number.
+ */
+void signalCleanup(int signum);
 
 #endif // THINKER_H

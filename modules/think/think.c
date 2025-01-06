@@ -40,7 +40,7 @@ int think(char *gameState) {
     printf("Position %d: %s\n", i, positions[i]);
   }
 
-  // Switch case um Steine zu printen 
+  // Switch case um Steine zu printen
   for (int i = 0; i < pieceCount; i++) {
     size_t len = strlen(positions[i]);
     if (len >= 2) {

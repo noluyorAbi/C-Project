@@ -7,7 +7,9 @@
 
 int think(char *gameState) {
   int board[25];
-
+  for (int i = 0; i < 25; i++) {
+    board[i] = 2; // Replace 42 with your desired value
+  }
   printf("Thinker: TEST Received game state:\n%s\n", gameState);
 
   // Array zur Speicherung der Positionen
@@ -343,24 +345,24 @@ int think(char *gameState) {
   }
 
   printf("\n"
-         " %c--------%c--------%c\n"
+         " %d--------%d--------%d\n"
          " |        |        |\n"
-         " |  %c-----5-----%c  |\n"
+         " |  %d-----%d-----%d  |\n"
          " |  |     |     |  |\n"
-         " |  |  %c--8--%c  |  |\n"
-         " |  |  |     |  |  |\n"
-         "%c-%c-%c    %c-%c-%c\n"
-         " |  |  |     |  |  |\n"
-         " |  |  %c--17--%c |\n"
+         " |  |   %d-%d-%d   |  |\n"
+         " |  |   |   |   |  |\n"
+         " %d--%d---%d   %d---%d--%d\n"
+         " |  |   |   |   |  |\n"
+         " |  |   %d-%d-%d   |  |\n"
          " |  |     |     |  |\n"
-         " |  %c----20----%c |\n"
+         " |  %d-----%d-----%d  |\n"
          " |        |        |\n"
-         " %c-------%c-------%c\n"
+         " %d--------%d--------%d\n"
          "\n",
-         board[0], board[1], board[2], board[3], board[5], board[6], board[8],
-         board[9], board[10], board[11], board[12], board[13], board[14],
-         board[15], board[17], board[18], board[20], board[21], board[22],
-         board[23]);
+         board[0], board[1], board[2], board[3], board[4], board[5], board[6],
+         board[7], board[8], board[9], board[10], board[11], board[12],
+         board[13], board[14], board[15], board[16], board[17], board[18],
+         board[19], board[20], board[21], board[22], board[23]);
 
   return EXIT_SUCCESS;
 }

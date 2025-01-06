@@ -47,9 +47,215 @@ int think(char *gameState) {
       switch (positions[i][len - 6]) {
       case '0':
         printf("Der Buchstabe im String '%s' ist '0'\n", positions[i]);
+        switch (positions[i][len - 2]) {
+        case 'A':
+          printf("Der Buchstabe im String '%s' ist 'A'\n", positions[i]);
+          switch (positions[i][len - 1]) {
+          case '0':
+            printf("Wert ist A0\n");
+            break;
+          case '1':
+            printf("Wert ist A1\n");
+            break;
+          case '2':
+            printf("Wert ist A2\n");
+            break;
+          case '3':
+            printf("Wert ist A3\n");
+            break;
+          case '4':
+            printf("Wert ist A4\n");
+            break;
+          case '5':
+            printf("Wert ist A5\n");
+            break;
+          case '6':
+            printf("Wert ist A6\n");
+            break;
+          case '7':
+            printf("Wert ist A7\n");
+            break;
+          default:
+            printf("Wert ist nicht zwischen 0 und 7\n");
+            break;
+          }
+          break;
+        case 'B':
+          printf("Der Buchstabe im String '%s' ist 'B'\n", positions[i]);
+          switch (positions[i][len - 1]) {
+          case '0':
+            printf("Wert ist B0\n");
+            break;
+          case '1':
+            printf("Wert ist B1\n");
+            break;
+          case '2':
+            printf("Wert ist B2\n");
+            break;
+          case '3':
+            printf("Wert ist B3\n");
+            break;
+          case '4':
+            printf("Wert ist B4\n");
+            break;
+          case '5':
+            printf("Wert ist B5\n");
+            break;
+          case '6':
+            printf("Wert ist B6\n");
+            break;
+          case '7':
+            printf("Wert ist B7\n");
+            break;
+          default:
+            printf("Wert ist nicht zwischen 0 und 7\n");
+            break;
+          }
+          break;
+        case 'C':
+          printf("Der Buchstabe im String '%s' ist 'C'\n", positions[i]);
+          switch (positions[i][len - 1]) {
+          case '0':
+            printf("Wert ist C0\n");
+            break;
+          case '1':
+            printf("Wert ist C1\n");
+            break;
+          case '2':
+            printf("Wert ist C2\n");
+            break;
+          case '3':
+            printf("Wert ist C3\n");
+            break;
+          case '4':
+            printf("Wert ist C4\n");
+            break;
+          case '5':
+            printf("Wert ist C5\n");
+            break;
+          case '6':
+            printf("Wert ist C6\n");
+            break;
+          case '7':
+            printf("Wert ist C7\n");
+            break;
+          default:
+            printf("Wert ist nicht zwischen 0 und 7\n");
+            break;
+          }
+          break;
+        default:
+          printf("Der Buchstabe im String '%s' ist weder 'A', 'B' noch 'C' (er "
+                 "ist '%c')\n",
+                 positions[i], positions[i][len - 2]);
+          break;
+        }
         break;
       case '1':
         printf("Der Buchstabe im String '%s' ist '1'\n", positions[i]);
+        switch (positions[i][len - 2]) {
+        case 'A':
+          printf("Der Buchstabe im String '%s' ist 'A'\n", positions[i]);
+          switch (positions[i][len - 1]) {
+          case '0':
+            printf("Wert ist A0\n");
+            break;
+          case '1':
+            printf("Wert ist A1\n");
+            break;
+          case '2':
+            printf("Wert ist A2\n");
+            break;
+          case '3':
+            printf("Wert ist A3\n");
+            break;
+          case '4':
+            printf("Wert ist A4\n");
+            break;
+          case '5':
+            printf("Wert ist A5\n");
+            break;
+          case '6':
+            printf("Wert ist A6\n");
+            break;
+          case '7':
+            printf("Wert ist A7\n");
+            break;
+          default:
+            printf("Wert ist nicht zwischen 0 und 7\n");
+            break;
+          }
+          break;
+        case 'B':
+          printf("Der Buchstabe im String '%s' ist 'B'\n", positions[i]);
+          switch (positions[i][len - 1]) {
+          case '0':
+            printf("Wert ist B0\n");
+            break;
+          case '1':
+            printf("Wert ist B1\n");
+            break;
+          case '2':
+            printf("Wert ist B2\n");
+            break;
+          case '3':
+            printf("Wert ist B3\n");
+            break;
+          case '4':
+            printf("Wert ist B4\n");
+            break;
+          case '5':
+            printf("Wert ist B5\n");
+            break;
+          case '6':
+            printf("Wert ist B6\n");
+            break;
+          case '7':
+            printf("Wert ist B7\n");
+            break;
+          default:
+            printf("Wert ist nicht zwischen 0 und 7\n");
+            break;
+          }
+          break;
+        case 'C':
+          printf("Der Buchstabe im String '%s' ist 'C'\n", positions[i]);
+          switch (positions[i][len - 1]) {
+          case '0':
+            printf("Wert ist C0\n");
+            break;
+          case '1':
+            printf("Wert ist C1\n");
+            break;
+          case '2':
+            printf("Wert ist C2\n");
+            break;
+          case '3':
+            printf("Wert ist C3\n");
+            break;
+          case '4':
+            printf("Wert ist C4\n");
+            break;
+          case '5':
+            printf("Wert ist C5\n");
+            break;
+          case '6':
+            printf("Wert ist C6\n");
+            break;
+          case '7':
+            printf("Wert ist C7\n");
+            break;
+          default:
+            printf("Wert ist nicht zwischen 0 und 7\n");
+            break;
+          }
+          break;
+        default:
+          printf("Der Buchstabe im String '%s' ist weder 'A', 'B' noch 'C' (er "
+                 "ist '%c')\n",
+                 positions[i], positions[i][len - 2]);
+          break;
+        }
         break;
       default:
         printf(

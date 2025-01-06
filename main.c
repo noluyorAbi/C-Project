@@ -316,8 +316,9 @@ static void run_thinker(pid_t pid) {
             strerror(errno));
   }
 
-  // Cleanup code (unreachable in current infinite loop)
-  // Detach the SHM segment
+  // TODO: Beides in eine einzelne Funktion packen, um vor jedem EXIT_FAILURE
+  // aufuzurufen? Cleanup code (unreachable in current infinite loop) Detach the
+  // SHM segment
   if (shmdt(shm) == -1) {
     fprintf(stderr, "Thinker: shmdt failed.\n");
     exit(EXIT_FAILURE);

@@ -213,8 +213,8 @@ static int fork_processes(GameConfig game_config, char *piece_data) {
  * @param piece_data Buffer for storing game state.
  */
 static void run_connector(GameConfig game_config, char *piece_data) {
-  // Close the read end of the pipe in the connector process
-  if (close(pipe_fd[0]) == -1) {
+  // Close the write end of the pipe in the connector process
+  if (close(pipe_fd[1]) == -1) {
     fprintf(stderr, "Connector: Error closing read end of the pipe: %s\n",
             strerror(errno));
   }
@@ -243,8 +243,8 @@ static void run_connector(GameConfig game_config, char *piece_data) {
             strerror(errno));
   }
 
-  // Close the write end of the pipe immediately after successful connection
-  if (close(pipe_fd[1]) == -1) {
+  // Close the read end of the pipe immediately after successful connection
+  if (close(pipe_fd[0]) == -1) {
     fprintf(stderr, "Connector: Error closing write end of the pipe: %s\n",
             strerror(errno));
     exit(EXIT_FAILURE);
@@ -259,8 +259,8 @@ static void run_connector(GameConfig game_config, char *piece_data) {
  * @param pid The process ID of the connector process.
  */
 static void run_thinker(pid_t pid) {
-  // Close the write end of the pipe in the thinker process
-  if (close(pipe_fd[1]) == -1) {
+  // Close the read end of the pipe in the thinker process
+  if (close(pipe_fd[0]) == -1) {
     fprintf(stderr, "Thinker: Error closing write end of the pipe: %s\n",
             strerror(errno));
   }
@@ -312,8 +312,8 @@ static void run_thinker(pid_t pid) {
     fprintf(stdout, "Connector terminated by signal %d.\n", WTERMSIG(status));
   }
 
-  // Close the read end of the pipe in the thinker process
-  if (close(pipe_fd[0]) == -1) {
+  // Close the write end of the pipe in the thinker process
+  if (close(pipe_fd[1]) == -1) {
     fprintf(stderr, "Thinker: Error closing read end of the pipe: %s\n",
             strerror(errno));
   }

@@ -1,3 +1,5 @@
+#include "think.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -365,5 +367,13 @@ int think(char *gameState) {
          board[13], board[14], board[15], board[16], board[17], board[18],
          board[19], board[20], board[21], board[22], board[23]);
 
+  // Write to the pipe
+  char *move = "PLAY A1\n";
+  if (write(pipe_fd[1], move, strlen(move)) == -1) {
+    fprintf(stderr, "Thinker: Failed to write to the pipe.\n");
+    return EXIT_FAILURE;
+  }
+
+  fprintf(stdout, "Thinker: Wrote to the pipe sucessfully.\n");
   return EXIT_SUCCESS;
 }

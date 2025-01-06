@@ -113,13 +113,16 @@ Das Projekt wird in mehreren Schritten im Verlauf des Praktikums entwickelt, und
 │   ├── shared_memory
 │   │   ├── shared_memory.c
 │   │   └── shared_memory.h
-│   └── tcp_performConnection
-│       ├── gameplay.c
-│       ├── gameplay.h
-│       ├── performConnection.c
-│       ├── performConnection.h
-│       ├── tcp_connection.c
-│       └── tcp_connection.h
+│   ├── tcp_performConnection
+│   │   ├── gameplay.c
+│   │   ├── gameplay.h
+│   │   ├── performConnection.c
+│   │   ├── performConnection.h
+│   │   ├── tcp_connection.c
+│   │   └── tcp_connection.h
+│   └── think
+│       ├── think.c
+│       └── think.h
 ├── scripts
 │   ├── Readme.md
 │   ├── setup_precommit
@@ -140,7 +143,7 @@ Das Projekt wird in mehreren Schritten im Verlauf des Praktikums entwickelt, und
         ├── test_sharedMemory.bash
         └── test_sharedMemory.c
 
-15 directories, 35 files
+16 directories, 37 files
 ```
 <!-- project-structure-end -->
 

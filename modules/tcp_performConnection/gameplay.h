@@ -3,13 +3,15 @@
 
 #include <stddef.h>
 
-// TODO MAKE PARAMS
-
 /**
- * @brief Handles the WAIT phase of the game.
+ * @brief Processes the WAIT phase of the game, where the server
+ *        waits for further instructions or player actions.
  *
- * @param sockfd The socket file descriptor.
- * @return int EXIT_SUCCESS on success, EXIT_FAILURE on error.
+ * @param sockfd The file descriptor for the socket used for communication.
+ * @param waitLine A string containing the WAIT phase-specific input or
+ * commands.
+ * @return int Returns EXIT_SUCCESS if the operation completes successfully,
+ *             or EXIT_FAILURE if an error occurs.
  */
 int handleWait(int sockfd, const char *waitLine);
 

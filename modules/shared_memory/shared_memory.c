@@ -9,6 +9,10 @@
 #include <sys/shm.h>
 #include <unistd.h>
 
+// TODO QUESTION
+//? We have this but never initalize it also i do not really
+//? see the usecase is this shared memory only there to load the gamaedata??
+
 /**
  * Creates a shared memory segment for the specified number of players.
  *

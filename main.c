@@ -5,6 +5,7 @@
 #include "./modules/shared_memory/shared_memory.c"
 #include "./modules/tcp_performConnection/performConnection.h"
 #include "./modules/tcp_performConnection/tcp_connection.h"
+#include "./modules/think/think.h"
 
 #include <arpa/inet.h> // For ntohs()
 #include <errno.h>
@@ -39,7 +40,7 @@ shm_data_t *shm_ptr = NULL;
 // Global flag for signal handling
 volatile sig_atomic_t sig_received = 0;
 
-// ========================= SIGNAL HANDLER =======================
+// ========================= SIGNAL HANDLER ===========na============
 /**
  * @brief Signal handler for the Thinker process.
  *        Sets the sig_received flag when SIGUSR1 is received.
@@ -72,6 +73,8 @@ int main(int argc, char *argv[]) {
   if (initialize_game(argc, argv, &game_config, &app_config) != 0) {
     return EXIT_FAILURE;
   }
+
+  // Create first SHM segment??
 
   // Create second SHM segment
   createBoardMemory();
@@ -283,17 +286,28 @@ static void run_thinker(pid_t pid) {
 
       // Check if the SHM flag is set
       if (shm_ptr->flag) {
-        // Print the received game state in ASCII
-        printf("Thinker: Received game state:\n%s\n",
-               shm_ptr->game_data - sizeof(int));
-        // Placeholder for move calculation logic
-        // Example:
-        // printf("Thinker: Calculated move: A1:B4\n");
-
+        think(shm_ptr->game_data);
         // Reset the SHM flag after processing
         shm_ptr->flag = 0;
       }
     }
+  }
+
+  int status;
+  if (waitpid(pid, &status, 0) == -1) {
+    fprintf(stderr, "Thinker: Error waiting for child process: %s\n",
+            strerror(errno));
+    if (close(pipe_fd[0]) == -1) {
+      fprintf(stderr, "Thinker: Error closing read end of the pipe: %s\n",
+              strerror(errno));
+    }
+    exit(EXIT_FAILURE); // Exit thinker if waitpid fails
+  }
+
+  if (WIFEXITED(status)) {
+    printf("Connector exited with status %d.\n", WEXITSTATUS(status));
+  } else if (WIFSIGNALED(status)) {
+    printf("Connector terminated by signal %d.\n", WTERMSIG(status));
   }
 
   // Close the read end of the pipe in the thinker process

@@ -38,12 +38,18 @@ int handleMove(int sockfd, const char *moveLine, char *piece_data) {
     }
     // Store piece data in second SHM segment
     if (strncmp(buffer, "+ PIECE", 7) == 0) {
-      strcat(piece_data, buffer); // Adds PIECE data to piece_data buffer
+      // Use strncat to prevent buffer overflow
+      // Calculate remaining space in piece_data
+      size_t current_length = strlen(piece_data);
+      size_t remaining_space =
+        BUFFER_SIZE - current_length - 1; // -1 for null terminator
+      strncat(piece_data, buffer, remaining_space);
       continue;
     }
     if (strncmp(buffer, "+ ENDPIECELIST", 14) == 0) {
-      snprintf(shm, BUFFER_SIZE, "%s",
-               piece_data); // Save collected data in SHM segment
+      // Save collected data in SHM segment
+      // Use snprintf to ensure no overflow
+      snprintf(shm, BUFFER_SIZE, "%s", piece_data);
       break;
     }
   }

@@ -19,7 +19,7 @@ int handleWait(int sockfd, const char *waitLine) {
   return EXIT_SUCCESS;
 }
 
-int handleMove(int sockfd, const char *moveLine, char *piece_data, char *shm) {
+int handleMove(int sockfd, const char *moveLine, char *piece_data) {
   char buffer[BUFFER_SIZE];
 
   // Receive "+ CAPTURE ..." immediately after + MOVE
@@ -91,8 +91,7 @@ int handleMove(int sockfd, const char *moveLine, char *piece_data, char *shm) {
   return EXIT_SUCCESS;
 }
 
-int handleGameover(int sockfd, const char *gameoverLine, char *piece_data,
-                   char *shm) {
+int handleGameover(int sockfd, const char *gameoverLine, char *piece_data) {
   char buffer[BUFFER_SIZE];
 
   // Receive a list of pieces until "+ ENDPIECELIST"

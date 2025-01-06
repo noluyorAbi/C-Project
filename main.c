@@ -108,13 +108,13 @@ int main(int argc, char *argv[]) {
  *********************************************************/
 
 /**
- * @brief Initialize the game configuration and application configuration
+ * @brief Initialize the game configuration and application configuration.
  *
- * @param argc Argument count
- * @param argv Argument vector
- * @param game_config Pointer to GameConfig structure
- * @param app_config Pointer to Config structure
- * @return int 0 on success, -1 on failure
+ * @param argc Argument count.
+ * @param argv Argument vector.
+ * @param game_config Pointer to GameConfig structure.
+ * @param app_config Pointer to Config structure.
+ * @return int 0 on success, -1 on failure.
  */
 static int initialize_game(int argc, char *argv[], GameConfig *game_config,
                            Config *app_config) {
@@ -141,7 +141,7 @@ static int initialize_game(int argc, char *argv[], GameConfig *game_config,
 }
 
 /**
- * @brief Creates a SHM segment for the game state
+ * @brief Creates a SHM segment for the game state.
  */
 static void createBoardMemory() {
   // Create second SHM segment with read and write permissions
@@ -169,9 +169,9 @@ static void createBoardMemory() {
 }
 
 /**
- * @brief Create a pipe for inter-process communication
+ * @brief Creates a pipe for inter-process communication.
  *
- * @return int 0 on success, -1 on failure
+ * @return int 0 on success, -1 on failure.
  */
 static int create_pipe() {
   if (pipe(pipe_fd) == -1) {
@@ -182,11 +182,11 @@ static int create_pipe() {
 }
 
 /**
- * @brief Fork processes and manage their execution
+ * @brief Fork processes and manage their execution.
  *
- * @param game_config The configuration for the game
- * @param piece_data  Buffer for storing game state data
- * @return int EXIT_SUCCESS on success, EXIT_FAILURE on failure
+ * @param game_config The configuration for the game.
+ * @param piece_data Buffer for storing game state.
+ * @return int EXIT_SUCCESS on success, EXIT_FAILURE on failure.
  */
 static int fork_processes(GameConfig game_config, char *piece_data) {
   pid_t pid = fork();
@@ -207,10 +207,10 @@ static int fork_processes(GameConfig game_config, char *piece_data) {
 }
 
 /**
- * @brief Run the connector process logic
+ * @brief Run the connector process logic.
  *
- * @param game_config The configuration for the game
- * @param piece_data  Buffer for storing game state data
+ * @param game_config The configuration for the game.
+ * @param piece_data Buffer for storing game state.
  */
 static void run_connector(GameConfig game_config, char *piece_data) {
   // Close the read end of the pipe in the connector process
@@ -219,8 +219,8 @@ static void run_connector(GameConfig game_config, char *piece_data) {
             strerror(errno));
   }
 
-  // Establish connection and populate piece_data and SHM
-  if (createConnection(game_config.game_id, piece_data, shm) != 0) {
+  // Establish connection
+  if (createConnection(game_config.game_id, piece_data) != 0) {
     fprintf(stderr, "Connector: Failed to establish connection.\n");
     // Close the write end of the pipe only if createConnection fails
     if (close(pipe_fd[1]) == -1) {
@@ -254,9 +254,9 @@ static void run_connector(GameConfig game_config, char *piece_data) {
 }
 
 /**
- * @brief Run the thinker process logic
+ * @brief Run the thinker process logic.
  *
- * @param pid The process ID of the connector process
+ * @param pid The process ID of the connector process.
  */
 static void run_thinker(pid_t pid) {
   // Close the write end of the pipe in the thinker process
@@ -271,11 +271,11 @@ static void run_thinker(pid_t pid) {
   sa.sa_flags = 0;               // No special flags
   sigemptyset(&sa.sa_mask);      // No signals blocked during handler
   if (sigaction(SIGUSR1, &sa, NULL) == -1) {
-    perror("Thinker: sigaction failed");
+    fprintf(stderr, "Thinker: sigaction failed.\n");
     exit(EXIT_FAILURE);
   }
 
-  printf("Thinker: Ready and waiting for signals...\n");
+  fprintf(stdout, "Thinker: Ready and waiting for signals...\n");
 
   // Main loop to wait for signals
   while (1) {
@@ -286,6 +286,7 @@ static void run_thinker(pid_t pid) {
 
       // Check if the SHM flag is set
       if (shm_ptr->flag) {
+        // Make a move
         think(shm_ptr->game_data);
         // Reset the SHM flag after processing
         shm_ptr->flag = 0;
@@ -293,6 +294,7 @@ static void run_thinker(pid_t pid) {
     }
   }
 
+  // Wait for connector to terminate
   int status;
   if (waitpid(pid, &status, 0) == -1) {
     fprintf(stderr, "Thinker: Error waiting for child process: %s\n",
@@ -305,9 +307,9 @@ static void run_thinker(pid_t pid) {
   }
 
   if (WIFEXITED(status)) {
-    printf("Connector exited with status %d.\n", WEXITSTATUS(status));
+    fprintf(stdout, "Connector exited with status %d.\n", WEXITSTATUS(status));
   } else if (WIFSIGNALED(status)) {
-    printf("Connector terminated by signal %d.\n", WTERMSIG(status));
+    fprintf(stdout, "Connector terminated by signal %d.\n", WTERMSIG(status));
   }
 
   // Close the read end of the pipe in the thinker process

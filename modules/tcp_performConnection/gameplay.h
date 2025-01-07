@@ -3,7 +3,8 @@
 
 #include <stddef.h>
 
-extern char *shm; // Pointer to second SHM segment
+extern char *shm;      // Pointer to second SHM segment
+extern int pipe_fd[2]; // Pipe for the interprocess-communication
 
 /**
  * @brief Handles the WAIT Phase of the game.
@@ -14,6 +15,16 @@ extern char *shm; // Pointer to second SHM segment
  * @return int EXIT_SUCCESS on success, EXIT_FAILURE on error.
  */
 int handleWait(int sockfd, const char *waitLine);
+
+/**
+ * @brief Checks for a signal from the Thinker process to determine when the
+ *        game state has been updated or when the Thinker is ready to make a
+ * move.
+ *
+ * @param sockfd The socket file descriptor.
+ * @return int EXIT_SUCCESS on success, EXIT_FAILURE on error.
+ */
+int checkForSignal(int sockfd);
 
 /**
  * @brief Handles the MOVE phase of the game.

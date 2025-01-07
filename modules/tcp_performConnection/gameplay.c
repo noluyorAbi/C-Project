@@ -19,6 +19,83 @@ int handleWait(int sockfd, const char *waitLine) {
   return EXIT_SUCCESS;
 }
 
+int checkForSignal(int sockfd) {
+  fd_set read_fds;
+  struct timeval timeout;
+  char buffer[BUFFER_SIZE];
+
+  while (1) {
+    // Set the timeout for select (e.g., 5 seconds)
+    timeout.tv_sec = 5;
+    timeout.tv_usec = 0;
+
+    // Clear the file descriptor set and add the socket and pipe
+    FD_ZERO(&read_fds);
+    FD_SET(sockfd, &read_fds);     // Gameserver socket
+    FD_SET(pipe_fd[0], &read_fds); // Pipe from Thinker (read end)
+
+    // Wait for either the socket or pipe to be ready to read
+    int ready_fds = select(FD_SETSIZE, &read_fds, NULL, NULL, &timeout);
+    if (ready_fds == -1) {
+      fprintf(stdout, "Select.\n");
+      return EXIT_FAILURE;
+    }
+
+    if (ready_fds == 0) {
+      // Timeout - nothing to read
+      fprintf(stdout, "Timeout occurred. No data received.\n");
+      continue;
+    }
+
+    // Check if the Gameserver socket has data
+    if (FD_ISSET(sockfd, &read_fds)) {
+      if (receiveMessage(sockfd, buffer, BUFFER_SIZE) != EXIT_SUCCESS) {
+        return EXIT_FAILURE;
+      }
+      if (strncmp(buffer, "- TIMEOUT", 9) == 0) {
+        fprintf(stderr, "Received timeout from server: %s\n", buffer);
+        return EXIT_FAILURE;
+      } else if (strncmp(buffer, "- ERROR", 7) == 0) {
+        fprintf(stderr, "Error from the server: %s\n", buffer);
+        return EXIT_FAILURE;
+      } else {
+        // Handle other server messages as needed
+        fprintf(stdout, "Received from server: %s\n", buffer);
+      }
+    }
+
+    // Check if the Thinker pipe has data
+    if (FD_ISSET(pipe_fd[0], &read_fds)) { // Read from pipe_fd[0]
+      int n = read(pipe_fd[0], buffer,
+                   sizeof(buffer)); // Read from the pipe's read end
+      if (n == -1) {
+        fprintf(stderr, "Read from pipe.\n");
+        return EXIT_FAILURE;
+      } else if (n == 0) {
+        fprintf(stdout, "Thinker has closed the pipe.\n");
+        return EXIT_FAILURE;
+      } else if (n == 1) {
+        fprintf(stdout, "Connector: Read %d bytes from the pipe sucessfully.\n",
+                n);
+      }
+
+      // Process the move sent by the Thinker
+      buffer[n] = '\0';
+      // fprintf(stdout, "Received move from Thinker: %s\n", buffer);
+
+      // Send the move to the server following the protocol
+      if (sendMessage(sockfd, buffer) != EXIT_SUCCESS) {
+        return EXIT_FAILURE;
+      }
+
+      // Exit the loop after successfully sending the move
+      break;
+    }
+  }
+
+  return EXIT_SUCCESS;
+}
+
 int handleMove(int sockfd, const char *moveLine, char *piece_data) {
   char buffer[BUFFER_SIZE];
 
@@ -68,22 +145,15 @@ int handleMove(int sockfd, const char *moveLine, char *piece_data) {
     return EXIT_FAILURE;
   }
 
-  // TODO: Send "PLAY" with think()-method, this was just a test
-  // DEBUG: WORKS
-  // THIS SHOULD BE SENT AS A SIGNAL TO THE THINKER
-  // Replace the following sendMessage with signal sending
-  /*
-  if (sendMessage(sockfd, "PLAY B6\n") != EXIT_SUCCESS) {
-      return EXIT_FAILURE;
-  }
-  */
-
   // Send SIGUSR1 signal to the Thinker process
   if (kill(getppid(), SIGUSR1) == -1) {
     fprintf(stderr, "Gameplay: Failed to send SIGUSR1 to Thinker: %s\n",
             strerror(errno));
     return EXIT_FAILURE;
   }
+
+  // Check TIMEOUT and pipe to send MOVE
+  checkForSignal(sockfd);
 
   // Receive "+ MOVEOK"
   if (receiveMessage(sockfd, buffer, BUFFER_SIZE) != EXIT_SUCCESS) {

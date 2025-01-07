@@ -3,7 +3,7 @@
 
 #include <stddef.h>
 
-extern int pipe_fd[2]; // Pipe for the interprocess-communication.
+extern int pipe_fd[2]; // Pipe for the interprocess-communication
 
 /**
  * @brief Calculates the next move.

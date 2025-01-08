@@ -96,8 +96,6 @@ Das Projekt wird in mehreren Schritten im Verlauf des Praktikums entwickelt, und
 │   └── sysprak-client
 ├── client.conf
 ├── compile_commands.json
-├── docs
-│   └── README.md
 ├── lib
 │   └── README.md
 ├── main.c
@@ -105,21 +103,28 @@ Das Projekt wird in mehreren Schritten im Verlauf des Praktikums entwickelt, und
 ├── modules
 │   ├── README.md
 │   ├── args_parser
+│   │   ├── README.md
 │   │   ├── args_parser.c
 │   │   ├── args_parser.h
 │   │   ├── config.c
 │   │   ├── config.h
 │   │   └── constants.h
 │   ├── shared_memory
+│   │   ├── README.md
 │   │   ├── shared_memory.c
 │   │   └── shared_memory.h
-│   └── tcp_performConnection
-│       ├── gameplay.c
-│       ├── gameplay.h
-│       ├── performConnection.c
-│       ├── performConnection.h
-│       ├── tcp_connection.c
-│       └── tcp_connection.h
+│   ├── tcp_performConnection
+│   │   ├── README.md
+│   │   ├── gameplay.c
+│   │   ├── gameplay.h
+│   │   ├── performConnection.c
+│   │   ├── performConnection.h
+│   │   ├── tcp_connection.c
+│   │   └── tcp_connection.h
+│   └── think
+│       ├── README.md
+│       ├── think.c
+│       └── think.h
 ├── scripts
 │   ├── Readme.md
 │   ├── setup_precommit
@@ -131,6 +136,7 @@ Das Projekt wird in mehreren Schritten im Verlauf des Praktikums entwickelt, und
 └── tests
     ├── README.md
     ├── test_clientConf
+    │   ├── README.md
     │   └── test_clientConf.sh
     ├── test_performConnection
     │   ├── README.md
@@ -140,7 +146,7 @@ Das Projekt wird in mehreren Schritten im Verlauf des Praktikums entwickelt, und
         ├── test_sharedMemory.bash
         └── test_sharedMemory.c
 
-15 directories, 35 files
+15 directories, 41 files
 ```
 <!-- project-structure-end -->
 

@@ -82,11 +82,10 @@ int receiveMessage(int sockfd, char *buffer, size_t buffer_size) {
  *
  * @param sockfd The socket file descriptor for the TCP connection.
  * @param GAME_ID The game ID to use for the connection.
- * @param piece_data Buffer for storing game state data.
- * @param shm Pointer to second SHM segment.
+ * @param piece_data Buffer for storing game state.
  * @return int EXIT_SUCCESS on success, EXIT_FAILURE on error.
  */
-int performConnection(int sockfd, char *GAME_ID, char *piece_data, char *shm) {
+int performConnection(int sockfd, char *GAME_ID, char *piece_data) {
   char buffer[BUFFER_SIZE];
 
   // 1. Receive greeting from server
@@ -209,11 +208,11 @@ int performConnection(int sockfd, char *GAME_ID, char *piece_data, char *shm) {
         return EXIT_FAILURE;
       }
     } else if (strncmp(buffer, "+ MOVE", 6) == 0) {
-      if (handleMove(sockfd, buffer, piece_data, shm) != 0) {
+      if (handleMove(sockfd, buffer, piece_data) != 0) {
         return EXIT_FAILURE;
       }
     } else if (strncmp(buffer, "+ GAMEOVER", 10) == 0) {
-      if (handleGameover(sockfd, buffer, piece_data, shm) != 0) {
+      if (handleGameover(sockfd, buffer, piece_data) != 0) {
         return EXIT_FAILURE;
       }
       break; // Exit loop on GAMEOVER

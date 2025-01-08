@@ -1,120 +1,55 @@
-## Bash Script: Update README.md with Project Structure
+# Ordnername: update_readme
 
-### Overview
+## Inhalt des Ordners
 
-This script automates the process of updating the `README.md` file in a project with the latest directory structure using the `tree` command. It ensures consistency and ease of documentation for project structures, especially useful for collaborative projects.
+Dieser Ordner enthält das Bash-Skript `update_readme.sh` sowie eine `README.md`-Datei. Diese Dateien dienen zur Automatisierung der Aktualisierung von Projektdokumentationen.
 
----
+### Dateien
 
-### Features
+- **update_readme.sh**: Ein Shell-Skript, das den Inhalt der `README.md`-Datei mit der aktuellen Verzeichnisstruktur des Projekts aktualisiert.
 
-1. **Terminal-Friendly Colors**:
-   - Informational (`INFO`), error (`ERROR`), and update (`UPDATE`) messages are color-coded for better visibility.
+- **README.md**: Die Dokumentation des Skripts selbst sowie dessen Gebrauchsanweisung.
+
+## Funktionalität
+
+Das Hauptziel des `update_readme.sh`-Skripts besteht darin, die `README.md`-Datei eines Projekts automatisch mit der neuesten Verzeichnisstruktur zu aktualisieren. Dies geschieht durch den Einsatz des `tree`-Befehls, der die Verzeichnisstruktur generiert. Das Skript bietet folgende Hauptfunktionen:
+
+1. **Terminalfreundliche Ausgabe**: Informative Nachrichten, Fehler- und Update-Meldungen werden farblich hervorgehoben, um die Lesbarkeit zu verbessern.
    
-2. **Quiet Mode**:
-   - Suppresses non-essential messages with the `-q` or `--quiet` option.
+2. **Still-Modus**: Mit dem `-q` oder `--quiet` Parameter können nicht-essentielle Nachrichten unterdrückt werden.
 
-3. **Automatic Installation**:
-   - Detects if the `tree` command is missing and attempts to install it using the appropriate package manager (`apt-get`, `yum`, `dnf`, `pacman`, or `brew`).
+3. **Automatische Installation von `tree`**: Das Skript überprüft, ob der `tree`-Befehl vorhanden ist, und versucht ihn, falls nötig, mit Hilfe eines unterstützten Paketmanagers (wie `apt-get`, `yum`, `dnf`, `pacman` oder `brew`) zu installieren.
 
-4. **Customizable Exclusions**:
-   - Excludes specific files and directories (e.g., `.git`, `node_modules`, etc.) from the `tree` output.
+4. **Benutzerdefinierte Ausschlüsse**: Bestimmte Dateien und Verzeichnisse können vom `tree`-Output ausgeschlossen werden, um unerwünschte Elemente in der Struktur zu vermeiden.
 
-5. **Markdown Update**:
-   - Searches for specific markers (`<!-- project-structure-start -->` and `<!-- project-structure-end -->`) in the `README.md` file and replaces the content between them with the latest project structure.
+5. **Aktualisierung der `README.md`**: Das Skript sucht nach vordefinierten Markern in der `README.md` und ersetzt den Inhalt zwischen diesen mit der neuesten Verzeichnisstruktur.
 
-6. **Error Handling**:
-   - Provides meaningful error messages and exits gracefully if required conditions are not met (e.g., `README.md` missing or markers not found).
+6. **Robuste Fehlerbehandlung**: Das Skript gibt informative Fehlermeldungen aus und beendet sich mit einem Fehlercode, wenn Voraussetzungen nicht erfüllt sind, beispielsweise wenn die `README.md` fehlt oder Marker nicht gefunden werden.
 
-7. **Temporary File Management**:
-   - Ensures cleanup of temporary files even if the script is interrupted.
+7. **Temporäre Dateiverwaltung**: Temporäre Dateien, die während der Ausführung erzeugt werden, werden am Ende gelöscht, selbst wenn das Skript unterbrochen wird.
 
----
+## Abhängigkeiten
 
-### Usage
+Das Skript benötigt den `tree`-Befehl zur Erstellung der Verzeichnisstruktur. Sollte dieser nicht installiert sein, versucht das Skript, diesen selbst zu installieren. Ein unterstützter Paketmanager wie `apt-get`, `yum`, `dnf`, `pacman` oder `brew` ist Voraussetzung für die automatische Installation.
 
-```bash
+## Verwendung
+
+Zur Ausführung des Skripts nutzen Sie folgendes Kommando im Terminal:
+
+bash
 ./update_readme.sh [OPTIONS]
-```
 
-#### Options
-- `-q, --quiet`  
-  Suppresses non-essential informational messages.
+### Optionen
 
-- `-h, --help`  
-  Displays usage information.
+- `-q, --quiet`: Unterdrückt nicht-essentielle Informationsnachrichten.
+- `-h, --help`: Zeigt die Verwendung und verfügbaren Optionen des Skripts an.
 
----
+## Interne Struktur
 
-### Example
+Das Skript navigiert zunächst zum Projektstammverzeichnis, überprüft und installiert bei Bedarf den `tree`-Befehl, generiert die Verzeichnisstruktur und aktualisiert die `README.md`-Datei zwischen den Markern `<!-- project-structure-start -->` und `<!-- project-structure-end -->`.
 
-Run the script to update the `README.md` file in the project root:
+## Sonstiges
 
-```bash
-./update_readme.sh
-```
+Das Skript behandelt Fehlermeldungen präzise und gibt bei Problemen deutliche Hinweise aus. Beispielhafte Fehlermeldungen umfassen das Fehlen der `README.md` oder der benötigten Marker darin. Sollten diese Probleme auftreten, ist eine manuelle Prüfung und Korrektur nötig, um eine erfolgreiche Ausführung zu gewährleisten.
 
-Suppress output except for errors:
-
-```bash
-./update_readme.sh --quiet
-```
-
----
-
-### Prerequisites
-
-- The `tree` command must be installed (handled by the script if missing).
-- A `README.md` file must exist in the project root.
-- The `README.md` must contain the following markers:
-  ```markdown
-  <!-- project-structure-start -->
-  ```sh
-  # The project structure will be inserted here
-  ```
-  <!-- project-structure-end -->
-  ```
-
----
-
-### How It Works
-
-1. **Navigates to Project Root**:  
-   The script identifies the project root directory relative to its own location and navigates there.
-
-2. **Checks for `tree` Command**:  
-   If `tree` is not installed, it uses the system's package manager to install it.
-
-3. **Generates Directory Structure**:  
-   Excludes unnecessary files/directories and writes the structure to a temporary file.
-
-4. **Updates `README.md`**:  
-   Finds the defined markers in `README.md` and replaces the content between them with the updated structure.
-
-5. **Cleans Up**:  
-   Deletes temporary files and displays a success message.
-
----
-
-### Error Handling
-
-- **Missing `README.md`**:  
-  Displays: `"README.md not found in project root."`
-
-- **Markers Missing in `README.md`**:  
-  Displays: `"Markers '<!-- project-structure-start -->' and/or '<!-- project-structure-end -->' not found in README.md."`
-
-- **Unsupported Package Manager**:  
-  Displays: `"No supported package manager found. Please install 'tree' manually."`
-
----
-
-### Sample Output
-
-```plaintext
-[INFO] Navigated to project root: /path/to/project
-[INFO] Generating project structure...
-[INFO] Updating README.md with the latest project structure...
-[UPDATE] README.md has been successfully updated.
-```
-
+Bitte beachten Sie, dass diese Dokumentation auf den bereitgestellten Informationen basiert und für weitergehende Änderungen oder Anpassungen des Skripts spezifische Kenntnisse der Bash-Programmierung erforderlich sein können.

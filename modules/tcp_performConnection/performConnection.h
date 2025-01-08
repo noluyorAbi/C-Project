@@ -28,10 +28,9 @@ int receiveMessage(int sockfd, char *buffer, size_t buffer_size);
  *
  * @param sockfd The file descriptor for the TCP connection.
  * @param GAME_ID The game ID to use for the connection.
- * @param piece_data Buffer for storing game state data.
- * @param shm Pointer to second SHM segment.
+ * @param piece_data Buffer for storing game state.
  * @return int EXIT_SUCCESS on success, EXIT_FAILURE on error.
  */
-int performConnection(int sockfd, char *GAME_ID, char *piece_data, char *shm);
+int performConnection(int sockfd, char *GAME_ID, char *piece_data);
 
 #endif

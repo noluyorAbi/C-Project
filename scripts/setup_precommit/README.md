@@ -1,78 +1,43 @@
-### README for `setup_pre_commit.sh`
+# setup_precommit
 
-#### Overview
+## Inhalt des Ordners
 
-`setup_pre_commit.sh` is a helper script designed to set up a Git `pre-commit` hook for your repository. The `pre-commit` hook ensures that every commit is checked for code formatting and that the `README.md` file is updated with the latest project structure.
+Der Ordner `setup_precommit` enthält ein Skript zur Einrichtung eines Git-`pre-commit`-Hooks sowie eine zugehörige README-Datei. Der Zweck dieses Ordners ist es, sicherzustellen, dass alle Codeeinreichungen in einem Git-Repository vor dem Commit bestimmten Qualitätsstandards entsprechen und dass die Dokumentation der Projektstruktur auf dem neuesten Stand gehalten wird.
 
----
+## Funktionalität
 
-#### What Does It Do?
+Das Hauptskript `setup_pre_commit.sh` dient dazu, einen `pre-commit`-Hook im Git-Repository zu konfigurieren. Dieser Hook wird vor jedem Commit automatisch ausgeführt und führt folgende Aufgaben aus:
 
-The script creates or overwrites a `pre-commit` hook in your Git repository. The hook performs the following actions before every commit:
+1. **Codeformatierung**: Durch den Aufruf von `make format` wird sichergestellt, dass alle Quellcodedateien gemäß den im Projekt festgelegten Stilregeln formatiert sind.
+2. **Aktualisierung der `README.md`**: Der Aufruf von `make update_readme` stellt sicher, dass der Abschnitt zur Projektstruktur in der `README.md` basierend auf der neuesten Struktur des Projekts aktualisiert wird.
+3. **Staging der aktualisierten `README.md`**: Die Änderungen an der `README.md` werden automatisch für den Commit vorbereitet.
 
-1. **Formats the Code**: Runs `make format` to ensure all source files are properly formatted.
-2. **Updates `README.md`**: Runs `make update_readme` to regenerate the project structure section in the `README.md`.
-3. **Stages the Updated `README.md`**: Automatically stages changes to the `README.md` file.
+## Abhängigkeiten
 
----
+- Eine gültige `Makefile` im Hauptverzeichnis des Repositories mit den Zielen:
+  - `format`: Zur Gewährleistung der Codeformatierung.
+  - `update_readme`: Zur Aktualisierung der Projektstruktur in der `README.md`.
+- Git muss im Repository initialisiert sein (`git init`).
 
-#### Usage Instructions
+## Verwendung
 
-1. **Save the Script**  
-   Save the script as `setup_pre_commit.sh` in the directory `scripts/setup_precommit/` of your repository.
+Um das Skript zu verwenden, folgen Sie diesen Schritten:
 
-2. **Make the Script Executable**  
-   Run the following command to make the script executable:
+1. **Speicherung des Skripts**: Speichern Sie `setup_pre_commit.sh` im Verzeichnis `scripts/setupprecommit/` Ihres Repositories.
+2. **Ausführbarkeitsrechte setzen**: Führen Sie den Befehl `chmod +x scripts/setupprecommit/setup_pre_commit.sh` aus, um das Skript ausführbar zu machen.
+3. **Skript ausführen**: Führen Sie das Skript mit `scripts/setupprecommit/setup_pre_commit.sh` aus, um den `pre-commit`-Hook einzurichten.
+4. **Überprüfung des Hooks**: Überprüfen Sie, ob der `pre-commit`-Hook in `.git/hooks/` vorhanden ist, indem Sie `ls .git/hooks/pre-commit` ausführen.
 
-   ```bash
-   chmod +x scripts/setup_precommit/setup_pre_commit.sh
-   ```
+## Interne Struktur
 
-3. **Run the Script**  
-   Execute the script to set up the `pre-commit` hook:
+Das Skript `setup_pre_commit.sh` besteht aus mehreren Schritten:
 
-   ```bash
-   scripts/setup_precommit/setup_pre_commit.sh
-   ```
+- Es wechselt in das Hauptverzeichnis des Git-Repositories.
+- Es überprüft, ob ein `.git`-Verzeichnis existiert, um sicherzustellen, dass das Skript im Root-Verzeichnis des Repositories ausgeführt wird.
+- Der `pre-commit`-Hook wird mit spezifischem Inhalt in die Datei `.git/hooks/pre-commit` geschrieben.
+- Die Ausführbarkeitsrechte für den Hook werden gesetzt, um sicherzustellen, dass Git den Hook ausführen kann.
 
-4. **Verify the Hook**  
-   Check that the `pre-commit` hook exists in `.git/hooks/`:
-   ```bash
-   ls .git/hooks/pre-commit
-   ```
+## Sonstiges
 
----
-
-#### Requirements
-
-- A valid `Makefile` in the root of the repository with the following targets:
-  - `format`: Ensures code formatting.
-  - `update_readme`: Updates the project structure in the `README.md`.
-- Git must be initialized in the repository (`git init`).
-
----
-
-#### Troubleshooting
-
-1. **Script Fails to Navigate to the Repository Root**  
-   Ensure the script is placed in `scripts/setup_precommit/` and your repository root contains a `.git` directory.
-
-2. **The Hook Does Not Trigger**  
-   Make sure the `pre-commit` hook is executable:
-
-   ```bash
-   chmod +x .git/hooks/pre-commit
-   ```
-
-3. **Make Commands Not Found**  
-   Verify that your `Makefile` includes the `format` and `update_readme` targets.
-
-4. **Existing Pre-Commit Hook**  
-   This script overwrites any existing `pre-commit` hook. If you have other functionality in your hook, consider appending instead of overwriting.
-
----
-
-#### Notes
-
-- The `pre-commit` hook is local to each developer's environment and is not automatically shared with others. For shared configurations, consider using tools like [pre-commit](https://pre-commit.com/).
-- Use this script to standardize pre-commit behavior across your team by sharing it in your repository.
+- Der `pre-commit`-Hook ist lokal auf die Umgebung jedes Entwicklers beschränkt und wird nicht automatisch mit anderen geteilt. Für eine gemeinsame Konfiguration in einem Team wird die Verwendung von Tools wie [pre-commit](https://pre-commit.com/) empfohlen.
+- Sollten bereits andere Funktionen im `pre-commit`-Hook vorhanden sein, überschreibt dieses Skript diese. Es wird empfohlen, die bestehenden Funktionen zu ergänzen, anstatt sie zu überschreiben.

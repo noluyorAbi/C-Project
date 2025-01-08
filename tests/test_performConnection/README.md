@@ -1,57 +1,56 @@
-# Inhalt
+# test_performConnection
 
-- **`test_performConnection/`**: Integrationstest für die `performConnection`-Funktion der TCP-Kommunikationsmodule.
+## Inhalt des Ordners
 
-### `test_performConnection/`
+Der Ordner `test_performConnection` enthält einen Integrationstest, der die Funktionalität der `performConnection`-Funktion aus den TCP-Kommunikationsmodulen testet. Insbesondere umfasst dieser Ordner die folgende Datei:
 
-#### Zweck
+- `test_performConnection.c`: Diese Datei implementiert den Integrationstest.
 
-`test_performConnection.c` ist ein Integrationstest, der die `performConnection`-Funktion überprüft. Diese Funktion ist verantwortlich für die Prolog-Phase der Kommunikation mit dem Gameserver, einschließlich des Austauschs von Nachrichten gemäß dem definierten Kommunikationsprotokoll.
+## Funktionalität
 
-#### Funktionsweise
+Die Datei `test_performConnection.c` dient als Integrationstest für die `performConnection`-Funktion. Ziel dieses Tests ist es, die korrekte Durchführung der Prolog-Phase der Kommunikation zwischen einem Client und einem Gameserver gemäß einem festgelegten Protokoll sicherzustellen.
 
-Der Test simuliert einen Gameserver, der erwartete Nachrichten sendet und auf Nachrichten des Clients reagiert. Dies wird erreicht durch:
+## Abhängigkeiten
 
-1. **Erstellung eines Socket-Paares:**
+Der Test erfordert die folgende Abhängigkeit:
 
-   - Verwendet die Funktion `socketpair()`, um zwei miteinander verbundene Sockets zu erzeugen. Einer dieser Sockets wird vom Mock-Server genutzt, der andere vom Client (`performConnection`).
+- `performConnection.h`: Diese Header-Datei befindet sich im Verzeichnis `../../modules/tcp_performConnection/` und definiert die Schnittstelle für die Funktion `performConnection`, die im Test verwendet wird.
 
-2. **Start eines Mock-Servers in einem separaten Thread:**
+Zusätzlich nutzt der Test Standardbibliotheken wie `<arpa/inet.h>`, `<netdb.h>`, `<netinet/in.h>`, `<pthread.h>`, `<stdio.h>`, `<stdlib.h>`, `<string.h>`, `<sys/socket.h>`, und `<unistd.h>` für Socket-Programmierung und Thread-Verwaltung.
 
-   - Ein neuer Thread wird mittels `pthread_create()` gestartet, der die Mock-Server-Funktion `mock_server()` ausführt.
-   - Der Mock-Server sendet vordefinierte Nachrichten an den Client und empfängt Nachrichten vom Client, um das Kommunikationsprotokoll zu simulieren.
+## Verwendung
 
-3. **Ausführung der `performConnection`-Funktion:**
+Die Ausführung des Tests erfordert das Kompilieren und Starten der `test_performConnection.c` Datei. Dies kann typischerweise über ein Build-System wie `make` erreicht werden, indem der Befehl `make test` im Hauptverzeichnis des Projekts ausgeführt wird. Der Test gibt detaillierte Protokolle über den Nachrichtenaustausch zwischen dem Mock-Server und dem Client aus, wodurch die Funktionsweise der `performConnection`-Funktion nachvollziehbar wird.
 
-   - Der Client-Teil des Tests ruft `performConnection()` mit dem entsprechenden Socket-Dateideskriptor auf.
-   - Diese Funktion führt die Prolog-Phase durch, sendet Nachrichten an den Mock-Server und verarbeitet die empfangenen Antworten.
+## Interne Struktur
 
-4. **Überprüfung der Ergebnisse:**
-   - Der Test überprüft, ob `performConnection()` korrekt auf die vom Mock-Server gesendeten Nachrichten reagiert und die erwarteten Ausgaben produziert.
-   - Nach Abschluss des Tests werden die Sockets geschlossen und der Mock-Server-Thread beendet.
-
-#### Ablauf des Tests
+### Ablauf des Tests
 
 1. **Initialisierung:**
-
-   - Ein Socket-Paar wird erstellt, um eine bidirektionale Kommunikation zwischen dem Mock-Server und dem Client zu ermöglichen.
+   - Ein Socket-Paar wird mit `socketpair()` erstellt, um eine direkte Kommunikation zwischen dem Mock-Server und dem Client zu ermöglichen.
 
 2. **Mock-Server-Aktionen:**
-
-   - Sendet eine Begrüßungsnachricht (`+ MNM Gameserver\n`) an den Client.
-   - Empfängt die Client-Version (`VERSION 2.42\n`) und sendet eine Bestätigung (`+ Client version accepted\n`).
-   - Empfängt die Game-ID (`ID my-game-id\n`) und sendet den Spieltyp (`+ PLAYING NMMorris\n`).
-   - Empfängt den PLAYER-Befehl (`PLAYER\n`) und weist dem Client einen Spieler zu (`+ YOU 1 Uli READY\n`), sendet die Gesamtanzahl der Spieler (`+ TOTAL 2\n`) sowie Details zu anderen Spielern (`+ PLAYER 2 Bob NOT_READY\n` und `+ ENDPLAYERS\n`).
+   - Der Mock-Server, implementiert in einem separaten Thread, sendet eine Begrüßungsnachricht und erwartet, dass der Client darauf reagiert.
+   - Er überprüft die Client-Version, empfängt die Game-ID, und simuliert den Austausch von Spielerinformationen.
 
 3. **Client-Aktionen (`performConnection`):**
-
-   - Führt die empfangenen Nachrichten aus und sendet die entsprechenden Antworten gemäß dem Protokoll.
-   - Gibt Ausgaben auf `stdout` für erfolgreiche Aktionen und auf `stderr` für Fehlermeldungen aus.
+   - Der Client (getestet durch die `performConnection`-Funktion) reagiert auf die Nachrichten des Mock-Servers und agiert gemäß dem Protokoll.
 
 4. **Abschluss:**
-   - Schließt die Sockets und wartet auf die Beendigung des Mock-Server-Threads.
-   - Gibt eine Erfolgsmeldung (`Test erfolgreich abgeschlossen.`) aus, wenn alle Schritte ohne Fehler durchgeführt wurden.
+   - Am Ende des Tests werden die Sockets geschlossen und der Server-Thread wird beendet. Eine Erfolgsmeldung wird ausgegeben, falls alle Protokollschritte korrekt durchgeführt wurden.
 
-#### Beispielhafte Ausführung
+## Tests
 
-Beim Ausführen des Tests (`make test`) sollte eine Ausgabe ähnlich der folgenden erscheinen:
+Der Integrationstest `test_performConnection.c` überprüft die Funktionalität der `performConnection`-Funktion unter realistischen Kommunikationsbedingungen. Durch den Einsatz eines Mock-Servers wird das Verhalten eines tatsächlichen Gameservers simuliert, wodurch sichergestellt wird, dass der Client ordnungsgemäß Nachrichten sendet und empfängt.
+
+Der Test validiert, ob:
+- Der Client auf eine korrekt formatierte Begrüßung reagiert.
+- Die Client-Version akzeptiert wird und eine Bestätigung gesendet wird.
+- Die Game-ID korrekt verarbeitet wird und der Spieltyp bestätigt wird.
+- Spielerinformationen korrekt gesendet und empfangen werden.
+
+Am Ende des Tests wird erwartet, dass eine Meldung `Test erfolgreich abgeschlossen.` erscheint, was bedeutet, dass der Integrationstest ohne Fehler durchlaufen wurde.
+
+## Sonstiges
+
+Es wird empfohlen, den Test regelmäßig durchzuführen, insbesondere nach Änderungen an der `performConnection`-Funktion oder verwandten Modulen, um sicherzustellen, dass die Kommunikation korrekt abläuft und keine neuen Fehler eingeführt wurden.

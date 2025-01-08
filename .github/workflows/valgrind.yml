@@ -29,16 +29,24 @@ jobs:
             ./modules/shared_memory/shared_memory.c \
             -I./modules/shared_memory
 
-      # Step 4: Run the shared memory test
+      # Step 4: Run the shared memory test (ohne Valgrind)
       - name: Run Shared Memory Test
         run: |
           chmod +x ./tests/test_sharedMemory/test_sharedMemory
           ./tests/test_sharedMemory/test_sharedMemory
 
-      # Step 5: Apply Valgrind to the shared memory test
+      # Step 5: Apply Valgrind to the shared memory test (mit Timeout)
       - name: Run Valgrind on Shared Memory Test
         run: |
-          valgrind --leak-check=full --track-origins=yes ./tests/test_sharedMemory/test_sharedMemory 2>&1 | tee valgrind_shared_memory.log
+          chmod +x ./tests/test_sharedMemory/test_sharedMemory
+          timeout 240 valgrind --leak-check=full --track-origins=yes ./tests/test_sharedMemory/test_sharedMemory 2>&1 | tee valgrind_shared_memory.log
+          EXIT_CODE=$?
+
+          # Prüfen, ob timeout das Programm abgebrochen hat
+          if [ $EXIT_CODE -eq 124 ]; then
+            echo "Valgrind timed out on Shared Memory Test"
+            exit 1
+          fi
 
       # Step 6: Analyze Valgrind output for the shared memory test
       - name: Analyze Valgrind Output for Shared Memory Test
@@ -51,7 +59,7 @@ jobs:
             echo "No memory leaks detected in shared memory test"
           fi
 
-      # Step 7: Compile the main project
+      # Step 7: Compile the main project (Beispiel über Makefile)
       - name: Build Project
         run: |
           make CC=gcc CFLAGS="-Wall -Werror -g"
@@ -60,10 +68,16 @@ jobs:
       - name: Make Executable
         run: chmod +x ./bin/sysprak-client
 
-      # Step 9: Apply Valgrind to the main executable
+      # Step 9: Apply Valgrind to the main executable (mit Timeout)
       - name: Run Valgrind on Main Executable
         run: |
-          valgrind --leak-check=full --track-origins=yes ./bin/sysprak-client -g 1234567890123 -p 1 2>&1 | tee valgrind.log
+          timeout 240 valgrind --leak-check=full --track-origins=yes ./bin/sysprak-client -g 1234567890123 -p 1 2>&1 | tee valgrind.log
+          EXIT_CODE=$?
+
+          if [ $EXIT_CODE -eq 124 ]; then
+            echo "Valgrind timed out on Main Executable"
+            exit 1
+          fi
 
       # Step 10: Analyze Valgrind output for the main executable
       - name: Analyze Valgrind Output for Main Executable

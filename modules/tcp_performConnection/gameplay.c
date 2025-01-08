@@ -74,6 +74,9 @@ int checkForSignal(int sockfd) {
       } else if (n == 0) {
         fprintf(stdout, "Thinker has closed the pipe.\n");
         return EXIT_FAILURE;
+      } else {
+        fprintf(stdout, "Connector: Read %d bytes from the pipe sucessfully.\n",
+                n);
       }
 
       // Process the move sent by the Thinker

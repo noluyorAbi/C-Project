@@ -40,7 +40,23 @@ shm_data_t *shm_ptr = NULL;
 // Global flag for signal handling
 volatile sig_atomic_t sig_received = 0;
 
-// ========================= SIGNAL HANDLER ===========na============
+/**
+ * @brief Signal handler for SIGINT (CTRL+C).
+ *        Cleans up shared memory and terminates the program.
+ *
+ * @param signal The signal number received.
+ */
+void handle_sigint(int signal) {
+  if (signal == SIGINT) {
+    fprintf(stdout,
+            "\nSIGINT received. Cleaning up shared memory and exiting.\n");
+
+    // Cleanup the second SHM segment
+    cleanupSHM(shmid, shm);
+    exit(EXIT_SUCCESS);
+  }
+}
+
 /**
  * @brief Signal handler for the Thinker process.
  *        Sets the sig_received flag when SIGUSR1 is received.
@@ -74,8 +90,6 @@ int main(int argc, char *argv[]) {
     return EXIT_FAILURE;
   }
 
-  // Create first SHM segment??
-
   // Create second SHM segment
   createBoardMemory();
 
@@ -91,6 +105,19 @@ int main(int argc, char *argv[]) {
 
   // Create an inter-process communication pipe
   if (create_pipe() != 0) {
+    cleanupSHM(shmid, shm); // Cleanup before exiting
+    return EXIT_FAILURE;
+  }
+
+  struct sigaction sa_int;
+
+  sa_int.sa_handler = handle_sigint; // Assign the handler function
+  sa_int.sa_flags = 0;               // No special flags
+  sigemptyset(&sa_int.sa_mask);      // No signals blocked during handler
+
+  if (sigaction(SIGINT, &sa_int, NULL) == -1) {
+    fprintf(stderr, "Error setting up SIGINT handler: %s\n", strerror(errno));
+    cleanupSHM(shmid, shm); // Cleanup before exiting
     return EXIT_FAILURE;
   }
 
@@ -198,6 +225,8 @@ static int fork_processes(GameConfig game_config, char *piece_data) {
   if (pid == 0) {
     // Child process: Run connector
     run_connector(game_config, piece_data);
+    // Child process should not continue beyond run_connector
+    exit(EXIT_SUCCESS);
   } else {
     // Parent process: Run thinker
     run_thinker(pid);
@@ -215,16 +244,16 @@ static int fork_processes(GameConfig game_config, char *piece_data) {
 static void run_connector(GameConfig game_config, char *piece_data) {
   // Close the write end of the pipe in the connector process
   if (close(pipe_fd[1]) == -1) {
-    fprintf(stderr, "Connector: Error closing read end of the pipe: %s\n",
+    fprintf(stderr, "Connector: Error closing write end of the pipe: %s\n",
             strerror(errno));
   }
 
   // Establish connection
   if (createConnection(game_config.game_id, piece_data) != 0) {
     fprintf(stderr, "Connector: Failed to establish connection.\n");
-    // Close the write end of the pipe only if createConnection fails
-    if (close(pipe_fd[1]) == -1) {
-      fprintf(stderr, "Connector: Error closing write end of the pipe: %s\n",
+    // Close the read end of the pipe only if createConnection fails
+    if (close(pipe_fd[0]) == -1) {
+      fprintf(stderr, "Connector: Error closing read end of the pipe: %s\n",
               strerror(errno));
     }
     exit(EXIT_FAILURE);
@@ -245,7 +274,7 @@ static void run_connector(GameConfig game_config, char *piece_data) {
 
   // Close the read end of the pipe immediately after successful connection
   if (close(pipe_fd[0]) == -1) {
-    fprintf(stderr, "Connector: Error closing write end of the pipe: %s\n",
+    fprintf(stderr, "Connector: Error closing read end of the pipe: %s\n",
             strerror(errno));
     exit(EXIT_FAILURE);
   }
@@ -261,7 +290,7 @@ static void run_connector(GameConfig game_config, char *piece_data) {
 static void run_thinker(pid_t pid) {
   // Close the read end of the pipe in the thinker process
   if (close(pipe_fd[0]) == -1) {
-    fprintf(stderr, "Thinker: Error closing write end of the pipe: %s\n",
+    fprintf(stderr, "Thinker: Error closing read end of the pipe: %s\n",
             strerror(errno));
   }
 
@@ -294,15 +323,20 @@ static void run_thinker(pid_t pid) {
     }
   }
 
+  // TODO: Break loop when server sends GAMEOVER or QUIT
+  // Note: The code below is unreachable due to the infinite loop,
+  // but it's good practice to include cleanup in case the loop exits.
+
   // Wait for connector to terminate
   int status;
   if (waitpid(pid, &status, 0) == -1) {
     fprintf(stderr, "Thinker: Error waiting for child process: %s\n",
             strerror(errno));
-    if (close(pipe_fd[0]) == -1) {
-      fprintf(stderr, "Thinker: Error closing read end of the pipe: %s\n",
+    if (close(pipe_fd[1]) == -1) {
+      fprintf(stderr, "Thinker: Error closing write end of the pipe: %s\n",
               strerror(errno));
     }
+    cleanupSHM(shmid, shm);
     exit(EXIT_FAILURE); // Exit thinker if waitpid fails
   }
 
@@ -314,27 +348,12 @@ static void run_thinker(pid_t pid) {
 
   // Close the write end of the pipe in the thinker process
   if (close(pipe_fd[1]) == -1) {
-    fprintf(stderr, "Thinker: Error closing read end of the pipe: %s\n",
+    fprintf(stderr, "Thinker: Error closing write end of the pipe: %s\n",
             strerror(errno));
   }
 
-  // TODO: Beides in eine einzelne Funktion packen, um vor jedem EXIT_FAILURE
-  // aufuzurufen? Cleanup code (unreachable in current infinite loop) Detach the
-  // SHM segment
-  if (shmdt(shm) == -1) {
-    fprintf(stderr, "Thinker: shmdt failed.\n");
-    exit(EXIT_FAILURE);
-  } else {
-    fprintf(stdout, "Thinker: shmdt was successful.\n");
-  }
-
-  // Deallocate the SHM segment
-  if (shmctl(shmid, IPC_RMID, NULL) == -1) {
-    fprintf(stderr, "Thinker: shmctl failed.\n");
-    exit(EXIT_FAILURE);
-  } else {
-    fprintf(stdout, "Thinker: shmctl was successful.\n");
-  }
+  // Cleanup the second SHM segment
+  cleanupSHM(shmid, shm);
 }
 /**********************************************************
  *                END OF HELPER FUNCTIONS                 *

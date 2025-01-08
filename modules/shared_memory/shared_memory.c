@@ -169,3 +169,27 @@ void cleanupSharedMemory(int shmid, SharedMemory *shm) {
     }
   }
 }
+
+/**
+ * Cleans up the second SHM segment by detaching and removing it.
+ *
+ * @param shmid The shared memory ID.
+ * @param shm Pointer to the shared memory.
+ */
+void cleanupSHM(int shmid, char *shm) {
+  // Detach the SHM segment
+  if (shmdt(shm) == -1) {
+    fprintf(stderr, "Thinker: shmdt failed.\n");
+    exit(EXIT_FAILURE);
+  } else {
+    fprintf(stdout, "Thinker: shmdt was successful.\n");
+  }
+
+  // Deallocate the SHM segment
+  if (shmctl(shmid, IPC_RMID, NULL) == -1) {
+    fprintf(stderr, "Thinker: shmctl failed.\n");
+    exit(EXIT_FAILURE);
+  } else {
+    fprintf(stdout, "Thinker: shmctl was successful.\n");
+  }
+}

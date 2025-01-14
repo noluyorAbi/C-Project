@@ -1,6 +1,8 @@
 # Compiler und Flags
 CC = clang
 CFLAGS = -Wall -Werror -Imodules -Imodules/args_parser -Imodules/tcp_performConnection
+CFLAGS = -Wall -Werror -g -Imodules -Imodules/shared_memory -Imodules/args_parser -Imodules/tcp_performConnection
+LDFLAGS = -lm
 
 # Verzeichnisse
 BIN_DIR = bin
@@ -15,7 +17,7 @@ TARGET = $(BIN_DIR)/sysprak-client
 LIBRARY = $(LIB_DIR)/libsysprak.a
 
 # Mock-Daten
-MOCK_ARGS = -g 2bk7aeor3lgkn -p 1
+MOCK_ARGS = -g 0a84rxpdqzdvk -p 1
 
 # Quellen und Objektdateien
 LIB_SRC = $(shell find $(MODULES_DIR) -name '*.c')
@@ -55,7 +57,7 @@ $(LIBRARY): $(LIB_OBJ)
 # Linken des Hauptprogramms mit der Bibliothek
 $(TARGET): $(MAIN_OBJ) $(LIBRARY)
 	@mkdir -p $(BIN_DIR)
-	$(CC) $(CFLAGS) -o $@ $^
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 # Formatieren der Quellcode-Dateien
 format:

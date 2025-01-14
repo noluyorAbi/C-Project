@@ -123,8 +123,12 @@ Das Projekt wird in mehreren Schritten im Verlauf des Praktikums entwickelt, und
 │   │   └── tcp_connection.h
 │   └── think
 │       ├── README.md
+│       ├── mcts.c
+│       ├── mcts.h
 │       ├── think.c
-│       └── think.h
+│       ├── think.h
+│       ├── util.c
+│       └── util.h
 ├── scripts
 │   ├── Readme.md
 │   ├── setup_precommit
@@ -146,7 +150,7 @@ Das Projekt wird in mehreren Schritten im Verlauf des Praktikums entwickelt, und
         ├── test_sharedMemory.bash
         └── test_sharedMemory.c
 
-15 directories, 41 files
+15 directories, 45 files
 ```
 <!-- project-structure-end -->
 

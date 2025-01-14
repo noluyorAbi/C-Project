@@ -2,6 +2,7 @@
 CC = clang
 CFLAGS = -Wall -Werror -Imodules -Imodules/args_parser -Imodules/tcp_performConnection
 CFLAGS = -Wall -Werror -g -Imodules -Imodules/shared_memory -Imodules/args_parser -Imodules/tcp_performConnection
+LDFLAGS = -lm
 
 # Verzeichnisse
 BIN_DIR = bin
@@ -56,7 +57,7 @@ $(LIBRARY): $(LIB_OBJ)
 # Linken des Hauptprogramms mit der Bibliothek
 $(TARGET): $(MAIN_OBJ) $(LIBRARY)
 	@mkdir -p $(BIN_DIR)
-	$(CC) $(CFLAGS) -o $@ $^
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 # Formatieren der Quellcode-Dateien
 format:

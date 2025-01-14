@@ -1,6 +1,7 @@
 # Compiler und Flags
 CC = clang
 CFLAGS = -Wall -Werror -Imodules -Imodules/args_parser -Imodules/tcp_performConnection
+CFLAGS = -Wall -Werror -g -Imodules -Imodules/shared_memory -Imodules/args_parser -Imodules/tcp_performConnection
 
 # Verzeichnisse
 BIN_DIR = bin

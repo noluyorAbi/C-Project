@@ -1,6 +1,5 @@
 #include "think.h"
-
-#include "../modules/shared_memory/shared_memory.h"
+#include "../shared_memory/shared_memory.h"
 #include "mcts.h"
 #include "util.h"
 

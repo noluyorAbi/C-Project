@@ -32,7 +32,7 @@ jobs:
       # Step 4: Build the main project
       - name: Build Main Project
         run: |
-          make CC=gcc CFLAGS="-Wall -Werror -g"
+          make CC=gcc CFLAGS="-Wall -Werror -g -lm"
 
       # Step 5: Make the main executable file executable
       - name: Make Executable

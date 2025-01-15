@@ -149,10 +149,11 @@ static int initialize_game(int argc, char *argv[], GameConfig *game_config,
     print_usage(argv[0]);
     return -1;
   }
-
-  printf("GAME-ID: %s\n", game_config->game_id);
-  printf("Number of Players: %d\n", game_config->player_number);
-  printf("Configuration File: %s\n", game_config->config_file);
+  /*  DEBUG
+    printf("GAME-ID: %s\n", game_config->game_id);
+    printf("Number of Players: %d\n", game_config->player_number);
+    printf("Configuration File: %s\n", game_config->config_file);
+   */
 
   if (!parse_config_file(game_config->config_file, app_config)) {
     fprintf(stderr, "Error: Invalid configuration file. %s\n",
@@ -160,10 +161,11 @@ static int initialize_game(int argc, char *argv[], GameConfig *game_config,
     return -1;
   }
 
-  printf("Hostname: %s\n", app_config->hostname);
-  printf("Port Number: %u\n", ntohs(app_config->portNumber));
-  printf("Game Kind Name: %s\n", app_config->gameKindName);
-
+  /*  DEBUG
+    printf("Hostname: %s\n", app_config->hostname);
+    printf("Port Number: %u\n", ntohs(app_config->portNumber));
+    printf("Game Kind Name: %s\n", app_config->gameKindName);
+   */
   return 0;
 }
 

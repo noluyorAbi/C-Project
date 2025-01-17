@@ -155,16 +155,8 @@ int check_miller(const char board[], char last_row, char last_col,
   return 0;
 }
 
-static const int all_mills[][3] = {
-  {0, 1, 2},
-  {3, 4, 5},
-  {6, 7, 8},
-  {0, 3, 6},
-  {1, 4, 7},
-  {2, 5, 8},
-  {0, 4, 8},
-  {2, 4, 6}
-};
+static const int all_mills[][3] = {{0, 1, 2}, {3, 4, 5}, {6, 7, 8}, {0, 3, 6},
+                                   {1, 4, 7}, {2, 5, 8}, {0, 4, 8}, {2, 4, 6}};
 
 int is_in_mill(const char board[], int index) {
   if (board[index] == '+' || board[index] == 'C') {
@@ -175,12 +167,10 @@ int is_in_mill(const char board[], int index) {
 
   int num_mills = sizeof(all_mills) / sizeof(all_mills[0]);
   for (int i = 0; i < num_mills; i++) {
-    if (all_mills[i][0] == index ||
-        all_mills[i][1] == index ||
-        all_mills[i][2] == index) {
-      if (   board[all_mills[i][0]] == myPiece
-          && board[all_mills[i][1]] == myPiece
-          && board[all_mills[i][2]] == myPiece ) {
+    if (all_mills[i][0] == index || all_mills[i][1] == index
+        || all_mills[i][2] == index) {
+      if (board[all_mills[i][0]] == myPiece && board[all_mills[i][1]] == myPiece
+          && board[all_mills[i][2]] == myPiece) {
         return 1;
       }
     }
@@ -189,10 +179,8 @@ int is_in_mill(const char board[], int index) {
 }
 
 int check_removable(const char board[], char myPiece, char opponentPiece) {
-  int candidate_mill =
-    -1;
-  int candidate_non_mill =
-    -1;
+  int candidate_mill = -1;
+  int candidate_non_mill = -1;
 
   for (int i = 0; i < 25; i++) {
     if (board[i] == opponentPiece) {
@@ -226,6 +214,8 @@ void remove_stone(char board[], int index) {
   if (board[index] == 'X' || board[index] == 'O') {
     board[index] = 'C';
   } else {
-    fprintf(stderr, "remove_stone: Kein gültiger Stein zum Entfernen an Index %d.\n", index);
+    fprintf(stderr,
+            "remove_stone: Kein gültiger Stein zum Entfernen an Index %d.\n",
+            index);
   }
 }

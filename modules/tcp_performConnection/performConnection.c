@@ -23,7 +23,7 @@ int sendMessage(int sockfd, const char *message) {
     fprintf(stderr, "Error sending message: %s\n", strerror(errno));
     return EXIT_FAILURE;
   }
-  fprintf(stdout, "C: %s", message);
+  // fprintf(stdout, "C: %s", message);
   return EXIT_SUCCESS;
 }
 
@@ -98,7 +98,7 @@ int performConnection(int sockfd, char *GAME_ID, char *piece_data) {
     fprintf(stderr, "Unexpected server response: %s\n", buffer);
     return EXIT_FAILURE;
   }
-  fprintf(stdout, "S: Verbindung zu Server hergestellt.\n");
+  fprintf(stdout, "Verbindung zu Server hergestellt.\n");
 
   // 2. Receive another message from server
   if (receiveMessage(sockfd, buffer, BUFFER_SIZE) != EXIT_SUCCESS) {
@@ -120,7 +120,7 @@ int performConnection(int sockfd, char *GAME_ID, char *piece_data) {
     fprintf(stderr, "Client version not accepted: %s\n", buffer);
     return EXIT_FAILURE;
   }
-  fprintf(stdout, "S: Client-Version wurde akzeptiert.\n");
+  fprintf(stdout, "Client-Version wurde akzeptiert.\n");
 
   // 5. Send game ID // @noluyorAbi I THINK THIS WORKS NOW
   char game_id_message[BUFFER_SIZE]; // Use a stack-allocated buffer
@@ -138,13 +138,13 @@ int performConnection(int sockfd, char *GAME_ID, char *piece_data) {
     fprintf(stderr, "Unexpected game type: %s\n", buffer);
     return EXIT_FAILURE;
   }
-  fprintf(stdout, "S: Das ausgewählte Spiel ist Neunermühle.\n");
+  fprintf(stdout, "Das ausgewählte Spiel ist Neunermühle.\n");
 
   // 7. Receive game name (if required)
   if (receiveMessage(sockfd, buffer, BUFFER_SIZE) != EXIT_SUCCESS) {
     return EXIT_FAILURE;
   }
-  fprintf(stdout, "S: Der Spielname lautet: %s", buffer + 2);
+  fprintf(stdout, "Der Spielname lautet: %s", buffer + 2);
 
   // 8. Send PLAYER command (no additional values)
   // TODO ASK RUFUS IF WE SHOULD REALLY GIVE -P AS ARGUMENT HRER AS MS01 SAYS
@@ -164,7 +164,7 @@ int performConnection(int sockfd, char *GAME_ID, char *piece_data) {
     fprintf(stderr, "Unexpected player assignment: %s\n", buffer);
     return EXIT_FAILURE;
   }
-  fprintf(stdout, "S: Du bist Spieler 0.\n");
+  fprintf(stdout, "Du bist Spieler 0.\n");
 
   // 10. Receive total number of players
   if (receiveMessage(sockfd, buffer, BUFFER_SIZE) != EXIT_SUCCESS) {
@@ -176,7 +176,7 @@ int performConnection(int sockfd, char *GAME_ID, char *piece_data) {
     return EXIT_FAILURE;
   }
   const int NUM_OF_PLAYERS = atoi(&buffer[8]);
-  fprintf(stdout, "S: Es gibt insgesamt %d Spieler.\n", NUM_OF_PLAYERS);
+  fprintf(stdout, "Es gibt insgesamt %d Spieler.\n", NUM_OF_PLAYERS);
 
   int total_players;
   if (sscanf(buffer + 7, "%d", &total_players) != 1) {
@@ -199,7 +199,7 @@ int performConnection(int sockfd, char *GAME_ID, char *piece_data) {
     if (sscanf(buffer, "+ %d %49s %d", &other_player_number, other_player_name,
                &other_player_readiness)
         == 3) {
-      printf("S: Spieler %d (%s) ist %s.\n", other_player_number,
+      printf("Spieler %d (%s) ist %s.\n", other_player_number,
              other_player_name,
              other_player_readiness == 1 ? "bereit" : "noch nicht bereit");
     } else {
@@ -214,17 +214,17 @@ int performConnection(int sockfd, char *GAME_ID, char *piece_data) {
     }
 
     if (strncmp(buffer, "+ WAIT", 6) == 0) {
-      fprintf(stdout, "S: Warte einen Moment.\n");
+      fprintf(stdout, "Warte einen Moment.\n");
       if (handleWait(sockfd, buffer) != 0) {
         return EXIT_FAILURE;
       }
     } else if (strncmp(buffer, "+ MOVE", 6) == 0) {
-      fprintf(stdout, "S: Bewege einen Stein.\n");
+      fprintf(stdout, "Bewege einen Stein.\n");
       if (handleMove(sockfd, buffer, piece_data) != 0) {
         return EXIT_FAILURE;
       }
     } else if (strncmp(buffer, "+ GAMEOVER", 10) == 0) {
-      fprintf(stdout, "S: Das Spiel ist beendet.\n");
+      fprintf(stdout, "Das Spiel ist beendet.\n");
       if (handleGameover(sockfd, buffer, piece_data) != 0) {
         return EXIT_FAILURE;
       }

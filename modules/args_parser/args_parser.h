@@ -3,6 +3,8 @@
 
 #include <stdbool.h>
 
+extern int EXTERN_PLAYER_NUMBER;
+
 typedef struct {
   char game_id[14];      // 13 characters + null terminator (mandatory)
   int player_number;     // 1 or 2 (optional, default: 1)

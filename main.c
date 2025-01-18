@@ -101,13 +101,13 @@ int main(int argc, char *argv[]) {
 
   // ----------------------------------------------------
   // 2A) NEUER SHM-BEREICH für "Initial Game Info" anlegen:
-  shmid_info =
-    initSharedMemory(game_config.player_number, // Anzahl Spieler
-                     game_config.game_id,       // Spielname (gameName)
-                     /* playerNumber=*/1,       // Beispiel: Wir sind Spieler 1
-                     /* thinkerPID=*/0,         // Wird ggf. später gesetzt
-                     /* connectorPID=*/0        // Wird ggf. später gesetzt
-    );
+  shmid_info = initSharedMemory(
+    game_config.player_number,              // Anzahl Spieler
+    game_config.game_id,                    // Spielname (gameName)
+    /* playerNumber=*/EXTERN_PLAYER_NUMBER, // Beispiel: Wir sind Spieler 1
+    /* thinkerPID=*/0,                      // Wird ggf. später gesetzt // TODO
+    /* connectorPID=*/0                     // Wird ggf. später gesetzt //TODO
+  );
   if (shmid_info < 0) {
     fprintf(stderr, "[ERROR] initSharedMemory for game info failed.\n");
     return EXIT_FAILURE;

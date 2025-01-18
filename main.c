@@ -2,7 +2,7 @@
 #include "./modules/args_parser/args_parser.h"
 #include "./modules/args_parser/config.h"
 #include "./modules/args_parser/constants.h"
-#include "./modules/shared_memory/shared_memory.c"
+#include "./modules/shared_memory/shared_memory.c" // <-- Enthält initSharedMemory etc.
 #include "./modules/tcp_performConnection/performConnection.h"
 #include "./modules/tcp_performConnection/tcp_connection.h"
 #include "./modules/think/think.h"
@@ -21,14 +21,18 @@
 #define INITIAL_SIZE 1024
 
 // ========================= GLOBAL VARIABLES ==========================
+// 1) Die bereits existierenden Variablen für das SHM mit Board-State:
 int pipe_fd[2]; // Pipe file descriptors: [0] read, [1] write
+int shmid;      // ID of second SHM segment for the game state
+char *shm;      // Pointer to second SHM segment
 
-int shmid; // ID of second SHM segment for the game state
-char *shm; // Pointer to second SHM segment
+// 2) NEU: SHM für Initial Game Info (Player-Daten, gameName etc.)
+int shmid_info = -1;           // ID des neuen "Initial Game Info" SHM-Bereichs
+SharedMemory *shm_info = NULL; // Pointer auf das SHM-Segment mit Spiel-Infos
 
 // ======================= NEW STRUCTURES AND VARIABLES =======================
 
-// Structure for Shared Memory with a flag
+// Structure for Shared Memory with a flag (Board/Data SHM)
 typedef struct {
   int flag; // 1 indicates that a new move should be calculated
   char game_data[INITIAL_SIZE - sizeof(int)]; // Game state data
@@ -51,8 +55,13 @@ void handle_sigint(int signal) {
     fprintf(stdout,
             "\nSIGINT received. Cleaning up shared memory and exiting.\n");
 
-    // Cleanup the second SHM segment
+    // Cleanup: Zuerst Board-SHM
     cleanupSHM(shmid, shm);
+
+    // Cleanup: Dann das Info-SHM
+    if (shm_info != NULL) {
+      cleanupSharedMemory(shmid_info, shm_info);
+    }
     exit(EXIT_SUCCESS);
   }
 }
@@ -72,7 +81,7 @@ void handle_signal(int signal) {
 // ========================= FUNCTION PROTOTYPES =======================
 static int initialize_game(int argc, char *argv[], GameConfig *game_config,
                            Config *app_config);
-static void createBoardMemory(); // Creates second SHM segment
+static void createBoardMemory(); // Creates second SHM segment for board
 static int create_pipe();
 static int fork_processes(GameConfig game_config, char *piece_data);
 static void run_connector(GameConfig game_config, char *piece_data);
@@ -90,7 +99,37 @@ int main(int argc, char *argv[]) {
     return EXIT_FAILURE;
   }
 
-  // Create second SHM segment
+  // ----------------------------------------------------
+  // 2A) NEUER SHM-BEREICH für "Initial Game Info" anlegen:
+  shmid_info =
+    initSharedMemory(game_config.player_number, // Anzahl Spieler
+                     game_config.game_id,       // Spielname (gameName)
+                     /* playerNumber=*/1,       // Beispiel: Wir sind Spieler 1
+                     /* thinkerPID=*/0,         // Wird ggf. später gesetzt
+                     /* connectorPID=*/0        // Wird ggf. später gesetzt
+    );
+  if (shmid_info < 0) {
+    fprintf(stderr, "[ERROR] initSharedMemory for game info failed.\n");
+    return EXIT_FAILURE;
+  }
+
+  // Anheften
+  shm_info = attachSharedMemory(shmid_info);
+  if (!shm_info) {
+    fprintf(stderr, "[ERROR] attachSharedMemory for game info failed.\n");
+    removeSharedMemory(shmid_info); // SHM aufräumen
+    return EXIT_FAILURE;
+  }
+
+  // Spielerfelder ggf. initialisieren
+  for (int i = 0; i < game_config.player_number; i++) {
+    shm_info->players[i].playerNumber = i + 1;
+    shm_info->players[i].playerName[0] = '\0';
+    shm_info->players[i].isRegistered = false;
+  }
+  // ----------------------------------------------------
+
+  // 2B) Bestehendes SHM-Segment anlegen (Board / Spielzustand):
   createBoardMemory();
 
   // Cast shm to shm_data_t structure
@@ -105,19 +144,26 @@ int main(int argc, char *argv[]) {
 
   // Create an inter-process communication pipe
   if (create_pipe() != 0) {
-    cleanupSHM(shmid, shm); // Cleanup before exiting
+    // Aufräumen bei Fehlschlag
+    cleanupSHM(shmid, shm);
+    if (shm_info != NULL) {
+      cleanupSharedMemory(shmid_info, shm_info);
+    }
     return EXIT_FAILURE;
   }
 
+  // Install SIGINT handler
   struct sigaction sa_int;
-
-  sa_int.sa_handler = handle_sigint; // Assign the handler function
-  sa_int.sa_flags = 0;               // No special flags
-  sigemptyset(&sa_int.sa_mask);      // No signals blocked during handler
+  sa_int.sa_handler = handle_sigint;
+  sa_int.sa_flags = 0;
+  sigemptyset(&sa_int.sa_mask);
 
   if (sigaction(SIGINT, &sa_int, NULL) == -1) {
     fprintf(stderr, "Error setting up SIGINT handler: %s\n", strerror(errno));
-    cleanupSHM(shmid, shm); // Cleanup before exiting
+    cleanupSHM(shmid, shm);
+    if (shm_info != NULL) {
+      cleanupSharedMemory(shmid_info, shm_info);
+    }
     return EXIT_FAILURE;
   }
 
@@ -149,28 +195,17 @@ static int initialize_game(int argc, char *argv[], GameConfig *game_config,
     print_usage(argv[0]);
     return -1;
   }
-  /*  DEBUG
-    printf("GAME-ID: %s\n", game_config->game_id);
-    printf("Number of Players: %d\n", game_config->player_number);
-    printf("Configuration File: %s\n", game_config->config_file);
-   */
 
   if (!parse_config_file(game_config->config_file, app_config)) {
     fprintf(stderr, "Error: Invalid configuration file. %s\n",
             game_config->config_file);
     return -1;
   }
-
-  /*  DEBUG
-    printf("Hostname: %s\n", app_config->hostname);
-    printf("Port Number: %u\n", ntohs(app_config->portNumber));
-    printf("Game Kind Name: %s\n", app_config->gameKindName);
-   */
   return 0;
 }
 
 /**
- * @brief Creates a SHM segment for the game state.
+ * @brief Creates a SHM segment for the game state (Board).
  */
 static void createBoardMemory() {
   // Create second SHM segment with read and write permissions
@@ -266,7 +301,7 @@ static void run_connector(GameConfig game_config, char *piece_data) {
   strncpy(shm_ptr->game_data, "Current game state data...",
           sizeof(shm_ptr->game_data) - 1);
   shm_ptr->game_data[sizeof(shm_ptr->game_data) - 1] =
-    '\0'; // Ensure null-termination
+    '\0'; // Ensure termination
 
   // Send SIGUSR1 signal to the Thinker process (Parent)
   if (kill(getppid(), SIGUSR1) == -1) {
@@ -317,8 +352,9 @@ static void run_thinker(pid_t pid) {
 
       // Check if the SHM flag is set
       if (shm_ptr->flag) {
-        // Make a move
+        // Make a move (z.B. in your think.c)
         think(shm_ptr->game_data);
+
         // Reset the SHM flag after processing
         shm_ptr->flag = 0;
       }
@@ -339,6 +375,10 @@ static void run_thinker(pid_t pid) {
               strerror(errno));
     }
     cleanupSHM(shmid, shm);
+    // NEU: Auch das Info-SHM entfernen
+    if (shm_info != NULL) {
+      cleanupSharedMemory(shmid_info, shm_info);
+    }
     exit(EXIT_FAILURE); // Exit thinker if waitpid fails
   }
 
@@ -354,8 +394,13 @@ static void run_thinker(pid_t pid) {
             strerror(errno));
   }
 
-  // Cleanup the second SHM segment
+  // Cleanup the second SHM segment (Board)
   cleanupSHM(shmid, shm);
+
+  // Cleanup the Info-SHM
+  if (shm_info != NULL) {
+    cleanupSharedMemory(shmid_info, shm_info);
+  }
 }
 /**********************************************************
  *                END OF HELPER FUNCTIONS                 *

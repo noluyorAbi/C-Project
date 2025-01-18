@@ -1,5 +1,6 @@
 #include "performConnection.h"
 
+#include "../args_parser/args_parser.h"
 #include "gameplay.h"
 
 #include <errno.h>
@@ -87,7 +88,7 @@ int receiveMessage(int sockfd, char *buffer, size_t buffer_size) {
  */
 int performConnection(int sockfd, char *GAME_ID, char *piece_data) {
   char buffer[BUFFER_SIZE];
-
+  printf("\nPLAYER VALUE IN -p IST: %d\n\n", EXTERN_PLAYER_NUMBER);
   // 1. Receive greeting from server
   if (receiveMessage(sockfd, buffer, BUFFER_SIZE) != EXIT_SUCCESS) {
     return EXIT_FAILURE;
@@ -147,10 +148,21 @@ int performConnection(int sockfd, char *GAME_ID, char *piece_data) {
   fprintf(stdout, "Der Spielname lautet: %s", buffer + 2);
 
   // 8. Send PLAYER command (no additional values)
-  // TODO ASK RUFUS IF WE SHOULD REALLY GIVE -P AS ARGUMENT HRER AS MS01 SAYS
   // `Geben Sie beim PLAYER-Kommando keine Werte mit und lassen Sie sich vom
   // Gameserver einen freien Spieler zuweisen.`
-  const char *player_command = "PLAYER\n";
+  char *player_command;
+  if (EXTERN_PLAYER_NUMBER == 0) {
+    player_command = "PLAYER \n";
+  } else if (EXTERN_PLAYER_NUMBER == 1) {
+    player_command = "PLAYER 0\n";
+  } else if (EXTERN_PLAYER_NUMBER == 2) {
+    player_command = "PLAYER 1\n";
+  } else {
+    fprintf(stderr, "EXTERN_PLAYER_NUMBER is not valid.");
+    return EXIT_FAILURE;
+  }
+
+  // const char *player_command = "PLAYER \n";
   if (sendMessage(sockfd, player_command) != EXIT_SUCCESS) {
     return EXIT_FAILURE;
   }
@@ -161,10 +173,14 @@ int performConnection(int sockfd, char *GAME_ID, char *piece_data) {
   }
 
   if (strncmp(buffer, "+ YOU", 5) != 0) {
-    fprintf(stderr, "Unexpected player assignment: %s\n", buffer);
+    fprintf(stderr,
+            "Der Player den sie ausgewählt haben in -p <1|2> ist nicht "
+            "frei. Wählen sie einen anderen. %s\n",
+            buffer);
     return EXIT_FAILURE;
   }
-  fprintf(stdout, "Du bist Spieler 0.\n");
+  fprintf(stdout, "Du bist Spieler 0.\n"); // TODO das it falsch und nicht
+                                           // responsiv zur -p flag
 
   // 10. Receive total number of players
   if (receiveMessage(sockfd, buffer, BUFFER_SIZE) != EXIT_SUCCESS) {

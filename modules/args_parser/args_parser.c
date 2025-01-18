@@ -6,6 +6,8 @@
 #include <stdio.h>
 #include <string.h>
 
+int EXTERN_PLAYER_NUMBER = 0; // Definition der Variable
+
 /**
  * Parse command-line arguments and populate the GameConfig structure.
  * Only -g is mandatory. -p and -c are optional.
@@ -46,6 +48,7 @@ bool parse_args(int argc, char *argv[], GameConfig *config) {
           return false;
         }
         config->player_number = argv[i + 1][0] - '0';
+        EXTERN_PLAYER_NUMBER = config->player_number;
         i++; // Skip the next argument since it has been processed
       } else {
         fprintf(stderr, "Fehler: -p benötigt einen Wert.\n");

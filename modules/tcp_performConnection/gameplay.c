@@ -10,7 +10,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-#define BUFFER_SIZE 1024
+#define BUFFER_SIZE 4096
 
 int handleWait(int sockfd, const char *waitLine) {
   if (sendMessage(sockfd, "OKWAIT\n") != EXIT_SUCCESS) {

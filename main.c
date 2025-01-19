@@ -18,7 +18,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-#define INITIAL_SIZE 1024
+#define INITIAL_SIZE 4096
 
 // ========================= GLOBAL VARIABLES ==========================
 int pipe_fd[2]; // Pipe file descriptors: [0] read, [1] write
@@ -205,6 +205,7 @@ static int create_pipe() {
     fprintf(stderr, "Failed to create pipe: %s\n", strerror(errno));
     return -1;
   }
+
   return 0;
 }
 
@@ -261,10 +262,8 @@ static void run_connector(GameConfig game_config, char *piece_data) {
 
   // Set the flag and populate game_data after successful connection
   shm_ptr->flag = 1;
-  strncpy(shm_ptr->game_data, "Current game state data...",
-          sizeof(shm_ptr->game_data) - 1);
-  shm_ptr->game_data[sizeof(shm_ptr->game_data) - 1] =
-    '\0'; // Ensure null-termination
+  snprintf(shm_ptr->game_data, sizeof(shm_ptr->game_data),
+           "Current game state data...");
 
   // Send SIGUSR1 signal to the Thinker process (Parent)
   if (kill(getppid(), SIGUSR1) == -1) {

@@ -8,7 +8,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#define MAX_PIECES 18
+#define MAX_PIECES 100
 
 void log_next_action(const char board[], char myPiece, char opponentPiece,
                      int placedPieces) {
@@ -42,9 +42,9 @@ int is_valid_position(const char *position) {
 }
 
 int think(char *gameState) {
-  printf("\n------------\n");
-  printf("%s\n", gameState);
-  printf("------------\n");
+//  printf("\n------------\n");
+//  printf("%s\n", gameState);
+//  printf("------------\n");
 
   char board[25];
   for (int i = 0; i < 25; i++) {
@@ -57,6 +57,11 @@ int think(char *gameState) {
 
   char *line = strtok(gameState, "\n");
   while (line != NULL) {
+//    printf("line: %s\n", line);
+//    printf("strncmp(line, \"+ PIECE\", 7) == 0: %d\n",
+//           strncmp(line, "+ PIECE", 7) == 0);
+//    printf("strlen(line) == 13: %d\n", strlen(line) == 13);
+
     if ((strncmp(line, "+ PIECE", 7) == 0) && strlen(line) == 13) {
       if (pieceCount < MAX_PIECES) {
         strncpy(positions[pieceCount], line + 7,
@@ -396,13 +401,13 @@ int think(char *gameState) {
          board[13], board[14], board[15], board[16], board[17], board[18],
          board[19], board[20], board[21], board[22], board[23]);
 
-  printf("--------------------\n");
-  for (int i = 0; i < 25; i++) {
-    if (occupiedPositions[i] == 1) {
-      printf("Occupied position: %s\n", occupiedStrings[i]);
-    }
-  }
-  printf("--------------------\n");
+//  printf("--------------------\n");
+//  for (int i = 0; i < 25; i++) {
+//    if (occupiedPositions[i] == 1) {
+//      printf("Occupied position: %s\n", occupiedStrings[i]);
+//    }
+//  }
+//  printf("--------------------\n");
 
   log_next_action(board, 'O', 'X', pieceCount);
 

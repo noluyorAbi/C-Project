@@ -42,6 +42,10 @@ int is_valid_position(const char *position) {
 }
 
 int think(char *gameState) {
+  printf("\n------------\n");
+  printf("%s\n", gameState);
+  printf("------------\n");
+
   char board[25];
   for (int i = 0; i < 25; i++) {
     board[i] = '+';
@@ -391,6 +395,14 @@ int think(char *gameState) {
          board[7], board[8], board[9], board[10], board[11], board[12],
          board[13], board[14], board[15], board[16], board[17], board[18],
          board[19], board[20], board[21], board[22], board[23]);
+
+  printf("--------------------\n");
+  for (int i = 0; i < 25; i++) {
+    if (occupiedPositions[i] == 1) {
+      printf("Occupied position: %s\n", occupiedStrings[i]);
+    }
+  }
+  printf("--------------------\n");
 
   log_next_action(board, 'O', 'X', pieceCount);
 

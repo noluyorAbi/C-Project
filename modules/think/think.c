@@ -1,344 +1,373 @@
 #include "think.h"
 
+#include "nmm.h"
+#include "util.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
-#define MAX_PIECES 18 // Maximale Anzahl an PIECEs
+#define MAX_PIECES 18
+
+void log_next_action(const char board[], char myPiece, char opponentPiece,
+                     int placedPieces) {
+  GameAction action =
+    determine_next_action(board, myPiece, opponentPiece, placedPieces);
+
+  switch (action) {
+  case SET:
+    printf("Next action: set a piece\n");
+    break;
+  case REMOVE:
+    printf("Next action: remove an opponent's piece\n");
+    break;
+  case MOVE:
+    printf("Next action: move a piece\n");
+    break;
+  case FINISHED:
+    printf("Game is over\n");
+    break;
+  default:
+    printf("Unknown action\n");
+  }
+}
+
+int is_valid_position(const char *position) {
+  if (strlen(position) != 2)
+    return 0;
+  char row = position[0];
+  char col = position[1];
+  return (row >= 'A' && row <= 'C') && (col >= '0' && col <= '7');
+}
 
 int think(char *gameState) {
+  printf("\n------------\n");
+  printf("%s\n", gameState);
+  printf("------------\n");
+
   char board[25];
   for (int i = 0; i < 25; i++) {
-    board[i] = '+'; // Replace 42 with your desired value
+    board[i] = '+';
   }
   printf("\nThinker: Received game state:\n");
 
-  // Array zur Speicherung der Positionen
-  char positions[MAX_PIECES][10]; // Angenommen: Maximal 100 Positionen, jede
-                                  // Position ist max. 10 Zeichen lang
+  char positions[MAX_PIECES][10];
   int pieceCount = 0;
 
-  // Zeilenweise parsen
   char *line = strtok(gameState, "\n");
   while (line != NULL) {
-    // Prüfen, ob die Zeile mit "+ PIECE" beginnt
     if ((strncmp(line, "+ PIECE", 7) == 0) && strlen(line) == 13) {
-      // Position extrahieren
       if (pieceCount < MAX_PIECES) {
         strncpy(positions[pieceCount], line + 7,
                 sizeof(positions[pieceCount]) - 1);
-        positions[pieceCount][sizeof(positions[pieceCount]) - 1] =
-          '\0'; // Null-terminieren
+        positions[pieceCount][sizeof(positions[pieceCount]) - 1] = '\0';
         pieceCount++;
       } else {
         fprintf(stderr, "Error: Too many PIECE entries!\n");
         break;
       }
     }
-    // Nächste Zeile
+
     line = strtok(NULL, "\n");
   }
-  /*
-    // Ausgabe der gespeicherten Positionen
-    // printf("Stored positions:\n");
-    for (int i = 0; i < pieceCount; i++) {
-      // printf("Position %c: %s\n", i, positions[i]);
-    }
-   */
-  // Switch case um Steine zu printen
+
+  int occupiedPositions[25] = {0};
+  char occupiedStrings[25][3];
+
   for (int i = 0; i < pieceCount; i++) {
     size_t len = strlen(positions[i]);
     if (len >= 2) {
       switch (positions[i][len - 6]) {
       case '0':
-        // printf("Der Buchstabe im String '%s' ist '0'\n", positions[i]);
         switch (positions[i][len - 2]) {
         case 'A':
-          // printf("Der Buchstabe im String '%s' ist 'A'\n", positions[i]);
           switch (positions[i][len - 1]) {
           case '0':
-            // printf("Wert ist A0\n");
             board[0] = 'O';
+            occupiedPositions[0] = 1;
+            strncpy(occupiedStrings[0], "A0", 3);
             break;
           case '1':
-            // printf("Wert ist A1\n");
             board[1] = 'O';
+            occupiedPositions[1] = 1;
+            strncpy(occupiedStrings[1], "A1", 3);
             break;
           case '2':
-            // printf("Wert ist A2\n");
             board[2] = 'O';
+            occupiedPositions[2] = 1;
+            strncpy(occupiedStrings[2], "A2", 3);
             break;
           case '3':
-            // printf("Wert ist A3\n");
             board[14] = 'O';
+            occupiedPositions[14] = 1;
+            strncpy(occupiedStrings[14], "A3", 3);
             break;
           case '4':
-            // printf("Wert ist A4\n");
             board[23] = 'O';
+            occupiedPositions[23] = 1;
+            strncpy(occupiedStrings[23], "A4", 3);
             break;
           case '5':
-            // printf("Wert ist A5\n");
             board[22] = 'O';
+            occupiedPositions[22] = 1;
+            strncpy(occupiedStrings[22], "A5", 3);
             break;
           case '6':
-            // printf("Wert ist A6\n");
             board[21] = 'O';
+            occupiedPositions[21] = 1;
+            strncpy(occupiedStrings[21], "A6", 3);
             break;
           case '7':
-            // printf("Wert ist A7\n");
             board[9] = 'O';
+            occupiedPositions[9] = 1;
+            strncpy(occupiedStrings[9], "A7", 3);
             break;
           default:
-            // printf("Wert ist nicht zwischen 0 und 7\n");
             break;
           }
           break;
         case 'B':
-          // printf("Der Buchstabe im String '%s' ist 'B'\n", positions[i]);
           switch (positions[i][len - 1]) {
           case '0':
-            // printf("Wert ist B0\n");
             board[3] = 'O';
+            occupiedPositions[3] = 1;
+            strncpy(occupiedStrings[3], "B0", 3);
             break;
           case '1':
-            // printf("Wert ist B1\n");
             board[4] = 'O';
+            occupiedPositions[4] = 1;
+            strncpy(occupiedStrings[4], "B1", 3);
             break;
           case '2':
-            // printf("Wert ist B2\n");
             board[5] = 'O';
+            occupiedPositions[5] = 1;
+            strncpy(occupiedStrings[5], "B2", 3);
             break;
           case '3':
-            // printf("Wert ist B3\n");
             board[13] = 'O';
+            occupiedPositions[13] = 1;
+            strncpy(occupiedStrings[13], "B3", 3);
             break;
           case '4':
-            // printf("Wert ist B4\n");
             board[20] = 'O';
+            occupiedPositions[20] = 1;
+            strncpy(occupiedStrings[20], "B4", 3);
             break;
           case '5':
-            // printf("Wert ist B5\n");
             board[19] = 'O';
+            occupiedPositions[19] = 1;
+            strncpy(occupiedStrings[19], "B5", 3);
             break;
           case '6':
-            // printf("Wert ist B6\n");
             board[18] = 'O';
+            occupiedPositions[18] = 1;
+            strncpy(occupiedStrings[18], "B6", 3);
             break;
           case '7':
-            // printf("Wert ist B7\n");
             board[10] = 'O';
+            occupiedPositions[10] = 1;
+            strncpy(occupiedStrings[10], "B7", 3);
             break;
           default:
-            // printf("Wert ist nicht zwischen 0 und 7\n");
             break;
           }
           break;
         case 'C':
-          // printf("Der Buchstabe im String '%s' ist 'C'\n", positions[i]);
           switch (positions[i][len - 1]) {
           case '0':
-            // printf("Wert ist C0\n");
             board[6] = 'O';
+            occupiedPositions[6] = 1;
+            strncpy(occupiedStrings[6], "C0", 3);
             break;
           case '1':
-            // printf("Wert ist C1\n");
             board[7] = 'O';
+            occupiedPositions[7] = 1;
+            strncpy(occupiedStrings[7], "C1", 3);
             break;
           case '2':
-            // printf("Wert ist C2\n");
             board[8] = 'O';
+            occupiedPositions[8] = 1;
+            strncpy(occupiedStrings[8], "C2", 3);
             break;
           case '3':
-            // printf("Wert ist C3\n");
             board[12] = 'O';
+            occupiedPositions[12] = 1;
+            strncpy(occupiedStrings[12], "C3", 3);
             break;
           case '4':
-            // printf("Wert ist C4\n");
             board[17] = 'O';
+            occupiedPositions[17] = 1;
+            strncpy(occupiedStrings[17], "C4", 3);
             break;
           case '5':
-            // printf("Wert ist C5\n");
             board[16] = 'O';
+            occupiedPositions[16] = 1;
+            strncpy(occupiedStrings[16], "C5", 3);
             break;
           case '6':
-            // printf("Wert ist C6\n");
             board[15] = 'O';
+            occupiedPositions[15] = 1;
+            strncpy(occupiedStrings[15], "C6", 3);
             break;
           case '7':
-            // printf("Wert ist C7\n");
             board[11] = 'O';
+            occupiedPositions[11] = 1;
+            strncpy(occupiedStrings[11], "C7", 3);
             break;
           default:
-            // printf("Wert ist nicht zwischen 0 und 7\n");
             break;
           }
           break;
         default:
-          printf("Der Buchstabe im String '%s' ist weder 'A', 'B' noch 'C' (er "
-                 "ist '%c')\n",
-                 positions[i], positions[i][len - 2]);
           break;
         }
         break;
       case '1':
-        // printf("Der Buchstabe im String '%s' ist '1'\n", positions[i]);
         switch (positions[i][len - 2]) {
         case 'A':
-          // printf("Der Buchstabe im String '%s' ist 'A'\n", positions[i]);
           switch (positions[i][len - 1]) {
           case '0':
-            // printf("Wert ist A0\n");
             board[0] = 'X';
-
+            occupiedPositions[0] = 1;
+            strncpy(occupiedStrings[0], "A0", 3);
             break;
           case '1':
-            // printf("Wert ist A1\n");
             board[1] = 'X';
-
+            occupiedPositions[1] = 1;
+            strncpy(occupiedStrings[1], "A1", 3);
             break;
           case '2':
-            // printf("Wert ist A2\n");
             board[2] = 'X';
-
+            occupiedPositions[2] = 1;
+            strncpy(occupiedStrings[2], "A2", 3);
             break;
           case '3':
-            // printf("Wert ist A3\n");
             board[14] = 'X';
-
+            occupiedPositions[14] = 1;
+            strncpy(occupiedStrings[14], "A3", 3);
             break;
           case '4':
-            // printf("Wert ist A4\n");
             board[23] = 'X';
-
+            occupiedPositions[23] = 1;
+            strncpy(occupiedStrings[23], "A4", 3);
             break;
           case '5':
-            // printf("Wert ist A5\n");
             board[22] = 'X';
-
+            occupiedPositions[22] = 1;
+            strncpy(occupiedStrings[22], "A5", 3);
             break;
           case '6':
-            // printf("Wert ist A6\n");
             board[21] = 'X';
-
+            occupiedPositions[21] = 1;
+            strncpy(occupiedStrings[21], "A6", 3);
             break;
           case '7':
-            // printf("Wert ist A7\n");
             board[9] = 'X';
-
+            occupiedPositions[9] = 1;
+            strncpy(occupiedStrings[9], "A7", 3);
             break;
           default:
-            // printf("Wert ist nicht zwischen 0 und 7\n");
             break;
           }
           break;
         case 'B':
-          // printf("Der Buchstabe im String '%s' ist 'B'\n", positions[i]);
           switch (positions[i][len - 1]) {
           case '0':
-            // printf("Wert ist B0\n");
             board[3] = 'X';
-
+            occupiedPositions[3] = 1;
+            strncpy(occupiedStrings[3], "B0", 3);
             break;
           case '1':
-            // printf("Wert ist B1\n");
             board[4] = 'X';
-
+            occupiedPositions[4] = 1;
+            strncpy(occupiedStrings[4], "B1", 3);
             break;
           case '2':
-            // printf("Wert ist B2\n");
             board[5] = 'X';
-
+            occupiedPositions[5] = 1;
+            strncpy(occupiedStrings[5], "B2", 3);
             break;
           case '3':
-            // printf("Wert ist B3\n");
             board[13] = 'X';
-
+            occupiedPositions[13] = 1;
+            strncpy(occupiedStrings[13], "B3", 3);
             break;
           case '4':
-            // printf("Wert ist B4\n");
             board[20] = 'X';
-
+            occupiedPositions[20] = 1;
+            strncpy(occupiedStrings[20], "B4", 3);
             break;
           case '5':
-            // printf("Wert ist B5\n");
             board[19] = 'X';
-
+            occupiedPositions[19] = 1;
+            strncpy(occupiedStrings[19], "B5", 3);
             break;
           case '6':
-            // printf("Wert ist B6\n");
             board[18] = 'X';
-
+            occupiedPositions[18] = 1;
+            strncpy(occupiedStrings[18], "B6", 3);
             break;
           case '7':
-            // printf("Wert ist B7\n");
             board[10] = 'X';
-
+            occupiedPositions[10] = 1;
+            strncpy(occupiedStrings[10], "B7", 3);
             break;
           default:
-            // printf("Wert ist nicht zwischen 0 und 7\n");
             break;
           }
           break;
         case 'C':
-          // printf("Der Buchstabe im String '%s' ist 'C'\n", positions[i]);
           switch (positions[i][len - 1]) {
           case '0':
-            // printf("Wert ist C0\n");
             board[6] = 'X';
-
+            occupiedPositions[6] = 1;
+            strncpy(occupiedStrings[6], "C0", 3);
             break;
           case '1':
-            // printf("Wert ist C1\n");
             board[7] = 'X';
-
+            occupiedPositions[7] = 1;
+            strncpy(occupiedStrings[7], "C1", 3);
             break;
           case '2':
-            // printf("Wert ist C2\n");
             board[8] = 'X';
-
+            occupiedPositions[8] = 1;
+            strncpy(occupiedStrings[8], "C2", 3);
             break;
           case '3':
-            // printf("Wert ist C3\n");
             board[12] = 'X';
-
+            occupiedPositions[12] = 1;
+            strncpy(occupiedStrings[12], "C3", 3);
             break;
           case '4':
-            // printf("Wert ist C4\n");
             board[17] = 'X';
-
+            occupiedPositions[17] = 1;
+            strncpy(occupiedStrings[17], "C4", 3);
             break;
           case '5':
-            // printf("Wert ist C5\n");
             board[16] = 'X';
-
+            occupiedPositions[16] = 1;
+            strncpy(occupiedStrings[16], "C5", 3);
             break;
           case '6':
-            // printf("Wert ist C6\n");
             board[15] = 'X';
-
+            occupiedPositions[15] = 1;
+            strncpy(occupiedStrings[15], "C6", 3);
             break;
           case '7':
-            // printf("Wert ist C7\n");
             board[11] = 'X';
-
+            occupiedPositions[11] = 1;
+            strncpy(occupiedStrings[11], "C7", 3);
             break;
           default:
-            // printf("Wert ist nicht zwischen 0 und 7\n");
             break;
           }
           break;
         default:
-          printf("Der Buchstabe im String '%s' ist weder 'A', 'B' noch 'C'(er "
-                 "ist '%c')\n",
-                 positions[i], positions[i][len - 2]);
           break;
         }
         break;
       default:
-        printf(
-          "Der Buchstabe im String '%s' ist weder '0' noch '1' (er ist '%c')\n",
-          positions[i], positions[i][len - 2]);
         break;
       }
     } else {
@@ -367,13 +396,27 @@ int think(char *gameState) {
          board[13], board[14], board[15], board[16], board[17], board[18],
          board[19], board[20], board[21], board[22], board[23]);
 
-  // Write to the pipe
-  char *move = "PLAY A1\n";
+  printf("--------------------\n");
+  for (int i = 0; i < 25; i++) {
+    if (occupiedPositions[i] == 1) {
+      printf("Occupied position: %s\n", occupiedStrings[i]);
+    }
+  }
+  printf("--------------------\n");
+
+  log_next_action(board, 'O', 'X', pieceCount);
+
+  char *move = find_next_free_spot(board, occupiedPositions);
+  if (move == NULL) {
+    fprintf(stderr, "Thinker: No free spots left!\n");
+    return EXIT_FAILURE;
+  }
+
   if (write(pipe_fd[1], move, strlen(move)) == -1) {
     fprintf(stderr, "Thinker: Failed to write to the pipe.\n");
     return EXIT_FAILURE;
   }
 
-  fprintf(stdout, "Thinker: Wrote to the pipe sucessfully.\n");
+  fprintf(stdout, "Thinker: Wrote '%s' to the pipe successfully.\n", move);
   return EXIT_SUCCESS;
 }

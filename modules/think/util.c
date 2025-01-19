@@ -1,74 +1,149 @@
 #include "util.h"
 
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
-#define false 0
-#define true 1
-typedef int bool;
 
-void place_piece_on_board(char board[], const char *position) {
-  if (strlen(position) < 2) {
-    printf("Invalid position string '%s'.\n", position);
-    return;
+int get_board_index(const char *position) {
+  size_t len = strlen(position);
+  if (len < 2) {
+    printf("String '%s' ist zu kurz, um den Buchstaben zu überprüfen.\n",
+           position);
+    return -1;
   }
 
-  char prefix = position[strlen(position) - 6];
-  char row = position[strlen(position) - 2];
-  char col = position[strlen(position) - 1];
+  char row = position[len - 2];
+  char col = position[len - 1];
 
-  int base_index;
+  int board_index = -1;
 
   switch (row) {
   case 'A':
-    base_index = 0;
+    switch (col) {
+    case '0':
+      board_index = 0;
+      break;
+    case '1':
+      board_index = 1;
+      break;
+    case '2':
+      board_index = 2;
+      break;
+    case '3':
+      board_index = 14;
+      break;
+    case '4':
+      board_index = 23;
+      break;
+    case '5':
+      board_index = 22;
+      break;
+    case '6':
+      board_index = 21;
+      break;
+    case '7':
+      board_index = 9;
+      break;
+    default:
+      printf("Ungültige Spalte '%c' in Position '%s'.\n", col, position);
+      return -1;
+    }
     break;
   case 'B':
-    base_index = 3;
+    switch (col) {
+    case '0':
+      board_index = 3;
+      break;
+    case '1':
+      board_index = 4;
+      break;
+    case '2':
+      board_index = 5;
+      break;
+    case '3':
+      board_index = 13;
+      break;
+    case '4':
+      board_index = 20;
+      break;
+    case '5':
+      board_index = 19;
+      break;
+    case '6':
+      board_index = 18;
+      break;
+    case '7':
+      board_index = 10;
+      break;
+    default:
+      printf("Ungültige Spalte '%c' in Position '%s'.\n", col, position);
+      return -1;
+    }
     break;
   case 'C':
-    base_index = 6;
+    switch (col) {
+    case '0':
+      board_index = 6;
+      break;
+    case '1':
+      board_index = 7;
+      break;
+    case '2':
+      board_index = 8;
+      break;
+    case '3':
+      board_index = 12;
+      break;
+    case '4':
+      board_index = 17;
+      break;
+    case '5':
+      board_index = 16;
+      break;
+    case '6':
+      board_index = 15;
+      break;
+    case '7':
+      board_index = 11;
+      break;
+    default:
+      printf("Ungültige Spalte '%c' in Position '%s'.\n", col, position);
+      return -1;
+    }
     break;
   default:
-    printf("Invalid row character '%c' in position '%s'.\n", row, position);
+    printf("Ungültige Reihe '%c' in Position '%s'.\n", row, position);
+    return -1;
+  }
+
+  return board_index;
+}
+
+void place_piece_on_board_util(char board[], const char *position) {
+  size_t len = strlen(position);
+  if (len < 6) {
+    printf("String '%s' ist zu kurz, um den Buchstaben zu überprüfen.\n",
+           position);
     return;
   }
 
-  int col_index = col - '0';
-  if (col_index < 0 || col_index > 7) {
-    printf("Invalid column character '%c' in position '%s'.\n", col, position);
+  char prefix = position[len - 6];
+  int board_index = get_board_index(position);
+
+  if (board_index == -1) {
     return;
   }
-
-  int board_index = base_index + col_index;
 
   if (prefix == '0') {
     board[board_index] = 'O';
   } else if (prefix == '1') {
     board[board_index] = 'X';
   } else {
-    printf("Invalid prefix character '%c' in position '%s'.\n", prefix,
-           position);
+    printf("Ungültiger Präfix '%c' in Position '%s'.\n", prefix, position);
   }
 }
 
 int is_position_free(const char board[], char row, char col) {
-  int base_index;
-
-  switch (row) {
-  case 'A':
-    base_index = 0;
-    break;
-  case 'B':
-    base_index = 3;
-    break;
-  case 'C':
-    base_index = 6;
-    break;
-  default:
-    return 0;
-  }
+  int base_index = (row - 'A') * 8;
 
   int col_index = col - '0';
   if (col_index < 0 || col_index > 7) {
@@ -97,62 +172,6 @@ char *find_next_free_spot(const char board[]) {
   }
 
   return NULL;
-}
-
-int check_miller(const char board[], char last_row, char last_col,
-                 char player_piece) {
-  static const int mills[8][3] = {{0, 1, 2}, {3, 4, 5}, {6, 7, 8}, {0, 3, 6},
-                                  {1, 4, 7}, {2, 5, 8}, {0, 4, 8}, {2, 4, 6}};
-
-  int base_index;
-  switch (last_row) {
-  case 'A':
-    base_index = 0;
-    break;
-  case 'B':
-    base_index = 3;
-    break;
-  case 'C':
-    base_index = 6;
-    break;
-  default:
-    return 0;
-  }
-
-  int col_index = last_col - '0';
-  if (col_index < 0 || col_index > 7) {
-    return 0;
-  }
-
-  int last_move_index = base_index + col_index;
-
-  for (int i = 0; i < 8; i++) {
-    int mill[3] = {mills[i][0], mills[i][1], mills[i][2]};
-
-    int last_move_in_mill = 0;
-    for (int j = 0; j < 3; j++) {
-      if (mill[j] == last_move_index) {
-        last_move_in_mill = 1;
-        break;
-      }
-    }
-
-    if (last_move_in_mill) {
-      int is_mill = 1;
-      for (int j = 0; j < 3; j++) {
-        if (board[mill[j]] != player_piece) {
-          is_mill = 0;
-          break;
-        }
-      }
-
-      if (is_mill) {
-        return 1;
-      }
-    }
-  }
-
-  return 0;
 }
 
 static const int all_mills[][3] = {{0, 1, 2}, {3, 4, 5}, {6, 7, 8}, {0, 3, 6},

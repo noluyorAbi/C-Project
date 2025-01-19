@@ -142,43 +142,27 @@ void place_piece_on_board(char board[], const char *position) {
   }
 }
 
-int is_position_free(const char board[], char row, char col) {
-  int base_index = (row - 'A') * 8;
+int is_position_free(const int occupiedPositions[], char row, char col) {
+  char pos[3];
+  pos[0] = row;
+  pos[1] = col;
+  pos[2] = '\0';
 
-  int col_index = col - '0';
-  if (col_index < 0 || col_index > 7) {
+  int board_index = get_board_index(pos);
+  if (board_index == -1) {
     return 0;
   }
-
-  int board_index = base_index + col_index;
-  return (board[board_index] == '+');
+  return (occupiedPositions[board_index] == 0);
 }
 
-char *find_next_free_spot(const char board[]) {
-  static char move[16];
-
-  char row;
-  int col_num;
-  char col;
-
-  for (row = 'A'; row <= 'C'; row++) {
-    for (col_num = 0; col_num <= 7; col_num++) {
-      col = (char) ('0' + col_num);
-      if (is_position_free(board, row, col)) {
-        snprintf(move, sizeof(move), "PLAY %c%c\n", row, col);
-        return move;
-      }
-    }
-  }
-
-  return NULL;
-}
-
-static const int all_mills[][3] = {{0, 1, 2}, {3, 4, 5}, {6, 7, 8}, {0, 3, 6},
-                                   {1, 4, 7}, {2, 5, 8}, {0, 4, 8}, {2, 4, 6}};
+static const int all_mills[][3] = {
+  {0, 1, 2},    {3, 4, 5},    {6, 7, 8},    {9, 10, 11},
+  {12, 13, 14}, {15, 16, 17}, {18, 19, 20}, {21, 22, 23},
+  {0, 9, 21},   {3, 10, 18},  {6, 11, 15},  {1, 4, 7},
+  {16, 19, 22}, {8, 12, 17},  {5, 13, 20},  {2, 14, 23}};
 
 int is_in_mill(const char board[], int index) {
-  if (board[index] == '+' || board[index] == 'C') {
+  if (board[index] != 'X' && board[index] != 'O') {
     return 0;
   }
 
@@ -195,6 +179,69 @@ int is_in_mill(const char board[], int index) {
     }
   }
   return 0;
+}
+
+char *find_next_free_spot(const char board[], const int occupiedPositions[]) {
+  static char move[16];
+
+  typedef struct {
+    char row;
+    char col;
+    int index;
+  } FreePos;
+
+  FreePos freePositions[24];
+  int freeCount = 0;
+
+  for (char row = 'A'; row <= 'C'; row++) {
+    for (int col_num = 0; col_num <= 7; col_num++) {
+      char col = (char) ('0' + col_num);
+
+      if (is_position_free(occupiedPositions, row, col)) {
+        char tempStr[3];
+        tempStr[0] = row;
+        tempStr[1] = col;
+        tempStr[2] = '\0';
+
+        int idx = get_board_index(tempStr);
+        if (idx >= 0 && idx < 25) {
+          freePositions[freeCount].row = row;
+          freePositions[freeCount].col = col;
+          freePositions[freeCount].index = idx;
+          freeCount++;
+        }
+      }
+    }
+  }
+
+  if (freeCount == 0) {
+    return NULL;
+  }
+
+  char tempBoard[25];
+  memcpy(tempBoard, board, 25);
+
+  for (int i = 0; i < freeCount; i++) {
+    int idx = freePositions[i].index;
+    if (can_form_mill(tempBoard, idx, 'O')) {
+      snprintf(move, sizeof(move), "PLAY %c%c\n", freePositions[i].row,
+               freePositions[i].col);
+      return move;
+    }
+  }
+
+  for (int i = 0; i < freeCount; i++) {
+    int idx = freePositions[i].index;
+    if (can_form_mill(tempBoard, idx, 'X')) {
+      snprintf(move, sizeof(move), "PLAY %c%c\n", freePositions[i].row,
+               freePositions[i].col);
+      return move;
+    }
+  }
+
+  snprintf(move, sizeof(move), "PLAY %c%c\n", freePositions[0].row,
+           freePositions[0].col);
+  return move;
 }
 
 int check_removable(const char board[], char myPiece, char opponentPiece) {
@@ -223,6 +270,18 @@ int check_removable(const char board[], char myPiece, char opponentPiece) {
   }
 
   return -1;
+}
+
+int can_form_mill(char board[], int pos, char myPiece) {
+  if (board[pos] != '+') {
+    return 0;
+  }
+
+  board[pos] = myPiece;
+  int result = is_in_mill(board, pos);
+  board[pos] = '+';
+
+  return result;
 }
 
 void remove_stone(char board[], int index) {

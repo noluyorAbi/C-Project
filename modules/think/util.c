@@ -118,7 +118,7 @@ int get_board_index(const char *position) {
   return board_index;
 }
 
-void place_piece_on_board_util(char board[], const char *position) {
+void place_piece_on_board(char board[], const char *position) {
   size_t len = strlen(position);
   if (len < 6) {
     printf("String '%s' ist zu kurz, um den Buchstaben zu überprüfen.\n",

@@ -181,6 +181,7 @@ int performConnection(int sockfd, char *GAME_ID, char *piece_data) {
     return EXIT_FAILURE;
   }
 
+  // TODO: Ask Rufus about this
   if (strncmp(buffer, "+ YOU", 5) != 0) {
     fprintf(stderr,
             "Der Player den sie ausgewählt haben in -p <1|2> ist nicht "
@@ -188,8 +189,12 @@ int performConnection(int sockfd, char *GAME_ID, char *piece_data) {
             buffer);
     return EXIT_FAILURE;
   }
-  fprintf(stdout, "Du bist Spieler 0.\n"); // TODO das it falsch und nicht
-                                           // responsiv zur -p flag
+
+  if (EXTERN_PLAYER_NUMBER == 0) {
+    fprintf(stdout, "Du bist Spieler 0.\n");
+  } else {
+    fprintf(stdout, "Du bist Spieler 1.\n");
+  }
 
   // 10. Receive total number of players
   if (receiveMessage(sockfd, buffer, BUFFER_SIZE) != EXIT_SUCCESS) {

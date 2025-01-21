@@ -92,7 +92,7 @@ int removeSharedMemory(int shmid) {
  * @param connectorPID The PID of the connector process.
  * @return The shared memory ID on success, or a negative error code on failure.
  */
-int initSharedMemory(int numPlayers, const char *gameName, int playerNumber,
+int initSharedMemory(int numPlayers, char *gameName, int playerNumber,
                      pid_t thinkerPID, pid_t connectorPID) {
   // Validate if gameName is NULL
   if (gameName == NULL) {

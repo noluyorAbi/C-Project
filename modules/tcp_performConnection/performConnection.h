@@ -1,7 +1,12 @@
 #ifndef PERFORMCONNECTION_H
 #define PERFORMCONNECTION_H
 
+#include "./shared_memory/shared_memory.h"
+
 #include <stddef.h>
+
+extern int shmid_info;         // ID des neuen "Initial Game Info" SHM-Bereichs
+extern SharedMemory *shm_info; // Pointer auf das SHM-Segment mit Spiel-Infos
 
 /**
  * @brief Sends a message over the socket.

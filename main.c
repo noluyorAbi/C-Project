@@ -149,11 +149,11 @@ int main(int argc, char *argv[]) {
   // ----------------------------------------------------
   // 2A) NEUER SHM-BEREICH für "Initial Game Info" anlegen:
   shmid_info = initSharedMemory(
-    game_config.player_number,              // Anzahl Spieler
-    game_config.game_id,                    // Spielname (gameName)
+    game_config.player_number, // Anzahl Spieler
+    /* gameName=*/"",          // Spielname (gameName) wird später gesetzt
     /* playerNumber=*/EXTERN_PLAYER_NUMBER, // Beispiel: Wir sind Spieler 1
-    /* thinkerPID=*/0,                      // Wird ggf. später gesetzt // TODO
-    /* connectorPID=*/0                     // Wird ggf. später gesetzt //TODO
+    /* thinkerPID=*/0,                      // Wird ggf. später gesetzt
+    /* connectorPID=*/0                     // Wird ggf. später gesetzt
   );
   if (shmid_info < 0) {
     fprintf(stderr, "[ERROR] initSharedMemory for game info failed.\n");
@@ -220,6 +220,9 @@ int main(int argc, char *argv[]) {
     }
     return EXIT_FAILURE;
   }
+
+  // Save process ID of thinker in first SHM
+  shm_info->thinkerPID = getpid();
 
   // Fork processes for connector and thinker logic
   return fork_processes(game_config, piece_data);
@@ -323,6 +326,9 @@ static int fork_processes(GameConfig game_config, char *piece_data) {
     run_thinker(pid);
   }
 
+  // Save process ID of connector in first SHM
+  shm_info->connectorPID = pid;
+
   return EXIT_SUCCESS;
 }
 
@@ -411,6 +417,7 @@ static void run_thinker(pid_t pid) {
       if (shm_ptr->flag) {
         // -- DEBUG: Board-SHM vor dem Zug ausgeben --
         debug_print_board_shm(shm_ptr);
+        debug_print_info_shm(shm_info);
 
         // Make a move (z.B. in deinem think-Modul)
         think(shm_ptr->game_data);

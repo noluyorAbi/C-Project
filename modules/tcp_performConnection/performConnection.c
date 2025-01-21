@@ -146,6 +146,15 @@ int performConnection(int sockfd, char *GAME_ID, char *piece_data) {
     return EXIT_FAILURE;
   }
   fprintf(stdout, "Der Spielname lautet: %s", buffer + 2);
+  strncpy(shm_info->gameName, buffer + 2, sizeof(shm_info->gameName) - 1);
+  shm_info->gameName[sizeof(shm_info->gameName) - 1] =
+    '\0'; // Null-Terminierung sicherstellen
+
+  // Entferne ein eventuell vorhandenes Newline-Zeichen
+  char *newline = strchr(shm_info->gameName, '\n');
+  if (newline) {
+    *newline = '\0'; // Ersetze \n durch \0
+  }
 
   // 8. Send PLAYER command (no additional values)
   // `Geben Sie beim PLAYER-Kommando keine Werte mit und lassen Sie sich vom

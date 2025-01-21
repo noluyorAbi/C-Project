@@ -196,6 +196,18 @@ int performConnection(int sockfd, char *GAME_ID, char *piece_data) {
     fprintf(stdout, "Du bist Spieler 1.\n");
   }
 
+  // Save our player info to SHM
+  int our_player_number;
+  char our_player_name[50];
+  if (sscanf(buffer, "+ YOU %d %49s", &our_player_number, our_player_name)
+      == 2) {
+    shm_info->players[our_player_number].playerNumber = our_player_number;
+    snprintf(shm_info->players[our_player_number].playerName,
+             sizeof(shm_info->players[our_player_number].playerName), "%s",
+             our_player_name);
+    shm_info->players[our_player_number].isRegistered = true;
+  }
+  
   // 10. Receive total number of players
   if (receiveMessage(sockfd, buffer, BUFFER_SIZE) != EXIT_SUCCESS) {
     return EXIT_FAILURE;
@@ -232,6 +244,14 @@ int performConnection(int sockfd, char *GAME_ID, char *piece_data) {
       printf("Spieler %d (%s) ist %s.\n", other_player_number,
              other_player_name,
              other_player_readiness == 1 ? "bereit" : "noch nicht bereit");
+
+      // Save other player info to SHM
+      shm_info->players[other_player_number].playerNumber = other_player_number;
+      snprintf(shm_info->players[other_player_number].playerName,
+               sizeof(shm_info->players[other_player_number].playerName), "%s",
+               other_player_name);
+      shm_info->players[other_player_number].isRegistered =
+        other_player_readiness;
     } else {
       fprintf(stderr, "Unknown player info: %s\n", buffer);
     }

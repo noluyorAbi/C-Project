@@ -68,8 +68,9 @@ static void debug_print_info_shm(const SharedMemory *s) {
 
   // Spielerarray
   for (int i = 0; i < s->playerCount; i++) {
-    fprintf(stdout, "    Player[%d]: number=%d, name='%s', isRegistered=%d\n",
-            i, s->players[i].playerNumber, s->players[i].playerName,
+    fprintf(stdout,
+            "    Player[%d]: number = %d, name = '%s', isRegistered = %d\n", i,
+            s->players[i].playerNumber, s->players[i].playerName,
             s->players[i].isRegistered);
   }
   fprintf(stdout, "[DEBUG] Ende SHM-INFO\n\n");
@@ -170,7 +171,7 @@ int main(int argc, char *argv[]) {
 
   // Spielerfelder ggf. initialisieren
   for (int i = 0; i < game_config.player_number; i++) {
-    shm_info->players[i].playerNumber = i + 1;
+    shm_info->players[i].playerNumber = i;
     shm_info->players[i].playerName[0] = '\0';
     shm_info->players[i].isRegistered = false;
   }

@@ -38,7 +38,7 @@ SharedMemory *shm_info = NULL; // Pointer auf das SHM-Segment mit Spiel-Infos
 // Structure for Shared Memory with a flag (Board/Data SHM)
 typedef struct {
   int flag; // 1 indicates that a new move should be calculated
-  char game_data[INITIAL_SIZE - sizeof(int)]; // Game state data
+  char game_data[INITIAL_SIZE]; // Game state data
 } shm_data_t;
 
 // Pointer to the SHM structure
@@ -88,7 +88,7 @@ static void debug_print_board_shm(const shm_data_t *b) {
 
   fprintf(stdout, "\n[DEBUG] BOARD-SHM (Spielzustand):\n");
   fprintf(stdout, "  flag         = %d\n", b->flag);
-  fprintf(stdout, "  game_data    = '%s'\n", b->game_data);
+  fprintf(stdout, "  game_data    = '%s'\n", b->game_data - sizeof(int));
   fprintf(stdout, "[DEBUG] Ende BOARD-SHM\n\n");
 }
 
@@ -96,6 +96,7 @@ static void debug_print_board_shm(const shm_data_t *b) {
 static int initialize_game(int argc, char *argv[], GameConfig *game_config,
                            Config *app_config);
 static void createBoardMemory(); // Creates second SHM segment for board
+static void attachBoardMemory(); // Attaches second SHM segment for board
 static int create_pipe();
 static int fork_processes(GameConfig game_config, char *piece_data);
 static void run_connector(GameConfig game_config, char *piece_data);
@@ -184,16 +185,6 @@ int main(int argc, char *argv[]) {
   // 2B) Bestehendes SHM-Segment anlegen (Board / Spielzustand):
   createBoardMemory();
 
-  // Cast shm to shm_data_t structure
-  shm_ptr = (shm_data_t *) shm;
-
-  // Initialize flag and game_data in SHM
-  shm_ptr->flag = 0;
-  memset(shm_ptr->game_data, 0, sizeof(shm_ptr->game_data));
-
-  // -- DEBUG-AUSGABE Board-SHM nach Initialisierung --
-  debug_print_board_shm(shm_ptr);
-
   // Create buffer to store piece data (game state data)
   char piece_data[INITIAL_SIZE] = "";
 
@@ -274,7 +265,12 @@ static void createBoardMemory() {
   } else {
     fprintf(stdout, "Shared memory creation for board was successful.\n");
   }
+}
 
+/**
+ * @brief Attaches SHM segment for the game state (Board).
+ */
+static void attachBoardMemory() {
   // Attach SHM segment to the process's address space
   shm = (char *) shmat(shmid, NULL, 0);
   if (shm == (char *) -1) {
@@ -286,8 +282,6 @@ static void createBoardMemory() {
 
   // Initialize the SHM structure
   shm_ptr = (shm_data_t *) shm;
-  shm_ptr->flag = 0;
-  memset(shm_ptr->game_data, 0, sizeof(shm_ptr->game_data));
 }
 
 /**
@@ -345,6 +339,11 @@ static void run_connector(GameConfig game_config, char *piece_data) {
     fprintf(stderr, "Connector: Error closing write end of the pipe: %s\n",
             strerror(errno));
   }
+
+  attachBoardMemory();
+
+  shm_ptr->flag = 0;
+  memset(shm_ptr->game_data, 0, sizeof(shm_ptr->game_data));
 
   // Establish connection
   if (createConnection(game_config.game_id, piece_data) != 0) {
@@ -410,6 +409,8 @@ static void run_thinker(pid_t pid) {
   // Main loop to wait for signals
   while (1) {
     pause(); // Wait for any signal
+
+    attachBoardMemory();
 
     if (sig_received) {
       sig_received = 0; // Reset the flag

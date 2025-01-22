@@ -1,6 +1,7 @@
 #include "performConnection.h"
 
 #include "../args_parser/args_parser.h"
+#include "../shared_memory/shared_memory.h"
 #include "gameplay.h"
 
 #include <errno.h>
@@ -207,7 +208,7 @@ int performConnection(int sockfd, char *GAME_ID, char *piece_data) {
              our_player_name);
     shm_info->players[our_player_number].isRegistered = true;
   }
-  
+
   // 10. Receive total number of players
   if (receiveMessage(sockfd, buffer, BUFFER_SIZE) != EXIT_SUCCESS) {
     return EXIT_FAILURE;

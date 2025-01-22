@@ -1,7 +1,7 @@
 #ifndef PERFORMCONNECTION_H
 #define PERFORMCONNECTION_H
 
-#include "./shared_memory/shared_memory.h"
+#include "../shared_memory/shared_memory.h"
 
 #include <stddef.h>
 

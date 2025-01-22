@@ -152,7 +152,7 @@ int main(int argc, char *argv[]) {
   // 2A) NEUER SHM-BEREICH für "Initial Game Info" anlegen:
   shmid_info = initSharedMemory(
     game_config.player_number, // Anzahl Spieler
-    /* gameName=*/(char *)"",          // Spielname (gameName) wird später gesetzt
+    /* gameName=*/"",          // Spielname (gameName) wird später gesetzt
     /* playerNumber=*/EXTERN_PLAYER_NUMBER, // Beispiel: Wir sind Spieler 1
     /* thinkerPID=*/0,                      // Wird ggf. später gesetzt
     /* connectorPID=*/0                     // Wird ggf. später gesetzt

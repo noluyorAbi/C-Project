@@ -81,7 +81,7 @@ int removeSharedMemory(int shmid);
  * @return int The ID of the shared memory segment or an error code (see
  * ShmError).
  */
-int initSharedMemory(int numPlayers, char *gameName, int playerNumber,
+int initSharedMemory(int numPlayers, const char *gameName, int playerNumber,
                      pid_t thinkerPID, pid_t connectorPID);
 
 /**

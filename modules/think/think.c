@@ -8,7 +8,15 @@
 #include <string.h>
 #include <unistd.h>
 
-#define MAX_PIECES 100
+#define MAX_PIECES 1000
+
+static const int adjacency_list[24][4] = {
+  {1, 9, -1},       {0, 2, 4, -1},   {1, 14, -1},      {4, 10, -1},
+  {3, 5, 1, 13},    {4, 13, -1},     {7, 11, -1},      {6, 8, 12, -1},
+  {7, 12, -1},      {0, 10, 21, -1}, {3, 9, 11, 18},   {6, 10, 15, -1},
+  {8, 13, 17, -1},  {4, 12, 14, 20}, {2, 13, 23, -1},  {11, 16, -1},
+  {15, 17, 19, -1}, {12, 16, -1},    {10, 19, -1},     {16, 18, 20, -1},
+  {13, 19, -1},     {9, 22, -1},     {21, 23, 19, -1}, {14, 22, -1}};
 
 void log_next_action(const char board[], char myPiece, char opponentPiece,
                      int placedPieces) {
@@ -42,9 +50,9 @@ int is_valid_position(const char *position) {
 }
 
 int think(char *gameState) {
-//  printf("\n------------\n");
-//  printf("%s\n", gameState);
-//  printf("------------\n");
+  //  printf("\n------------\n");
+  //  printf("%s\n", gameState);
+  //  printf("------------\n");
 
   char board[25];
   for (int i = 0; i < 25; i++) {
@@ -57,10 +65,10 @@ int think(char *gameState) {
 
   char *line = strtok(gameState, "\n");
   while (line != NULL) {
-//    printf("line: %s\n", line);
-//    printf("strncmp(line, \"+ PIECE\", 7) == 0: %d\n",
-//           strncmp(line, "+ PIECE", 7) == 0);
-//    printf("strlen(line) == 13: %d\n", strlen(line) == 13);
+    //    printf("line: %s\n", line);
+    //    printf("strncmp(line, \"+ PIECE\", 7) == 0: %d\n",
+    //           strncmp(line, "+ PIECE", 7) == 0);
+    //    printf("strlen(line) == 13: %d\n", strlen(line) == 13);
 
     if ((strncmp(line, "+ PIECE", 7) == 0) && strlen(line) == 13) {
       if (pieceCount < MAX_PIECES) {
@@ -401,27 +409,122 @@ int think(char *gameState) {
          board[13], board[14], board[15], board[16], board[17], board[18],
          board[19], board[20], board[21], board[22], board[23]);
 
-//  printf("--------------------\n");
-//  for (int i = 0; i < 25; i++) {
-//    if (occupiedPositions[i] == 1) {
-//      printf("Occupied position: %s\n", occupiedStrings[i]);
-//    }
-//  }
-//  printf("--------------------\n");
+  //  printf("--------------------\n");
+  //  for (int i = 0; i < 25; i++) {
+  //    if (occupiedPositions[i] == 1) {
+  //      printf("Occupied position: %s\n", occupiedStrings[i]);
+  //    }
+  //  }
+  //  printf("--------------------\n");
+
+  int numberOfMyPieces = count_pieces(board, 'O');
 
   log_next_action(board, 'O', 'X', pieceCount);
+  GameAction action = determine_next_action(board, 'O', 'X', numberOfMyPieces);
+  if (action == SET) {
+    char *move = find_next_free_spot(board, occupiedPositions);
+    if (move == NULL) {
+      fprintf(stderr, "Thinker: No free spots left!\n");
+      return EXIT_FAILURE;
+    }
 
-  char *move = find_next_free_spot(board, occupiedPositions);
-  if (move == NULL) {
-    fprintf(stderr, "Thinker: No free spots left!\n");
+    if (write(pipe_fd[1], move, strlen(move)) == -1) {
+      fprintf(stderr, "Thinker: Failed to write to the pipe.\n");
+      return EXIT_FAILURE;
+    }
+  } else if (action == REMOVE) {
+    int remove_index = check_removable(board, 'O', 'X');
+    if (remove_index == -1) {
+      fprintf(stderr, "Thinker: No removable opponent pieces found.\n");
+      return EXIT_FAILURE;
+    }
+    const char *pos = index_to_position(remove_index);
+    if (!pos) {
+      fprintf(stderr, "Thinker: Invalid remove index %d.\n", remove_index);
+      return EXIT_FAILURE;
+    }
+    char command[16];
+    snprintf(command, sizeof(command), "PLAY %s\n", pos);
+    if (write(pipe_fd[1], command, strlen(command)) == -1) {
+      fprintf(stderr, "Thinker: Failed to write to the pipe.\n");
+      return EXIT_FAILURE;
+    }
+    fprintf(stdout, "Thinker: Wrote '%s' to the pipe successfully.\n", command);
+    return EXIT_SUCCESS;
+  } else if (action == MOVE) {
+    struct Move {
+      int from;
+      int to;
+    };
+
+    struct Move moves[100];
+    int moveCount = 0;
+
+    for (int i = 0; i < 24; i++) {
+      if (board[i] == 'O') {
+        for (int j = 0; j < 4; j++) {
+          int adj = adjacency_list[i][j];
+          if (adj == -1)
+            break;
+          if (adj < 0 || adj >= 24)
+            continue;
+          if (board[adj] == '+') {
+            moves[moveCount].from = i;
+            moves[moveCount].to = adj;
+            moveCount++;
+            if (moveCount >= 100)
+              break;
+          }
+        }
+        if (moveCount >= 100)
+          break;
+      }
+    }
+
+    if (moveCount == 0) {
+      fprintf(stderr, "Thinker: No moves available.\n");
+      return EXIT_FAILURE;
+    }
+
+    int selected_move = -1;
+    for (int i = 0; i < moveCount; i++) {
+      char tempBoard[24];
+      memcpy(tempBoard, board, 24);
+      tempBoard[moves[i].from] = '+';
+      tempBoard[moves[i].to] = 'O';
+      if (is_in_mill(tempBoard, moves[i].to)) {
+        selected_move = i;
+        break;
+      }
+    }
+
+    if (selected_move == -1) {
+      selected_move = 0;
+    }
+
+    const char *from_pos = index_to_position(moves[selected_move].from);
+    const char *to_pos = index_to_position(moves[selected_move].to);
+
+    if (!from_pos || !to_pos) {
+      fprintf(stderr, "Thinker: Invalid move positions.\n");
+      return EXIT_FAILURE;
+    }
+
+    char command[32];
+    snprintf(command, sizeof(command), "PLAY %s:%s\n", from_pos, to_pos);
+    if (write(pipe_fd[1], command, strlen(command)) == -1) {
+      fprintf(stderr, "Thinker: Failed to write to the pipe.\n");
+      return EXIT_FAILURE;
+    }
+    fprintf(stdout, "Thinker: Wrote '%s' to the pipe successfully.\n", command);
+    return EXIT_SUCCESS;
+  } else if (action == FINISHED) {
+    printf("Game is over\n");
+    return EXIT_SUCCESS;
+  } else {
+    fprintf(stderr, "Unknown action\n");
     return EXIT_FAILURE;
   }
 
-  if (write(pipe_fd[1], move, strlen(move)) == -1) {
-    fprintf(stderr, "Thinker: Failed to write to the pipe.\n");
-    return EXIT_FAILURE;
-  }
-
-  fprintf(stdout, "Thinker: Wrote '%s' to the pipe successfully.\n", move);
   return EXIT_SUCCESS;
 }

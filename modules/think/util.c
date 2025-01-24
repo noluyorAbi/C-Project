@@ -118,6 +118,15 @@ int get_board_index(const char *position) {
   return board_index;
 }
 
+const char *index_to_position(int index) {
+  static const char *positions[] = {
+    "A0", "A1", "A2", "B0", "B1", "B2", "C0", "C1", "C2", "A7", "B7", "C7",
+    "C3", "B3", "A3", "C6", "C5", "C4", "B6", "B5", "B4", "A6", "A5", "A4"};
+  if (index < 0 || index >= 24)
+    return NULL;
+  return positions[index];
+}
+
 void place_piece_on_board(char board[], const char *position) {
   size_t len = strlen(position);
   if (len < 6) {

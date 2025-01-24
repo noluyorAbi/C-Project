@@ -27,22 +27,13 @@ static const int DEBUG_PRINTS = 1;
 // 1) Die bereits existierenden Variablen für das SHM mit Board-State:
 int pipe_fd[2]; // Pipe file descriptors: [0] read, [1] write
 int shmid;      // ID of second SHM segment for the game state
-char *shm;      // Pointer to second SHM segment
+shm_data_t *shm;      // Pointer to second SHM segment
 
 // 2) NEU: SHM für Initial Game Info (Player-Daten, gameName etc.)
 int shmid_info = -1;           // ID des neuen "Initial Game Info" SHM-Bereichs
 SharedMemory *shm_info = NULL; // Pointer auf das SHM-Segment mit Spiel-Infos
 
 // ======================= NEW STRUCTURES AND VARIABLES =======================
-
-// Structure for Shared Memory with a flag (Board/Data SHM)
-typedef struct {
-  int flag; // 1 indicates that a new move should be calculated
-  char game_data[INITIAL_SIZE]; // Game state data
-} shm_data_t;
-
-// Pointer to the SHM structure
-shm_data_t *shm_ptr = NULL;
 
 // Global flag for signal handling
 volatile sig_atomic_t sig_received = 0;
@@ -88,7 +79,7 @@ static void debug_print_board_shm(const shm_data_t *b) {
 
   fprintf(stdout, "\n[DEBUG] BOARD-SHM (Spielzustand):\n");
   fprintf(stdout, "  flag         = %d\n", b->flag);
-  fprintf(stdout, "  game_data    = '%s'\n", b->game_data - sizeof(int));
+  fprintf(stdout, "  game_data    = '%s'\n", b->game_data);
   fprintf(stdout, "[DEBUG] Ende BOARD-SHM\n\n");
 }
 
@@ -272,16 +263,13 @@ static void createBoardMemory() {
  */
 static void attachBoardMemory() {
   // Attach SHM segment to the process's address space
-  shm = (char *) shmat(shmid, NULL, 0);
-  if (shm == (char *) -1) {
+  shm = (shm_data_t *) shmat(shmid, NULL, 0);
+  if (shm == (shm_data_t *) -1) {
     fprintf(stderr, "shmat failed.\n");
     exit(EXIT_FAILURE);
   } else {
     fprintf(stdout, "shmat was successful.\n");
   }
-
-  // Initialize the SHM structure
-  shm_ptr = (shm_data_t *) shm;
 }
 
 /**
@@ -342,8 +330,10 @@ static void run_connector(GameConfig game_config, char *piece_data) {
 
   attachBoardMemory();
 
-  shm_ptr->flag = 0;
-  memset(shm_ptr->game_data, 0, sizeof(shm_ptr->game_data));
+  shm->flag = 0;
+  memset(shm->game_data, 0, sizeof(shm->game_data));
+
+  debug_print_board_shm(shm);
 
   // Establish connection
   if (createConnection(game_config.game_id, piece_data) != 0) {
@@ -354,17 +344,10 @@ static void run_connector(GameConfig game_config, char *piece_data) {
               strerror(errno));
     }
     exit(EXIT_FAILURE);
-  }
-
-  // Set the flag and populate game_data after successful connection
-  shm_ptr->flag = 1;
-  strncpy(shm_ptr->game_data, "Current game state data...",
-          sizeof(shm_ptr->game_data) - 1);
-  shm_ptr->game_data[sizeof(shm_ptr->game_data) - 1] =
-    '\0'; // Ensure termination
+  } 
 
   // -- DEBUG: Nach dem Schreiben in Board-SHM --
-  debug_print_board_shm(shm_ptr);
+  debug_print_board_shm(shm);            
 
   // Send SIGUSR1 signal to the Thinker process (Parent)
   if (kill(getppid(), SIGUSR1) == -1) {
@@ -416,19 +399,19 @@ static void run_thinker(pid_t pid) {
       sig_received = 0; // Reset the flag
 
       // Check if the SHM flag is set
-      if (shm_ptr->flag) {
+      if (shm->flag == 1) {
         // -- DEBUG: Board-SHM vor dem Zug ausgeben --
-        debug_print_board_shm(shm_ptr);
+        debug_print_board_shm(shm);
         debug_print_info_shm(shm_info);
 
         // Make a move (z.B. in deinem think-Modul)
-        think(shm_ptr->game_data);
+        think(shm->game_data);
 
         // Reset the SHM flag after processing
-        shm_ptr->flag = 0;
+        shm->flag = 0;
 
         // -- DEBUG: Board-SHM nach dem Zug ausgeben --
-        debug_print_board_shm(shm_ptr);
+        debug_print_board_shm(shm);
       }
     }
   }

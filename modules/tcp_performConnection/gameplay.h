@@ -1,9 +1,11 @@
 #ifndef GAMEPLAY_H
 #define GAMEPLAY_H
 
+#include "../shared_memory/shared_memory.h"
+
 #include <stddef.h>
 
-extern char *shm;      // Pointer to second SHM segment
+extern shm_data_t *shm;      // Pointer to second SHM segment
 extern int pipe_fd[2]; // Pipe for the interprocess-communication
 
 /**

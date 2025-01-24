@@ -25,9 +25,9 @@ static const int DEBUG_PRINTS = 1;
 
 // ========================= GLOBAL VARIABLES ==========================
 // 1) Die bereits existierenden Variablen für das SHM mit Board-State:
-int pipe_fd[2]; // Pipe file descriptors: [0] read, [1] write
-int shmid;      // ID of second SHM segment for the game state
-shm_data_t *shm;      // Pointer to second SHM segment
+int pipe_fd[2];  // Pipe file descriptors: [0] read, [1] write
+int shmid;       // ID of second SHM segment for the game state
+shm_data_t *shm; // Pointer to second SHM segment
 
 // 2) NEU: SHM für Initial Game Info (Player-Daten, gameName etc.)
 int shmid_info = -1;           // ID des neuen "Initial Game Info" SHM-Bereichs
@@ -344,10 +344,10 @@ static void run_connector(GameConfig game_config, char *piece_data) {
               strerror(errno));
     }
     exit(EXIT_FAILURE);
-  } 
+  }
 
   // -- DEBUG: Nach dem Schreiben in Board-SHM --
-  debug_print_board_shm(shm);            
+  debug_print_board_shm(shm);
 
   // Send SIGUSR1 signal to the Thinker process (Parent)
   if (kill(getppid(), SIGUSR1) == -1) {

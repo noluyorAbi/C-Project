@@ -5,8 +5,8 @@
 
 #include <stddef.h>
 
-extern shm_data_t *shm;      // Pointer to second SHM segment
-extern int pipe_fd[2]; // Pipe for the interprocess-communication
+extern shm_data_t *shm; // Pointer to second SHM segment
+extern int pipe_fd[2];  // Pipe for the interprocess-communication
 
 /**
  * @brief Handles the WAIT Phase of the game.

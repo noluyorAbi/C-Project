@@ -1,7 +1,9 @@
 #include "util.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 int get_board_index(const char *position) {
   size_t len = strlen(position);
@@ -119,14 +121,24 @@ int get_board_index(const char *position) {
 }
 
 const char *index_to_position(int index) {
-  static const char *positions[] = {
-    "A0", "A1", "A2", "B0", "B1", "B2", "C0", "C1", "C2", "A7", "B7", "C7",
-    "C3", "B3", "A3", "C6", "C5", "C4", "B6", "B5", "B4", "A6", "A5", "A4"};
-  if (index < 0 || index >= 24)
+  if (index < 0 || index >= 24) {
+    fprintf(stderr, "Invalid index: %d\n", index);
     return NULL;
+  }
+
+  static const char *positions[24] = {
+    "A0", "A1", "A2", // 0-2
+    "B0", "B1", "B2", // 3-5
+    "C0", "C1", "C2", // 6-8
+    "A7", "B7", "C7", // 9-11
+    "C3", "B3", "A3", // 12-14
+    "C6", "C5", "C4", // 15-17
+    "B6", "B5", "B4", // 18-20
+    "A6", "A5", "A4"  // 21-23
+  };
+
   return positions[index];
 }
-
 void place_piece_on_board(char board[], const char *position) {
   size_t len = strlen(position);
   if (len < 6) {
@@ -257,7 +269,7 @@ int check_removable(const char board[], char myPiece, char opponentPiece) {
   int candidate_mill = -1;
   int candidate_non_mill = -1;
 
-  for (int i = 0; i < 25; i++) {
+  for (int i = 0; i < 24; i++) {
     if (board[i] == opponentPiece) {
       if (is_in_mill(board, i)) {
         if (candidate_mill < 0) {
@@ -273,7 +285,6 @@ int check_removable(const char board[], char myPiece, char opponentPiece) {
   if (candidate_non_mill >= 0) {
     return candidate_non_mill;
   }
-
   if (candidate_mill >= 0) {
     return candidate_mill;
   }
@@ -305,4 +316,55 @@ void remove_stone(char board[], int index) {
             "remove_stone: Kein gültiger Stein zum Entfernen an Index %d.\n",
             index);
   }
+}
+
+int find_opponent_piece(const char board[], char opponentPiece) {
+  int indices[24];
+  int count = 0;
+
+  for (int i = 0; i < 24; i++) {
+    if (board[i] == opponentPiece) {
+      indices[count++] = i;
+    }
+  }
+
+  if (count == 0) {
+    return -1;
+  }
+
+  int randomIndex = rand() % count;
+  return indices[randomIndex];
+}
+
+static int my_player_number = -1;
+
+void set_player_number(int player) {
+  my_player_number = player;
+}
+
+char get_my_symbol(const char *gameState) {
+  if (my_player_number == -1) {
+    fprintf(stderr, "Player number not set!\n");
+    return 'O';
+  }
+
+  char *copy = strdup(gameState);
+  if (!copy) {
+    return 'O';
+  }
+
+  char *line = strtok(copy, "\n");
+  while (line != NULL) {
+    if (strncmp(line, "+ PIECE", 7) == 0) {
+      if (line[8] - '0' == my_player_number) {
+        free(copy);
+        return (my_player_number == 0) ? 'O' : 'X';
+      }
+    }
+    line = strtok(NULL, "\n");
+  }
+
+  free(copy);
+
+  return (my_player_number == 0) ? 'O' : 'X';
 }

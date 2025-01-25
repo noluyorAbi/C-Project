@@ -9,7 +9,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-#define BUFFER_SIZE 4096
+#define BUFFER_SIZE 32768
 
 /**
  * @brief Sends a message over the socket.

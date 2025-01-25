@@ -6,6 +6,7 @@
 #include "./modules/tcp_performConnection/performConnection.h"
 #include "./modules/tcp_performConnection/tcp_connection.h"
 #include "./modules/think/think.h"
+#include "./modules/think/util.h"
 
 #include <arpa/inet.h> // For ntohs()
 #include <errno.h>
@@ -16,9 +17,10 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <sys/wait.h>
+#include <time.h>
 #include <unistd.h>
 
-#define INITIAL_SIZE 4096
+#define INITIAL_SIZE 32768
 
 // ========================= GLOBAL VARIABLES ==========================
 int pipe_fd[2]; // Pipe file descriptors: [0] read, [1] write
@@ -82,6 +84,17 @@ static void run_thinker(pid_t pid);
  *                       MAIN FUNCTION                    *
  *********************************************************/
 int main(int argc, char *argv[]) {
+  srand(time(NULL));
+
+  if (argc < 2) {
+    fprintf(stderr, "Usage: %s <player_number>\n", argv[0]);
+    return EXIT_FAILURE;
+  }
+
+  int player = atoi(argv[1]);
+  printf("Player number: %d\n", player);
+  set_player_number(player);
+
   GameConfig game_config;
   Config app_config;
 

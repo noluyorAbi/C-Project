@@ -11,35 +11,55 @@
 #define MAX_PIECES 1000
 
 static const int adjacency_list[24][4] = {
-  {1, 9, -1},       {0, 2, 4, -1},   {1, 14, -1},      {4, 10, -1},
-  {3, 5, 1, 13},    {4, 13, -1},     {7, 11, -1},      {6, 8, 12, -1},
-  {7, 12, -1},      {0, 10, 21, -1}, {3, 9, 11, 18},   {6, 10, 15, -1},
-  {8, 13, 17, -1},  {4, 12, 14, 20}, {2, 13, 23, -1},  {11, 16, -1},
-  {15, 17, 19, -1}, {12, 16, -1},    {10, 19, -1},     {16, 18, 20, -1},
-  {13, 19, -1},     {9, 22, -1},     {21, 23, 19, -1}, {14, 22, -1}};
-
-void log_next_action(const char board[], char myPiece, char opponentPiece,
-                     int placedPieces) {
-  GameAction action =
-    determine_next_action(board, myPiece, opponentPiece, placedPieces);
-
-  switch (action) {
-  case SET:
-    printf("Next action: set a piece\n");
-    break;
-  case REMOVE:
-    printf("Next action: remove an opponent's piece\n");
-    break;
-  case MOVE:
-    printf("Next action: move a piece\n");
-    break;
-  case FINISHED:
-    printf("Game is over\n");
-    break;
-  default:
-    printf("Unknown action\n");
-  }
-}
+  // A0 (0)
+  {1, 9, -1, -1}, // Adjacent to A1 (1), A7 (9)
+  // A1 (1)
+  {0, 2, 4, -1}, // Adjacent to A0 (0), A2 (2), B1 (4)
+  // A2 (2)
+  {1, 14, -1, -1}, // Adjacent to A1 (1), A3 (14)
+  // B0 (3)
+  {4, 10, -1, -1}, // Adjacent to B1 (4), B7 (10)
+  // B1 (4)
+  {1, 3, 5, 13}, // Adjacent to A1 (1), B0 (3), B2 (5), B3 (13)
+  // B2 (5)
+  {4, 13, -1, -1}, // Adjacent to B1 (4), B3 (13)
+  // C0 (6)
+  {7, 11, -1, -1}, // Adjacent to C1 (7), C7 (11)
+  // C1 (7)
+  {6, 8, 12, -1}, // Adjacent to C0 (6), C2 (8), C3 (12)
+  // C2 (8)
+  {7, 12, -1, -1}, // Adjacent to C1 (7), C3 (12)
+  // A7 (9)
+  {0, 10, 21, -1}, // Adjacent to A0 (0), B7 (10), A6 (21)
+  // B7 (10)
+  {3, 9, 11, 18}, // Adjacent to B0 (3), A7 (9), C7 (11), B6 (18)
+  // C7 (11)
+  {6, 10, 15, -1}, // Adjacent to C0 (6), B7 (10), C6 (15)
+  // C3 (12)
+  {8, 13, 17, -1}, // Adjacent to C2 (8), B3 (13), C4 (17)
+  // B3 (13)
+  {4, 12, 14, 20}, // Adjacent to B1 (4), C3 (12), A3 (14), B4 (20)
+  // A3 (14)
+  {2, 13, 23, -1}, // Adjacent to A2 (2), B3 (13), A4 (23)
+  // C6 (15)
+  {11, 16, -1, -1}, // Adjacent to C7 (11), C5 (16)
+  // C5 (16)
+  {15, 17, 19, -1}, // Adjacent to C6 (15), C4 (17), B5 (19)
+  // C4 (17)
+  {12, 16, -1, -1}, // Adjacent to C3 (12), C5 (16)
+  // B6 (18)
+  {10, 19, -1, -1}, // Adjacent to B7 (10), B5 (19)
+  // B5 (19)
+  {16, 18, 20, -1}, // Adjacent to C5 (16), B6 (18), B4 (20)
+  // B4 (20)
+  {13, 19, -1, -1}, // Adjacent to B3 (13), B5 (19)
+  // A6 (21)
+  {9, 22, -1, -1}, // Adjacent to A7 (9), A5 (22)
+  // A5 (22)
+  {21, 23, 19, -1}, // Adjacent to A6 (21), A4 (23), B5 (19)
+  // A4 (23)
+  {14, 22, -1, -1} // Adjacent to A3 (14), A5 (22)
+};
 
 int is_valid_position(const char *position) {
   if (strlen(position) != 2)
@@ -48,6 +68,17 @@ int is_valid_position(const char *position) {
   char col = position[1];
   return (row >= 'A' && row <= 'C') && (col >= '0' && col <= '7');
 }
+
+int move_counter = 0;
+static int current_move_number = 0;
+static int last_mill_move_number = -1;
+static int mill_positions[16][3];
+static int num_mills = 0;
+static const int all_mills[16][3] = {
+  {0, 1, 2},    {3, 4, 5},    {6, 7, 8},    {9, 10, 11},
+  {12, 13, 14}, {15, 16, 17}, {18, 19, 20}, {21, 22, 23},
+  {0, 9, 21},   {3, 10, 18},  {6, 11, 15},  {1, 4, 7},
+  {16, 19, 22}, {8, 12, 17},  {5, 13, 20},  {2, 14, 23}};
 
 int think(char *gameState) {
   //  printf("\n------------\n");
@@ -62,6 +93,11 @@ int think(char *gameState) {
 
   char positions[MAX_PIECES][10];
   int pieceCount = 0;
+
+  char my_piece = get_my_symbol(gameState);
+  char opponent_piece = (my_piece == 'X') ? 'O' : 'X';
+  printf("DEBUG: My symbol is '%c', opponent is '%c'\n", my_piece,
+         opponent_piece);
 
   char *line = strtok(gameState, "\n");
   while (line != NULL) {
@@ -417,10 +453,93 @@ int think(char *gameState) {
   //  }
   //  printf("--------------------\n");
 
-  int numberOfMyPieces = count_pieces(board, 'O');
+  // get my piece prefix
 
-  log_next_action(board, 'O', 'X', pieceCount);
-  GameAction action = determine_next_action(board, 'O', 'X', numberOfMyPieces);
+  int numberOfMyPieces = count_pieces(board, my_piece);
+
+  int previous_mills[num_mills][3];
+  memcpy(previous_mills, mill_positions, sizeof(previous_mills));
+  int previous_num_mills = num_mills;
+  num_mills = 0;
+
+  for (int i = 0; i < 16; i++) {
+    int a = all_mills[i][0];
+    int b = all_mills[i][1];
+    int c = all_mills[i][2];
+
+    if (board[a] == my_piece && board[b] == my_piece && board[c] == my_piece) {
+      int sorted[3] = {a, b, c};
+
+      if (sorted[0] > sorted[1]) {
+        int tmp = sorted[0];
+        sorted[0] = sorted[1];
+        sorted[1] = tmp;
+      }
+      if (sorted[1] > sorted[2]) {
+        int tmp = sorted[1];
+        sorted[1] = sorted[2];
+        sorted[2] = tmp;
+      }
+      if (sorted[0] > sorted[1]) {
+        int tmp = sorted[0];
+        sorted[0] = sorted[1];
+        sorted[1] = tmp;
+      }
+
+      mill_positions[num_mills][0] = sorted[0];
+      mill_positions[num_mills][1] = sorted[1];
+      mill_positions[num_mills][2] = sorted[2];
+      num_mills++;
+    }
+  }
+
+  int new_mill_formed = 0;
+  for (int i = 0; i < num_mills; i++) {
+    int is_new = 1;
+    for (int j = 0; j < previous_num_mills; j++) {
+      if (mill_positions[i][0] == previous_mills[j][0]
+          && mill_positions[i][1] == previous_mills[j][1]
+          && mill_positions[i][2] == previous_mills[j][2]) {
+        is_new = 0;
+        break;
+      }
+    }
+
+    if (is_new) {
+      new_mill_formed = 1;
+      last_mill_move_number = current_move_number;
+      break;
+    }
+  }
+
+  printf("new_mill_formed: %d\n", new_mill_formed);
+
+  GameAction action;
+  if (new_mill_formed) {
+    action = REMOVE;
+  } else {
+    action = determine_next_action(numberOfMyPieces, move_counter);
+  }
+
+  current_move_number++;
+
+  switch (action) {
+  case SET:
+    printf("Next action: set a piece\n");
+    break;
+  case REMOVE:
+    printf("Next action: remove an opponent's piece\n");
+    break;
+  case MOVE:
+    printf("Next action: move a piece\n");
+    break;
+  case FINISHED:
+    printf("Game is over\n");
+    break;
+  default:
+    printf("Unknown action\n");
+  }
+
   if (action == SET) {
     char *move = find_next_free_spot(board, occupiedPositions);
     if (move == NULL) {
@@ -433,7 +552,7 @@ int think(char *gameState) {
       return EXIT_FAILURE;
     }
   } else if (action == REMOVE) {
-    int remove_index = check_removable(board, 'O', 'X');
+    int remove_index = find_opponent_piece(board, opponent_piece);
     if (remove_index == -1) {
       fprintf(stderr, "Thinker: No removable opponent pieces found.\n");
       return EXIT_FAILURE;
@@ -452,6 +571,7 @@ int think(char *gameState) {
     fprintf(stdout, "Thinker: Wrote '%s' to the pipe successfully.\n", command);
     return EXIT_SUCCESS;
   } else if (action == MOVE) {
+    move_counter++;
     struct Move {
       int from;
       int to;
@@ -460,20 +580,34 @@ int think(char *gameState) {
     struct Move moves[100];
     int moveCount = 0;
 
+    int canFly = (numberOfMyPieces == 3);
+
     for (int i = 0; i < 24; i++) {
-      if (board[i] == 'O') {
-        for (int j = 0; j < 4; j++) {
-          int adj = adjacency_list[i][j];
-          if (adj == -1)
-            break;
-          if (adj < 0 || adj >= 24)
-            continue;
-          if (board[adj] == '+') {
-            moves[moveCount].from = i;
-            moves[moveCount].to = adj;
-            moveCount++;
-            if (moveCount >= 100)
+      if (board[i] == my_piece) {
+        if (canFly) {
+          for (int j = 0; j < 24; j++) {
+            if (board[j] == '+') {
+              moves[moveCount].from = i;
+              moves[moveCount].to = j;
+              moveCount++;
+              if (moveCount >= 100)
+                break;
+            }
+          }
+        } else {
+          for (int j = 0; j < 4; j++) {
+            int adj = adjacency_list[i][j];
+            if (adj == -1)
               break;
+            if (adj < 0 || adj >= 24)
+              continue;
+            if (board[adj] == '+') {
+              moves[moveCount].from = i;
+              moves[moveCount].to = adj;
+              moveCount++;
+              if (moveCount >= 100)
+                break;
+            }
           }
         }
         if (moveCount >= 100)
@@ -486,12 +620,13 @@ int think(char *gameState) {
       return EXIT_FAILURE;
     }
 
+    // Prioritize moves that form a mill
     int selected_move = -1;
     for (int i = 0; i < moveCount; i++) {
       char tempBoard[24];
       memcpy(tempBoard, board, 24);
       tempBoard[moves[i].from] = '+';
-      tempBoard[moves[i].to] = 'O';
+      tempBoard[moves[i].to] = my_piece;
       if (is_in_mill(tempBoard, moves[i].to)) {
         selected_move = i;
         break;
@@ -499,6 +634,8 @@ int think(char *gameState) {
     }
 
     if (selected_move == -1) {
+      // No mill-forming move found; select a random move (e.g., first
+      // available)
       selected_move = 0;
     }
 

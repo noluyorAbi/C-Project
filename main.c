@@ -399,11 +399,11 @@ static void run_thinker(pid_t pid) {
 
   fprintf(stdout, "Thinker: Ready and waiting for signals...\n");
 
+  attachBoardMemory();
+
   // Main loop to wait for signals
   while (1) {
     pause(); // Wait for any signal
-
-    attachBoardMemory();
 
     if (sig_received) {
       sig_received = 0; // Reset the flag

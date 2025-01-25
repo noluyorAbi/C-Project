@@ -8,7 +8,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#define MAX_PIECES 1000
+#define MAX_PIECES 10000
 
 static const int adjacency_list[24][4] = {
   // A0 (0)

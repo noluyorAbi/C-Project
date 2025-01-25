@@ -3,8 +3,8 @@
 
 #include <stdbool.h>
 
-#define MAX_PIECES 1000
-#define MAX_POSITIONS 25
+#define MAX_PIECES 10000
+#define MAX_POSITIONS 2500
 
 typedef enum { SET, REMOVE, MOVE, FINISHED } GameAction;
 

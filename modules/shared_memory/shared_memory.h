@@ -8,6 +8,7 @@
 // Constants for Shared Memory
 #define SHM_PERMISSIONS 0666
 #define MAX_PLAYERS_TEST 100
+#define INITIAL_SIZE 1024
 
 // Error codes for Shared Memory operations
 typedef enum {
@@ -34,6 +35,12 @@ typedef struct {
   pid_t connectorPID;
   Player players[]; // Flexible array member for players
 } SharedMemory;
+
+// Structure for Shared Memory with a flag (Board/Data SHM)
+typedef struct {
+  int flag; // 1 indicates that a new move should be calculated
+  char game_data[INITIAL_SIZE]; // Game state data
+} shm_data_t;
 
 // Function declarations
 /**
@@ -91,5 +98,13 @@ int initSharedMemory(int numPlayers, const char *gameName, int playerNumber,
  * @param shm Pointer to the shared memory segment.
  */
 void cleanupSharedMemory(int shmid, SharedMemory *shm);
+
+/**
+ * Cleans up the second SHM segment by detaching and removing it.
+ *
+ * @param shmid The shared memory ID.
+ * @param shm Pointer to the shared memory.
+ */
+void cleanupSHM(int shmid, shm_data_t *shm);
 
 #endif

@@ -1,5 +1,6 @@
 #include "gameplay.h"
 
+#include "../shared_memory/shared_memory.h"
 #include "performConnection.h"
 
 #include <errno.h>
@@ -126,7 +127,8 @@ int handleMove(int sockfd, const char *moveLine, char *piece_data) {
     if (strncmp(buffer, "+ ENDPIECELIST", 14) == 0) {
       // Save collected data in SHM segment
       // Use snprintf to ensure no overflow
-      snprintf(shm, BUFFER_SIZE, "%s", piece_data);
+      snprintf(shm->game_data, BUFFER_SIZE, "%s", piece_data);
+      shm->flag = 1;
       break;
     }
   }
@@ -188,7 +190,7 @@ int handleGameover(int sockfd, const char *gameoverLine, char *piece_data) {
     if (strncmp(buffer, "+ ENDPIECELIST", 14) == 0) {
       // Save collected data in SHM segment
       // Use snprintf to ensure no overflow
-      snprintf(shm, BUFFER_SIZE, "%s", piece_data);
+      snprintf(shm->game_data, BUFFER_SIZE, "%s", piece_data);
       break;
     }
   }

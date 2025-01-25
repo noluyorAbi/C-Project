@@ -95,6 +95,7 @@ Das Projekt wird in mehreren Schritten im Verlauf des Praktikums entwickelt, und
 ├── bin
 │   └── sysprak-client
 ├── client.conf
+<<<<<<< HEAD
 ├── cmake-build-debug
 │   ├── CMakeCache.txt
 │   ├── CMakeFiles

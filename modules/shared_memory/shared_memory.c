@@ -9,10 +9,6 @@
 #include <sys/shm.h>
 #include <unistd.h>
 
-// TODO QUESTION
-//? We have this but never initalize it also i do not really
-//? see the usecase is this shared memory only there to load the gamaedata??
-
 /**
  * Creates a shared memory segment for the specified number of players.
  *
@@ -176,7 +172,7 @@ void cleanupSharedMemory(int shmid, SharedMemory *shm) {
  * @param shmid The shared memory ID.
  * @param shm Pointer to the shared memory.
  */
-void cleanupSHM(int shmid, char *shm) {
+void cleanupSHM(int shmid, shm_data_t *shm) {
   // Detach the SHM segment
   if (shmdt(shm) == -1) {
     fprintf(stderr, "Thinker: shmdt failed.\n");

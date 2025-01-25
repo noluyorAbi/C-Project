@@ -95,6 +95,8 @@ int think(char *gameState) {
   int pieceCount = 0;
 
   char my_piece = get_my_symbol(gameState);
+  printf("DEBUG: My symbol is '%c'\n", my_piece);
+
   char opponent_piece = (my_piece == 'X') ? 'O' : 'X';
   printf("DEBUG: My symbol is '%c', opponent is '%c'\n", my_piece,
          opponent_piece);

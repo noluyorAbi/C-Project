@@ -1,5 +1,7 @@
 #include "util.h"
 
+#include "../../modules/args_parser/args_parser.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -343,28 +345,5 @@ void set_player_number(int player) {
 }
 
 char get_my_symbol(const char *gameState) {
-  if (my_player_number == -1) {
-    fprintf(stderr, "Player number not set!\n");
-    return 'O';
-  }
-
-  char *copy = strdup(gameState);
-  if (!copy) {
-    return 'O';
-  }
-
-  char *line = strtok(copy, "\n");
-  while (line != NULL) {
-    if (strncmp(line, "+ PIECE", 7) == 0) {
-      if (line[8] - '0' == my_player_number) {
-        free(copy);
-        return (my_player_number == 0) ? 'O' : 'X';
-      }
-    }
-    line = strtok(NULL, "\n");
-  }
-
-  free(copy);
-
-  return (my_player_number == 0) ? 'O' : 'X';
+  return (EXTERN_PLAYER_NUMBER == 0) ? 'O' : 'X';
 }

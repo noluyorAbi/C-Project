@@ -95,7 +95,6 @@ Das Projekt wird in mehreren Schritten im Verlauf des Praktikums entwickelt, und
 ├── bin
 │   └── sysprak-client
 ├── client.conf
-<<<<<<< HEAD
 ├── cmake-build-debug
 │   ├── CMakeCache.txt
 │   ├── CMakeFiles
@@ -124,7 +123,6 @@ Das Projekt wird in mehreren Schritten im Verlauf des Praktikums entwickelt, und
 │   │       └── LastTest.log
 │   ├── build.ninja
 │   └── cmake_install.cmake
-├── compile_commands.json
 ├── lib
 │   └── README.md
 ├── main.c
@@ -179,7 +177,7 @@ Das Projekt wird in mehreren Schritten im Verlauf des Praktikums entwickelt, und
         ├── test_sharedMemory.bash
         └── test_sharedMemory.c
 
-29 directories, 59 files
+29 directories, 58 files
 ```
 <!-- project-structure-end -->
 

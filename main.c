@@ -140,10 +140,6 @@ int main(int argc, char *argv[]) {
     return EXIT_FAILURE;
   }
 
-  int player = atoi(argv[1]);
-  printf("Player number: %d\n", player);
-  set_player_number(player);
-
   GameConfig game_config;
   Config app_config;
 
@@ -359,11 +355,6 @@ static void run_connector(GameConfig game_config, char *piece_data) {
     }
     exit(EXIT_FAILURE);
   }
-
-  // Set the flag and populate game_data after successful connection
-  shm_ptr->flag = 1;
-  snprintf(shm_ptr->game_data, sizeof(shm_ptr->game_data),
-           "Current game state data...");
 
   // -- DEBUG: Nach dem Schreiben in Board-SHM --
   debug_print_board_shm(shm);

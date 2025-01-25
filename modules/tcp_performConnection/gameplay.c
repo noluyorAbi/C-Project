@@ -128,6 +128,7 @@ int handleMove(int sockfd, const char *moveLine, char *piece_data) {
       // Save collected data in SHM segment
       // Use snprintf to ensure no overflow
       snprintf(shm->game_data, BUFFER_SIZE, "%s", piece_data);
+      memset(piece_data, 0, BUFFER_SIZE);
       shm->flag = 1;
       break;
     }
@@ -191,6 +192,7 @@ int handleGameover(int sockfd, const char *gameoverLine, char *piece_data) {
       // Save collected data in SHM segment
       // Use snprintf to ensure no overflow
       snprintf(shm->game_data, BUFFER_SIZE, "%s", piece_data);
+      memset(piece_data, 0, BUFFER_SIZE);
       break;
     }
   }

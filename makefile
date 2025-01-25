@@ -15,7 +15,7 @@ TARGET = $(BIN_DIR)/sysprak-client
 LIBRARY = $(LIB_DIR)/libsysprak.a
 
 # Mock-Daten
-MOCK_ARGS = -g 2bk7aeor3lgkn -p 1
+MOCK_ARGS = -g 2vijf8x0h34mi -p 2
 
 # Quellen und Objektdateien
 LIB_SRC = $(shell find $(MODULES_DIR) -name '*.c')
@@ -43,7 +43,7 @@ $(BUILD_DIR)/%.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 # Kompilieren von main.o mit korrektem Header-Pfad
-$(BUILD_DIR)/main.o: main.c modules/tcp_performConnection/performConnection.h
+$(BUILD_DIR)/main.o: main.c modules/tcp_performConnection/performConnection.h 
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
 

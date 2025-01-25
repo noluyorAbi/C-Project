@@ -95,6 +95,34 @@ Das Projekt wird in mehreren Schritten im Verlauf des Praktikums entwickelt, und
 ├── bin
 │   └── sysprak-client
 ├── client.conf
+├── cmake-build-debug
+│   ├── CMakeCache.txt
+│   ├── CMakeFiles
+│   │   ├── 3.27.8
+│   │   │   ├── CMakeCCompiler.cmake
+│   │   │   ├── CMakeDetermineCompilerABI_C.bin
+│   │   │   ├── CMakeSystem.cmake
+│   │   │   └── CompilerIdC
+│   │   │       ├── CMakeCCompilerId.c
+│   │   │       └── tmp
+│   │   ├── CMakeConfigureLog.yaml
+│   │   ├── TargetDirectories.txt
+│   │   ├── c_project.dir
+│   │   │   ├── modules
+│   │   │   │   ├── args_parser
+│   │   │   │   └── tcp_performConnection
+│   │   │   └── tests
+│   │   │       └── test_performConnection
+│   │   ├── clion-Debug-log.txt
+│   │   ├── clion-environment.txt
+│   │   ├── cmake.check_cache
+│   │   ├── pkgRedirects
+│   │   └── rules.ninja
+│   ├── Testing
+│   │   └── Temporary
+│   │       └── LastTest.log
+│   ├── build.ninja
+│   └── cmake_install.cmake
 ├── lib
 │   └── README.md
 ├── main.c
@@ -149,7 +177,7 @@ Das Projekt wird in mehreren Schritten im Verlauf des Praktikums entwickelt, und
         ├── test_sharedMemory.bash
         └── test_sharedMemory.c
 
-15 directories, 44 files
+29 directories, 58 files
 ```
 <!-- project-structure-end -->
 

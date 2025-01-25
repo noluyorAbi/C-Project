@@ -172,7 +172,7 @@ void cleanupSharedMemory(int shmid, SharedMemory *shm) {
  * @param shmid The shared memory ID.
  * @param shm Pointer to the shared memory.
  */
-void cleanupSHM(int shmid, char *shm) {
+void cleanupSHM(int shmid, shm_data_t *shm) {
   // Detach the SHM segment
   if (shmdt(shm) == -1) {
     fprintf(stderr, "Thinker: shmdt failed.\n");

@@ -60,3 +60,4 @@ dkms.conf
 
 # Bin directory
 /bin
+compile_commands.json

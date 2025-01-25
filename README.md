@@ -95,7 +95,6 @@ Das Projekt wird in mehreren Schritten im Verlauf des Praktikums entwickelt, und
 ├── bin
 │   └── sysprak-client
 ├── client.conf
-├── compile_commands.json
 ├── lib
 │   └── README.md
 ├── main.c
@@ -146,7 +145,7 @@ Das Projekt wird in mehreren Schritten im Verlauf des Praktikums entwickelt, und
         ├── test_sharedMemory.bash
         └── test_sharedMemory.c
 
-15 directories, 41 files
+15 directories, 40 files
 ```
 <!-- project-structure-end -->
 

@@ -59,7 +59,7 @@ static void debug_print_info_shm(const SharedMemory *s) {
   if (!DEBUG_PRINTS || s == NULL)
     return; // Keine Ausgabe, wenn Debug aus oder Pointer NULL
 
-  fprintf(stdout, "\n[DEBUG] SHM-INFO (Spiel- und Spieler-Daten):\n");
+  fprintf(stdout, "\n\033[33m[DEBUG] SHM-INFO (Spiel- und Spieler-Daten):\n");
   fprintf(stdout, "  gameName     = '%s'\n", s->gameName);
   fprintf(stdout, "  playerNumber = %d\n", s->playerNumber);
   fprintf(stdout, "  playerCount  = %d\n", s->playerCount);
@@ -73,7 +73,7 @@ static void debug_print_info_shm(const SharedMemory *s) {
             s->players[i].playerNumber, s->players[i].playerName,
             s->players[i].isRegistered);
   }
-  fprintf(stdout, "[DEBUG] Ende SHM-INFO\n\n");
+  fprintf(stdout, "[DEBUG] Ende SHM-INFO\033[0m\n\n");
 }
 
 /**
@@ -86,10 +86,10 @@ static void debug_print_board_shm(const shm_data_t *b) {
   if (!DEBUG_PRINTS || b == NULL)
     return; // Keine Ausgabe, wenn Debug aus oder Pointer NULL
 
-  fprintf(stdout, "\n[DEBUG] BOARD-SHM (Spielzustand):\n");
+  fprintf(stdout, "\n\033[33m[DEBUG] BOARD-SHM (Spielzustand):\n");
   fprintf(stdout, "  flag         = %d\n", b->flag);
-  fprintf(stdout, "  game_data    = '%s'\n", b->game_data - sizeof(int));
-  fprintf(stdout, "[DEBUG] Ende BOARD-SHM\n\n");
+  fprintf(stdout, "  game_data    = '%s'\n", b->game_data);
+  fprintf(stdout, "[DEBUG] Ende BOARD-SHM\033[0m\n\n");
 }
 
 // ========================= FUNCTION PROTOTYPES =======================

@@ -89,7 +89,8 @@ int receiveMessage(int sockfd, char *buffer, size_t buffer_size) {
  */
 int performConnection(int sockfd, char *GAME_ID, char *piece_data) {
   char buffer[BUFFER_SIZE];
-  printf("\nPLAYER VALUE IN -p IST: %d\n\n", EXTERN_PLAYER_NUMBER);
+  fprintf(stdout, "\033[0;33m\n[DEBUG] PLAYER VALUE IN -p IST: %d\n\n\033[0m",
+          EXTERN_PLAYER_NUMBER);
   // 1. Receive greeting from server
   if (receiveMessage(sockfd, buffer, BUFFER_SIZE) != EXIT_SUCCESS) {
     return EXIT_FAILURE;

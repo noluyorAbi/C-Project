@@ -192,7 +192,9 @@ int performConnection(int sockfd, char *GAME_ID, char *piece_data) {
     return EXIT_FAILURE;
   }
 
-  if (EXTERN_PLAYER_NUMBER == 0) {
+  shm_info->playerNumber = atoi(&buffer[6]);
+
+  if (shm_info->playerNumber == 0) {
     fprintf(stdout, "Du bist Spieler 0.\n");
   } else {
     fprintf(stdout, "Du bist Spieler 1.\n");

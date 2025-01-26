@@ -345,10 +345,10 @@ void set_player_number(int player) {
 }
 
 char get_my_symbol(const char *gameState) {
-  printf("DEBUG: EXTERN_PLAYER_NUMBER = %d\n", EXTERN_PLAYER_NUMBER);
-  if (EXTERN_PLAYER_NUMBER == 0) {
+  printf("DEBUG: PLAYER_NUMBER = %d\n", shm_info->playerNumber);
+  if (shm_info->playerNumber == 0) {
     return 'O';
   }
 
-  return (EXTERN_PLAYER_NUMBER == 1) ? 'O' : 'X';
+  return (shm_info->playerNumber == 1) ? 'X' : 'O';
 }

@@ -153,9 +153,9 @@ int main(int argc, char *argv[]) {
   shmid_info = initSharedMemory(
     game_config.player_number, // Anzahl Spieler
     /* gameName=*/"",          // Spielname (gameName) wird später gesetzt
-    /* playerNumber=*/EXTERN_PLAYER_NUMBER, // Beispiel: Wir sind Spieler 1
-    /* thinkerPID=*/0,                      // Wird ggf. später gesetzt
-    /* connectorPID=*/0                     // Wird ggf. später gesetzt
+    /* playerNumber=*/0,       // Wird ggf. später gesetzt
+    /* thinkerPID=*/0,         // Wird ggf. später gesetzt
+    /* connectorPID=*/0        // Wird ggf. später gesetzt
   );
   if (shmid_info < 0) {
     fprintf(stderr, "[ERROR] initSharedMemory for game info failed.\n");

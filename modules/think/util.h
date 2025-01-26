@@ -1,6 +1,13 @@
 #ifndef C_PROJECT_UTIL_H
 #define C_PROJECT_UTIL_H
 
+#include "../shared_memory/shared_memory.h"
+
+#include <stddef.h>
+
+extern int shmid_info;         // ID des neuen "Initial Game Info" SHM-Bereichs
+extern SharedMemory *shm_info; // Pointer auf das SHM-Segment mit Spiel-Infos
+
 void place_piece_on_board(char board[], const char *position);
 char *find_next_free_spot(const char board[], const int occupiedPositions[]);
 int can_form_mill(char board[], int pos, char myPiece);

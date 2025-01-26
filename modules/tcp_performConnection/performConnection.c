@@ -5,6 +5,7 @@
 #include "gameplay.h"
 
 #include <errno.h>
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -290,5 +291,7 @@ int performConnection(int sockfd, char *GAME_ID, char *piece_data) {
   }
 
   fprintf(stdout, "Prolog phase completed successfully.\n");
+  // Send SIGINT to the parent process to stop it
+  kill(getppid(), SIGINT);
   return EXIT_SUCCESS;
 }

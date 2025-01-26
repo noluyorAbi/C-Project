@@ -40,6 +40,19 @@
     <img src="https://contrib.rocks/image?repo=noluyorAbi/C-Project" />
   </a>
 </p>
+<br/>
+
+<div align="center">
+
+# 📚 Dokumentation 📚
+
+Wir haben eine ausführliche Dokumentationsseite erstellt, die alle wichtigen Informationen zu unseren Komponenten und deren Funktionsweise enthält. Falls Sie sich genauer informieren möchten, wie die einzelnen Teile des Projekts funktionieren, schauen Sie einfach hier vorbei:
+
+👉 <a href="https://c-project-docs.vercel.app/"><b>Zur Dokumentation</b></a>
+
+</div>
+
+
 
 <br/>
 
@@ -238,10 +251,10 @@ Die Spielregeln für Neunermühle und weitere Hilfen zur Entwicklung des Clients
 
 ## Projekt-Roadmap
 
-- [x] **Phase 1**: Verbindung zum Gameserver herstellen
-- [ ] **Phase 2**: Spielelogik implementieren
-- [ ] **Phase 3**: Signalverarbeitung hinzufügen
-- [ ] **Phase 4**: Shared Memory nutzen
+- ✅ **Phase 1**: Verbindung zum Gameserver herstellen  
+- ✅ **Phase 2**: Signalverarbeitung hinzufügen  
+- ✅ **Phase 3**: Shared Memory implementieren  
+- ✅ **Phase 4**: Spielelogik implementieren
 
 ---
 

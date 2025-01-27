@@ -11,7 +11,6 @@
 #define MAX_PIECES 10000
 
 static const int adjacency_list[24][4] = {
-  // A0 (0)
   {1, 9, -1, -1}, // Adjacent to A1 (1), A7 (9)
   // A1 (1)
   {0, 2, 4, -1}, // Adjacent to A0 (0), A2 (2), B1 (4)
@@ -20,7 +19,7 @@ static const int adjacency_list[24][4] = {
   // B0 (3)
   {4, 10, -1, -1}, // Adjacent to B1 (4), B7 (10)
   // B1 (4)
-  {1, 3, 5, 13}, // Adjacent to A1 (1), B0 (3), B2 (5), B3 (13)
+  {1, 3, 5, -1}, // Adjacent to A1 (1), B0 (3), B2 (5)
   // B2 (5)
   {4, 13, -1, -1}, // Adjacent to B1 (4), B3 (13)
   // C0 (6)

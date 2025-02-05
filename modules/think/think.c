@@ -11,54 +11,12 @@
 #define MAX_PIECES 10000
 
 static const int adjacency_list[24][4] = {
-  {1, 9, -1, -1}, // Adjacent to A1 (1), A7 (9)
-  // A1 (1)
-  {0, 2, 4, -1}, // Adjacent to A0 (0), A2 (2), B1 (4)
-  // A2 (2)
-  {1, 14, -1, -1}, // Adjacent to A1 (1), A3 (14)
-  // B0 (3)
-  {4, 10, -1, -1}, // Adjacent to B1 (4), B7 (10)
-  // B1 (4)
-  {1, 3, 5, -1}, // Adjacent to A1 (1), B0 (3), B2 (5)
-  // B2 (5)
-  {4, 13, -1, -1}, // Adjacent to B1 (4), B3 (13)
-  // C0 (6)
-  {7, 11, -1, -1}, // Adjacent to C1 (7), C7 (11)
-  // C1 (7)
-  {6, 8, 12, -1}, // Adjacent to C0 (6), C2 (8), C3 (12)
-  // C2 (8)
-  {7, 12, -1, -1}, // Adjacent to C1 (7), C3 (12)
-  // A7 (9)
-  {0, 10, 21, -1}, // Adjacent to A0 (0), B7 (10), A6 (21)
-  // B7 (10)
-  {3, 9, 11, 18}, // Adjacent to B0 (3), A7 (9), C7 (11), B6 (18)
-  // C7 (11)
-  {6, 10, 15, -1}, // Adjacent to C0 (6), B7 (10), C6 (15)
-  // C3 (12)
-  {8, 13, 17, -1}, // Adjacent to C2 (8), B3 (13), C4 (17)
-  // B3 (13)
-  {4, 12, 14, 20}, // Adjacent to B1 (4), C3 (12), A3 (14), B4 (20)
-  // A3 (14)
-  {2, 13, 23, -1}, // Adjacent to A2 (2), B3 (13), A4 (23)
-  // C6 (15)
-  {11, 16, -1, -1}, // Adjacent to C7 (11), C5 (16)
-  // C5 (16)
-  {15, 17, 19, -1}, // Adjacent to C6 (15), C4 (17), B5 (19)
-  // C4 (17)
-  {12, 16, -1, -1}, // Adjacent to C3 (12), C5 (16)
-  // B6 (18)
-  {10, 19, -1, -1}, // Adjacent to B7 (10), B5 (19)
-  // B5 (19)
-  {16, 18, 20, -1}, // Adjacent to C5 (16), B6 (18), B4 (20)
-  // B4 (20)
-  {13, 19, -1, -1}, // Adjacent to B3 (13), B5 (19)
-  // A6 (21)
-  {9, 22, -1, -1}, // Adjacent to A7 (9), A5 (22)
-  // A5 (22)
-  {21, 23, 19, -1}, // Adjacent to A6 (21), A4 (23), B5 (19)
-  // A4 (23)
-  {14, 22, -1, -1} // Adjacent to A3 (14), A5 (22)
-};
+  {1, 9, -1, -1},   {0, 2, 4, -1},    {1, 14, -1, -1},  {4, 10, -1, -1},
+  {1, 3, 5, 7},     {4, 13, -1, -1},  {7, 11, -1, -1},  {4, 6, 8, -1},
+  {7, 12, -1, -1},  {0, 10, 21, -1},  {3, 9, 11, 18},   {6, 10, 15, -1},
+  {8, 13, 17, -1},  {5, 12, 14, 20},  {2, 13, 23, -1},  {11, 16, -1, -1},
+  {15, 17, 19, -1}, {12, 16, -1, -1}, {10, 19, -1, -1}, {16, 18, 20, 22},
+  {13, 19, -1, -1}, {9, 22, -1, -1},  {19, 21, 23, -1}, {14, 22, -1, -1}};
 
 int is_valid_position(const char *position) {
   if (strlen(position) != 2)
@@ -80,10 +38,6 @@ static const int all_mills[16][3] = {
   {16, 19, 22}, {8, 12, 17},  {5, 13, 20},  {2, 14, 23}};
 
 int think(char *gameState) {
-  //  printf("\n------------\n");
-  //  printf("%s\n", gameState);
-  //  printf("------------\n");
-
   char board[25];
   for (int i = 0; i < 25; i++) {
     board[i] = '+';
@@ -102,11 +56,6 @@ int think(char *gameState) {
 
   char *line = strtok(gameState, "\n");
   while (line != NULL) {
-    //    printf("line: %s\n", line);
-    //    printf("strncmp(line, \"+ PIECE\", 7) == 0: %d\n",
-    //           strncmp(line, "+ PIECE", 7) == 0);
-    //    printf("strlen(line) == 13: %d\n", strlen(line) == 13);
-
     if ((strncmp(line, "+ PIECE", 7) == 0) && strlen(line) == 13) {
       if (pieceCount < MAX_PIECES) {
         strncpy(positions[pieceCount], line + 7,
@@ -446,16 +395,6 @@ int think(char *gameState) {
          board[13], board[14], board[15], board[16], board[17], board[18],
          board[19], board[20], board[21], board[22], board[23]);
 
-  //  printf("--------------------\n");
-  //  for (int i = 0; i < 25; i++) {
-  //    if (occupiedPositions[i] == 1) {
-  //      printf("Occupied position: %s\n", occupiedStrings[i]);
-  //    }
-  //  }
-  //  printf("--------------------\n");
-
-  // get my piece prefix
-
   int numberOfMyPieces = count_pieces(board, my_piece);
 
   int previous_mills[num_mills][3];
@@ -621,7 +560,6 @@ int think(char *gameState) {
       return EXIT_FAILURE;
     }
 
-    // Prioritize moves that form a mill
     int selected_move = -1;
     for (int i = 0; i < moveCount; i++) {
       char tempBoard[24];
@@ -635,8 +573,6 @@ int think(char *gameState) {
     }
 
     if (selected_move == -1) {
-      // No mill-forming move found; select a random move (e.g., first
-      // available)
       selected_move = 0;
     }
 

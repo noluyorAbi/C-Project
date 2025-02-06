@@ -14,7 +14,7 @@ int EXTERN_PLAYER_NUMBER = 0; // Definition der Variable
  */
 bool parse_args(int argc, char *argv[], GameConfig *config) {
   // Set default values for optional arguments
-  config->player_number = 1; // Default player number
+  config->player_number = 2; // Default player number
   strncpy(config->config_file, "client.conf", sizeof(config->config_file) - 1);
   config->config_file[sizeof(config->config_file) - 1] = '\0';
 
@@ -49,6 +49,9 @@ bool parse_args(int argc, char *argv[], GameConfig *config) {
         }
         config->player_number = argv[i + 1][0] - '0';
         EXTERN_PLAYER_NUMBER = config->player_number;
+        if (EXTERN_PLAYER_NUMBER <= 1) {
+          config->player_number = 2;
+        }
         i++; // Skip the next argument since it has been processed
       } else {
         fprintf(stderr, "Fehler: -p benötigt einen Wert.\n");

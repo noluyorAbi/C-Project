@@ -5,13 +5,14 @@
 #include "gameplay.h"
 
 #include <errno.h>
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/socket.h>
 #include <unistd.h>
 
-#define BUFFER_SIZE 1024
+#define BUFFER_SIZE 32768
 
 /**
  * @brief Sends a message over the socket.
@@ -192,7 +193,9 @@ int performConnection(int sockfd, char *GAME_ID, char *piece_data) {
     return EXIT_FAILURE;
   }
 
-  if (EXTERN_PLAYER_NUMBER == 0) {
+  shm_info->playerNumber = atoi(&buffer[6]);
+
+  if (shm_info->playerNumber == 0) {
     fprintf(stdout, "Du bist Spieler 0.\n");
   } else {
     fprintf(stdout, "Du bist Spieler 1.\n");
@@ -288,5 +291,7 @@ int performConnection(int sockfd, char *GAME_ID, char *piece_data) {
   }
 
   fprintf(stdout, "Prolog phase completed successfully.\n");
+  // Send SIGINT to the parent process to stop it
+  kill(getppid(), SIGINT);
   return EXIT_SUCCESS;
 }

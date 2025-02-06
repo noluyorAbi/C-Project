@@ -7,7 +7,7 @@ extern int EXTERN_PLAYER_NUMBER;
 
 typedef struct {
   char game_id[14];      // 13 characters + null terminator (mandatory)
-  int player_number;     // 1 or 2 (optional, default: 1)
+  int player_number;     // optional, default: 2 for nnm
   char config_file[256]; // Path to the configuration file (optional, default:
                          // client.conf)
 } GameConfig;

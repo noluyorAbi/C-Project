@@ -6,6 +6,7 @@
 #include "./modules/tcp_performConnection/performConnection.h"
 #include "./modules/tcp_performConnection/tcp_connection.h"
 #include "./modules/think/think.h"
+#include "./modules/think/util.h"
 
 #include <arpa/inet.h> // For ntohs()
 #include <errno.h>
@@ -16,9 +17,10 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <sys/wait.h>
+#include <time.h>
 #include <unistd.h>
 
-#define INITIAL_SIZE 1024
+#define INITIAL_SIZE 32768
 
 // ---- Debug-Flag steuert Ausgaben (0 = keine Debug-Ausgabe, 1 = Debug-Ausgabe)
 static const int DEBUG_PRINTS = 1;
@@ -131,6 +133,13 @@ void handle_signal(int signal) {
  *                       MAIN FUNCTION                    *
  *********************************************************/
 int main(int argc, char *argv[]) {
+  srand(time(NULL));
+
+  if (argc < 2) {
+    fprintf(stderr, "Usage: %s <player_number>\n", argv[0]);
+    return EXIT_FAILURE;
+  }
+
   GameConfig game_config;
   Config app_config;
 
@@ -144,9 +153,9 @@ int main(int argc, char *argv[]) {
   shmid_info = initSharedMemory(
     game_config.player_number, // Anzahl Spieler
     /* gameName=*/"",          // Spielname (gameName) wird später gesetzt
-    /* playerNumber=*/EXTERN_PLAYER_NUMBER, // Beispiel: Wir sind Spieler 1
-    /* thinkerPID=*/0,                      // Wird ggf. später gesetzt
-    /* connectorPID=*/0                     // Wird ggf. später gesetzt
+    /* playerNumber=*/0,       // Wird ggf. später gesetzt
+    /* thinkerPID=*/0,         // Wird ggf. später gesetzt
+    /* connectorPID=*/0        // Wird ggf. später gesetzt
   );
   if (shmid_info < 0) {
     fprintf(stderr, "[ERROR] initSharedMemory for game info failed.\n");
@@ -282,6 +291,7 @@ static int create_pipe() {
     fprintf(stderr, "Failed to create pipe: %s\n", strerror(errno));
     return -1;
   }
+
   return 0;
 }
 
@@ -389,11 +399,11 @@ static void run_thinker(pid_t pid) {
 
   fprintf(stdout, "Thinker: Ready and waiting for signals...\n");
 
+  attachBoardMemory();
+
   // Main loop to wait for signals
   while (1) {
     pause(); // Wait for any signal
-
-    attachBoardMemory();
 
     if (sig_received) {
       sig_received = 0; // Reset the flag

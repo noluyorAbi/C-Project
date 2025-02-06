@@ -15,7 +15,7 @@ TARGET = $(BIN_DIR)/sysprak-client
 LIBRARY = $(LIB_DIR)/libsysprak.a
 
 # Mock-Daten
-MOCK_ARGS = -g 22wo3yzt95kp3
+MOCK_ARGS = -g 28cihqtpi7rgv
 
 # Quellen und Objektdateien
 LIB_SRC = $(shell find $(MODULES_DIR) -name '*.c')

@@ -1,5 +1,5 @@
 # Compiler und Flags
-CC = clang
+CC = gcc
 CFLAGS = -Wall -Werror -Imodules -Imodules/args_parser -Imodules/tcp_performConnection -fsanitize=address -fno-omit-frame-pointer
 
 # Verzeichnisse
@@ -15,7 +15,7 @@ TARGET = $(BIN_DIR)/sysprak-client
 LIBRARY = $(LIB_DIR)/libsysprak.a
 
 # Mock-Daten
-MOCK_ARGS = -g 1iwjidem96h41
+MOCK_ARGS = -g 0hnmtqyocqhej
 
 # Quellen und Objektdateien
 LIB_SRC = $(shell find $(MODULES_DIR) -name '*.c')

@@ -106,7 +106,6 @@ Das Projekt wird in mehreren Schritten im Verlauf des Praktikums entwickelt, und
 ├── LICENSE
 ├── README.md
 ├── bin
-│   ├── README.md
 │   └── sysprak-client
 ├── client.conf
 ├── lib
@@ -149,6 +148,7 @@ Das Projekt wird in mehreren Schritten im Verlauf des Praktikums entwickelt, und
 │   └── update_readme
 │       ├── README.md
 │       └── update_readme.sh
+├── sysprak-abgabe.sh
 └── tests
     ├── README.md
     ├── test_clientConf

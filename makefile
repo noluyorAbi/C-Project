@@ -1,6 +1,6 @@
 # Compiler und Flags
 CC = clang
-CFLAGS = -Wall -Werror -Imodules -Imodules/args_parser -Imodules/tcp_performConnection
+CFLAGS = -Wall -Werror -Imodules -Imodules/args_parser -Imodules/tcp_performConnection -fsanitize=address -fno-omit-frame-pointer
 
 # Verzeichnisse
 BIN_DIR = bin
@@ -15,7 +15,7 @@ TARGET = $(BIN_DIR)/sysprak-client
 LIBRARY = $(LIB_DIR)/libsysprak.a
 
 # Mock-Daten
-MOCK_ARGS = -g 28cihqtpi7rgv
+MOCK_ARGS = -g 1iwjidem96h41
 
 # Quellen und Objektdateien
 LIB_SRC = $(shell find $(MODULES_DIR) -name '*.c')
@@ -108,6 +108,6 @@ test: $(LIBRARY) $(TEST_OBJ)
 
 # Phony Target für Update des README.md
 update_readme:
-	@printf "\n\033[1;35mAktualisiere die Projektstruktur in README.md...\033[0m\n"
+#	@printf "\n\033[1;35mAktualisiere die Projektstruktur in README.md...\033[0m\n"
 	@./scripts/update_readme/update_readme.sh > /dev/null
-	@printf "\033[1;36mUpdate abgeschlossen. Die Projektstruktur wurde in die README.md übernommen.\033[0m\n"
+#	@printf "\033[1;36mUpdate abgeschlossen. Die Projektstruktur wurde in die README.md übernommen.\033[0m\n"

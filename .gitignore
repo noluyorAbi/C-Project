@@ -63,3 +63,4 @@ dkms.conf
 compile_commands.json
 /lib
 /build
+sysprak-abgabe.sh

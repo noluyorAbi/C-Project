@@ -1,5 +1,5 @@
 # Compiler und Flags
-CC = clang
+CC = gcc
 CFLAGS = -Wall -Werror -Imodules -Imodules/args_parser -Imodules/tcp_performConnection
 
 # Verzeichnisse

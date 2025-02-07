@@ -1,23 +1,21 @@
-# Compiler und Flags
+# Compiler and Flags
 CC = gcc
 CFLAGS = -Wall -Werror -Imodules -Imodules/args_parser -Imodules/tcp_performConnection
 
-# Verzeichnisse
-BIN_DIR = .
-BUILD_DIR = build
-SRC_DIR = .
+# Directories
+BUILD_DIR   = build
 MODULES_DIR = modules
-LIB_DIR = lib
-TESTS_DIR = tests
+LIB_DIR     = lib
+TESTS_DIR   = tests
 
-# Ziele
-TARGET = $(BIN_DIR)/sysprak-client
-LIBRARY = $(LIB_DIR)/libsysprak.a
+# Targets
+TARGET    = sysprak-client
+LIBRARY   = $(LIB_DIR)/libsysprak.a
 
-# Mock-Daten
+# Mock Data
 MOCK_ARGS = -g 0hnmtqyocqhej
 
-# Quellen und Objektdateien
+# Sources and Object Files
 LIB_SRC = $(shell find $(MODULES_DIR) -name '*.c')
 LIB_OBJ = $(LIB_SRC:%.c=$(BUILD_DIR)/%.o)
 
@@ -29,39 +27,38 @@ TEST_OBJ = $(TEST_SRC:%.c=$(BUILD_DIR)/%.o)
 
 CLANG_FORMAT = clang-format
 
-# Standardziel
+# Default Target
 .DEFAULT_GOAL := all
 
-# Phony-Ziele
+# Phony Targets
 .PHONY: all run clean format tidy test update_readme
 
 all: $(TARGET) update_readme
 
-# Kompilieren von Bibliotheksobjektdateien
+# Build object files for the library
 $(BUILD_DIR)/%.o: %.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-# Kompilieren von main.o mit korrektem Header-Pfad
+# Build main.o (explicit dependency on a header)
 $(BUILD_DIR)/main.o: main.c modules/tcp_performConnection/performConnection.h 
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-# Erstellen der statischen Bibliothek
+# Build the static library
 $(LIBRARY): $(LIB_OBJ)
 	@mkdir -p $(LIB_DIR)
 	ar rcs $@ $^
 
-# Linken des Hauptprogramms mit der Bibliothek
+# Link the main program with the library, placing the executable in the root
 $(TARGET): $(MAIN_OBJ) $(LIBRARY)
-	@mkdir -p $(BIN_DIR)
-	$(CC) $(CFLAGS) -o $@ $^
+	$(CC) $(CFLAGS) -o $@ $(MAIN_OBJ) $(LIBRARY)
 
-# Formatieren der Quellcode-Dateien
+# Format source code files
 format:
 	@echo "\n\033[1;35mFormatiere Quellcode-Dateien...\033[0m\n"
 	@formatted_count=0; \
-	for file in $(shell find $(SRC_DIR) $(MODULES_DIR) -name '*.c' -o -name '*.h'); do \
+	for file in $(shell find . $(MODULES_DIR) -name '*.c' -o -name '*.h'); do \
 		if ! $(CLANG_FORMAT) --dry-run --Werror $$file 2>/dev/null; then \
 			$(CLANG_FORMAT) -i $$file; \
 			echo "\033[1;33m  Formatiert:\033[0m $$file"; \
@@ -73,19 +70,19 @@ format:
 	echo; \
 	echo "\033[1;36mFormatierung abgeschlossen. Gesamtzahl der formatierten Dateien: $$formatted_count.\033[0m"
 
-# Clean-Ziel - entfernt Binärdateien und Build-Dateien
+# Clean: remove build, lib and binaries
 clean:
 	@echo "Bereinige..."
-	@for dir in $(BIN_DIR) $(BUILD_DIR) $(LIB_DIR); do \
+	@for dir in $(BUILD_DIR) $(LIB_DIR); do \
 		if [ -d "$$dir" ]; then \
 			echo "Bereinige $$dir..."; \
 			find $$dir -type f ! -name "README.md" -exec rm -f {} +; \
 			find $$dir -type d -empty -delete; \
 		fi; \
 	done
+	@rm -f $(TARGET) sysprak-client-test
 
-
-# Clang-Tidy-Ziel - Analysiert alle Quellcode-Dateien mit clang-tidy
+# Run clang-tidy on source files
 tidy:
 	@echo "Führe clang-tidy auf Quellcode-Dateien aus..."
 	@for file in $(LIB_SRC) $(MAIN_SRC); do \
@@ -94,20 +91,17 @@ tidy:
 	done
 	@echo "clang-tidy-Analyse erfolgreich abgeschlossen."
 
-# Ausführen des Hauptprogramms mit Mock-Daten
+# Run the main program with mock arguments
 run: $(TARGET)
-	echo "\n"
-	./$(TARGET) $(MOCK_ARGS)
+	@echo "\n"
+	@./$(TARGET) $(MOCK_ARGS)
 
-# Kompilieren und Ausführen von Tests
+# Build and run tests
 test: $(LIBRARY) $(TEST_OBJ)
-	@mkdir -p $(BIN_DIR)
-	$(CC) $(CFLAGS) -o $(BIN_DIR)/sysprak-client-test $(TEST_OBJ) -L$(LIB_DIR) -lsysprak -lpthread
+	$(CC) $(CFLAGS) -o sysprak-client-test $(TEST_OBJ) $(LIBRARY) -lpthread
 	@echo "\n\n"
-	@./$(BIN_DIR)/sysprak-client-test
+	@./sysprak-client-test
 
-# Phony Target für Update des README.md
+# Update README.md with the project structure
 update_readme:
-#	@printf "\n\033[1;35mAktualisiere die Projektstruktur in README.md...\033[0m\n"
 	@./scripts/update_readme/update_readme.sh > /dev/null
-#	@printf "\033[1;36mUpdate abgeschlossen. Die Projektstruktur wurde in die README.md übernommen.\033[0m\n"

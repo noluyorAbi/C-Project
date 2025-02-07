@@ -3,7 +3,7 @@ CC = gcc
 CFLAGS = -Wall -Werror -Imodules -Imodules/args_parser -Imodules/tcp_performConnection -fsanitize=address -fno-omit-frame-pointer
 
 # Verzeichnisse
-BIN_DIR = bin
+BIN_DIR = .
 BUILD_DIR = build
 SRC_DIR = .
 MODULES_DIR = modules

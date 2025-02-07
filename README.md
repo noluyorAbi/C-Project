@@ -107,61 +107,6 @@ Das Projekt wird in mehreren Schritten im Verlauf des Praktikums entwickelt, und
 ├── README.md
 ├── bin
 │   └── sysprak-client
-├── build_test
-│   ├── LICENSE
-│   ├── README.md
-│   ├── client.conf
-│   ├── main.c
-│   ├── makefile
-│   ├── modules
-│   │   ├── README.md
-│   │   ├── args_parser
-│   │   │   ├── README.md
-│   │   │   ├── args_parser.c
-│   │   │   ├── args_parser.h
-│   │   │   ├── config.c
-│   │   │   ├── config.h
-│   │   │   └── constants.h
-│   │   ├── shared_memory
-│   │   │   ├── README.md
-│   │   │   ├── shared_memory.c
-│   │   │   └── shared_memory.h
-│   │   ├── tcp_performConnection
-│   │   │   ├── README.md
-│   │   │   ├── gameplay.c
-│   │   │   ├── gameplay.h
-│   │   │   ├── performConnection.c
-│   │   │   ├── performConnection.h
-│   │   │   ├── tcp_connection.c
-│   │   │   └── tcp_connection.h
-│   │   └── think
-│   │       ├── README.md
-│   │       ├── nmm.c
-│   │       ├── nmm.h
-│   │       ├── think.c
-│   │       ├── think.h
-│   │       ├── util.c
-│   │       └── util.h
-│   ├── scripts
-│   │   ├── Readme.md
-│   │   ├── setup_precommit
-│   │   │   ├── README.md
-│   │   │   └── setup_pre_commit.sh
-│   │   └── update_readme
-│   │       ├── README.md
-│   │       └── update_readme.sh
-│   └── tests
-│       ├── README.md
-│       ├── test_clientConf
-│       │   ├── README.md
-│       │   └── test_clientConf.sh
-│       ├── test_performConnection
-│       │   ├── README.md
-│       │   └── test_performConnection.c
-│       └── test_sharedMemory
-│           ├── README.md
-│           ├── test_sharedMemory.bash
-│           └── test_sharedMemory.c
 ├── client.conf
 ├── lib
 ├── main.c
@@ -217,7 +162,7 @@ Das Projekt wird in mehreren Schritten im Verlauf des Praktikums entwickelt, und
         ├── test_sharedMemory.bash
         └── test_sharedMemory.c
 
-28 directories, 86 files
+15 directories, 44 files
 ```
 <!-- project-structure-end -->
 

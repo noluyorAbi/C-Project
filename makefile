@@ -1,6 +1,6 @@
 # Compiler und Flags
 CC = gcc
-CFLAGS = -Wall -Werror -Imodules -Imodules/args_parser -Imodules/tcp_performConnection -fsanitize=address -fno-omit-frame-pointer
+CFLAGS = -Wall -Werror -Imodules -Imodules/args_parser -Imodules/tcp_performConnection
 
 # Verzeichnisse
 BIN_DIR = .
